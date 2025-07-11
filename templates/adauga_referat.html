@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Creează Referat de Necesitate Nou</h2>
+<form method="POST" action="{{ url_for('referate.adauga_referat') }}">
+    <label for="numar_referat">Număr Referat (Opțional):</label><br>
+    <input type="text" id="numar_referat" name="numar_referat"><br><br>
+
+    <label for="data_creare">Data Creare:</label><br>
+    <input type="date" id="data_creare" name="data_creare" value="{{ today }}" required><br><br>
+
+    <label for="stare">Stare:</label><br>
+    <select id="stare" name="stare">
+        <option value="Ciorna" selected>Ciornă</option>
+        <option value="Trimis">Trimis</option>
+        <option value="Aprobat">Aprobat</option>
+        <option value="Respins">Respins</option>
+    </select><br><br>
+
+    <h3>Detalii Document Oficial (Opțional)</h3>
+    <label for="numar_inregistrare_doc">Număr Înregistrare Document:</label><br>
+    <input type="text" id="numar_inregistrare_doc" name="numar_inregistrare_doc"><br><br>
+
+    <label for="data_inregistrare_doc">Data Înregistrare Document:</label><br>
+    <input type="date" id="data_inregistrare_doc" name="data_inregistrare_doc"><br><br>
+
+    <label for="link_scan_pdf">Link Scan PDF:</label><br>
+    <input type="url" id="link_scan_pdf" name="link_scan_pdf" placeholder="https://exemplu.com/scan.pdf"><br><br>
+
+    <label for="observatii">Observații (Opțional):</label><br>
+    <textarea id="observatii" name="observatii" rows="4"></textarea><br><br>
+
+    <button type="submit">Creează Referat</button>
+</form>
+{% endblock %}

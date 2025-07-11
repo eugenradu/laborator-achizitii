@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Detalii Licitație: {{ licitatie.Nume_Licitatie }}</h2>
+    <p>ID Licitație: <strong>#{{ licitatie.ID_Licitatie }}</strong></p>
+    <p>Stare: <strong>{{ licitatie.Stare }}</strong></p>
+    <p>Data Creare: <strong>{{ licitatie.Data_Creare }}</strong></p>
+    <p>Creat de: <strong>{{ licitatie.creator_licitatie.Nume_Utilizator if licitatie.creator_licitatie else 'N/A' }}</strong></p>
+    
+    <div class="actions">
+        <a href="{{ url_for('genereaza_caiet_sarcini', licitatie_id=licitatie.ID_Licitatie) }}" class="button">Generează Caiet de Sarcini (.txt)</a>
+    </div>
+
+    <h3>Loturi Incluse în Licitație</h3>
+
+    {% for lot_id, detalii in detalii_loturi.items() %}
+        <div class="lot-container">
+            <h4>Lot #{{ detalii.lot_obj.ID_Lot }}: {{ detalii.lot_obj.Nume_Lot }}</h4>
+            {% if detalii.lot_obj.Descriere_Lot %}<p>Descriere: <span class="pre-formatted-text">{{ detalii.lot_obj.Descriere_Lot }}</span></p>{% endif %}
+
+            <h5>Produse în Acest Lot</h5>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nume Generic Produs</th>
+                        <th>Cantitate Solicitată</th>
+                        <th>Unitate Măsură</th>
+                        <th>Specificații Tehnice</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pil, pir, prod in detalii.produse %}
+                    <tr>
+                        <td>{{ prod.Nume_Generic }}</td>
+                        <td>{{ pir.Cantitate_Solicitata }}</td>
+                        <td>{{ prod.Unitate_Masura }}</td>
+                        <td class="pre-formatted-text">{{ prod.Specificatii_Tehnice }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="4">Acest lot nu conține produse.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="actions">
+                <a href="{{ url_for('adauga_oferta_licitatie_detaliat', licitatie_id=licitatie.ID_Licitatie, lot_id=detalii.lot_obj.ID_Lot) }}" class="button">Adaugă Ofertă Detaliată pentru Lot</a>
+            </div>
+
+            <h5>Oferte Detaliate Primite pentru Acest Lot</h5>
+            {% for distribuitor, oferta_grupata in detalii.oferte_grupate.items() %}
+                <div class="oferta-container">
+                    <h6>Ofertă de la: <strong>{{ distribuitor }}</strong></h6>
+                    <p>
+                        Valoare Totală Ofertă: <strong>{{ "%.2f"|format(oferta_grupata.total_oferta) }} {{ oferta_grupata.moneda }}</strong> | 
+                        Data Ofertei: {{ oferta_grupata.data_oferta }}
+                    </p>
+                    {% if oferta_grupata.numar_inregistrare %}
+                    <p>
+                        Înregistrare Ofertă: <strong>Nr. {{ oferta_grupata.numar_inregistrare }} / {{ oferta_grupata.data_inregistrare }}</strong>
+                    </p>
+                    {% endif %}
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Produs Generic Solicitat</th>
+                                <th>Varianta Comercială Ofertată</th>
+                                <th>Cantitate Solicitată</th>
+                                <th>Preț Unitar Ofertat</th>
+                                <th>Valoare Articol</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for articol in oferta_grupata.articole %}
+                            <tr>
+                                <td>{{ articol.produs_generic.Nume_Generic }}</td>
+                                <td>
+                                    <strong>{{ articol.producator.Nume_Producator }}</strong><br>
+                                    {{ articol.varianta_comerciala.Nume_Comercial_Extins or articol.varianta_comerciala.Descriere_Ambalare }}<br>
+                                    <small>(Cod: {{ articol.varianta_comerciala.Cod_Catalog }})</small>
+                                </td>
+                                <td>{{ articol.produs_in_referat.Cantitate_Solicitata }} {{ articol.produs_generic.Unitate_Masura }}</td>
+                                <td>{{ "%.2f"|format(articol.oferta_specifica.Pret_Unitar_Pachet) }} {{ oferta_grupata.moneda }}</td>
+                                <td>{{ "%.2f"|format(articol.valoare_articol) }} {{ oferta_grupata.moneda }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="actions" style="margin-top: 10px;">
+                        <a href="{{ url_for('creeaza_contract', licitatie_id=licitatie.ID_Licitatie, lot_id=detalii.lot_obj.ID_Lot, distribuitor=distribuitor) }}" class="button-primary">Creează Contract din Această Ofertă</a>
+                    </div>
+                </div>
+            {% else %}
+                <p>Nicio ofertă detaliată primită pentru acest lot.</p>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>Această licitație nu are loturi asociate.</p>
+    {% endfor %}
+
+    <style>
+        .lot-container {
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+        .oferta-container {
+            border: 1px solid #e0e0e0;
+            background-color: #f9f9f9;
+            padding: 10px;
+            margin-top: 15px;
+            border-radius: 5px;
+        }
+        .button-primary {
+            background-color: #28a745;
+            color: white;
+            padding: 8px 12px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+    </style>
+{% endblock %}

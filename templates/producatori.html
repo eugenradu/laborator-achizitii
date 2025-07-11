@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Management Producători</h2>
+
+    <div class="form-container">
+        <h3>Adaugă Producător Nou</h3>
+        <form action="{{ url_for('producatori') }}" method="POST">
+            <label for="nume_producator">Nume Producător:</label>
+            <input type="text" id="nume_producator" name="nume_producator" required>
+            <button type="submit">Adaugă</button>
+        </form>
+    </div>
+
+    <h3>Producători Existenți</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Nume Producător</th>
+                <th style="width: 50%;">Acțiuni</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for producator in producatori %}
+            <tr>
+                <td>{{ producator.Nume_Producator }}</td>
+                <td>
+                    <form action="{{ url_for('modifica_producator', producator_id=producator.ID_Producator) }}" method="POST" style="display: inline-flex; align-items: center; gap: 10px; margin-right: 10px;">
+                        <input type="text" name="nume_producator_nou" placeholder="Nume nou" required style="margin-bottom: 0;">
+                        <button type="submit">Redenumește</button>
+                    </form>
+                    <form action="{{ url_for('sterge_producator', producator_id=producator.ID_Producator) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Ești sigur că vrei să ștergi producătorul? Acțiunea este ireversibilă.');">
+                        <button type="submit" class="button-danger">Șterge</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="2">Nu există niciun producător definit.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <style>
+        .button-danger { background-color: #dc3545; }
+        .button-danger:hover { background-color: #c82333; }
+        .form-container { margin-bottom: 30px; }
+    </style>
+{% endblock %}
+

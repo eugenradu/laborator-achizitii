@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Detalii Ofertă #{{ oferta.ID_Oferta }}</h2>
+
+<fieldset>
+    <legend>Informații Generale</legend>
+    <p><strong>Furnizor:</strong> <a
+            href="{{ url_for('furnizori.edit_furnizor', furnizor_id=oferta.furnizor.ID_Furnizor) }}">{{
+            oferta.furnizor.Nume_Furnizor }}</a></p>
+    <p><strong>Data Ofertei:</strong> {{ oferta.Data_Oferta }}</p>
+    <p><strong>Monedă:</strong> {{ oferta.Moneda }}</p>
+    {% if oferta.Numar_Inregistrare %}
+    <p><strong>Înregistrare:</strong> Nr. {{ oferta.Numar_Inregistrare }} / {{ oferta.Data_Inregistrare }}</p>
+    {% endif %}
+    {% if oferta.licitatie_parinte %}
+    <p><strong>Asociată cu Licitația:</strong> <a href="#">{{ oferta.licitatie_parinte.Nume_Licitatie }}</a></p> {#
+    TODO: Link to licitatie details #}
+    {% elif oferta.referat_asociat %}
+    <p><strong>Asociată cu Referatul:</strong> <a
+            href="{{ url_for('referate.detalii_referat', referat_id=oferta.referat_asociat.ID_Referat) }}">Referat #{{
+            oferta.referat_asociat.ID_Referat }}</a></p>
+    {% else %}
+    <p><strong>Tip:</strong> Ofertă Generală</p>
+    {% endif %}
+</fieldset>
+
+<h3>Articole Incluse în Ofertă</h3>
+<table>
+    <thead>
+        <tr>
+            <th>Produs Ofertat (Varianta Comercială)</th>
+            <th>Preț Unitar Pachet</th>
+            <th>Observații</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for articol in oferta.articole %}
+        <tr>
+            <td>
+                <strong>{{ articol.varianta_comerciala_ofertata.producator.Nume_Producator }}</strong><br>
+                {{ articol.varianta_comerciala_ofertata.produs_generic.Nume_Generic }}<br>
+                <small>{{ articol.varianta_comerciala_ofertata.Descriere_Ambalare }} (Cod: {{
+                    articol.varianta_comerciala_ofertata.Cod_Catalog }})</small>
+            </td>
+            <td>{{ "%.2f"|format(articol.Pret_Unitar_Pachet) }} {{ oferta.Moneda }}</td>
+            <td class="pre-formatted-text">{{ articol.Observatii or 'N/A' }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="3">Această ofertă nu conține articole.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="actions" style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
+    <div>
+        <a href="{{ url_for('oferte.edit_oferta', oferta_id=oferta.ID_Oferta) }}" class="button">Editează Oferta</a>
+        <form method="POST" action="{{ url_for('oferte.sterge_oferta', oferta_id=oferta.ID_Oferta) }}"
+            style="display:inline; margin-left: 10px;"
+            onsubmit="return confirm('Sunteți sigur că doriți să ștergeți această ofertă? Acțiunea este ireversibilă.');">
+            <button type="submit" class="button button-danger">Șterge Oferta</button>
+        </form>
+    </div>
+    <a href="{{ url_for('oferte.list_oferte') }}" class="button button-secondary">Înapoi la Listă</a>
+</div>
+
+<style>
+    .button-danger {
+        background-color: #f44336;
+        /* Red */
+    }
+
+    .button-danger:hover {
+        background-color: #da190b;
+    }
+
+    .button-secondary {
+        background-color: #6c757d;
+        /* Gray */
+    }
+
+    .button-secondary:hover {
+        background-color: #5a6268;
+    }
+</style>
+{% endblock %}

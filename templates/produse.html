@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Lista Produselor Generice</h2>
+
+<div class="card">
+    <h3>Filtrează și Caută Produse</h3>
+    <form method="GET" action="{{ url_for('produse.produse') }}" class="search-form">
+        <input type="text" name="search" placeholder="Caută după nume, specificații..." value="{{ search_term or '' }}">
+        <select name="category_filter" onchange="this.form.submit()">
+            <option value="">-- Toate Categoriile --</option>
+            {% for cat in categorii %}
+            <option value="{{ cat.ID_Categorie }}" {% if cat.ID_Categorie==category_filter_id %}selected{% endif %}>
+                {{ cat.Nume_Categorie }}
+            </option>
+            {% endfor %}
+        </select>
+        {% if search_term or category_filter_id %}
+        <a href="{{ url_for('produse.produse') }}" class="button-secondary">Șterge Filtrele</a>
+        {% endif %}
+    </form>
+</div>
+
+<div class="card">
+    <h3>Importă Produse din JSON</h3>
+    <p>Încarcă un fișier JSON cu o listă de produse. Cheile obligatorii sunt "Nume_Generic", "Specificatii_Tehnice" și
+        "Unitate_Masura". Cheia "Categorie" este opțională. Dacă este specificată, categoria trebuie să existe deja în
+        sistem. Dacă este omisă, produsul va fi asignat categoriei "Necategorizat".</p>
+    <form action="{{ url_for('produse.import_produse_json') }}" method="post" enctype="multipart/form-data">
+        <label for="fisier_json">Selectează fișier:</label>
+        <input type="file" id="fisier_json" name="fisier_json" accept=".json" required>
+        <button type="submit" class="button-primary">Importă</button>
+    </form>
+</div>
+
+<div class="actions">
+    <a href="{{ url_for('produse.adauga_produs') }}" class="button">Adaugă Produs Generic Nou</a>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>Nume Generic</th>
+            <th>Specificații Tehnice</th>
+            <th>Categorie</th>
+            <th>Unitate Măsură</th>
+            <th>Acțiuni</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for produs, categorie in produse %}
+        <tr>
+            <td>{{ produs.Nume_Generic }}</td>
+            <td class="pre-formatted-text">{{ produs.Specificatii_Tehnice }}</td>
+            <td>{{ categorie.Nume_Categorie }}</td>
+            <td>{{ produs.Unitate_Masura }}</td>
+            <td>
+                <a href="{{ url_for('produse.edit_produs', produs_id=produs.ID_Produs) }}" class="button-edit"
+                    style="margin-right: 5px;">Editează</a>
+                <form action="{{ url_for('produse.sterge_produs', produs_id=produs.ID_Produs) }}" method="POST"
+                    style="display: inline-block;"
+                    onsubmit="return confirm('Ești sigur că vrei să ștergi acest produs? Acțiunea este ireversibilă și va eșua dacă produsul are variante comerciale sau este folosit în referate.');">
+                    <button type="submit" class="button-danger">Șterge</button>
+                </form>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            {% if search_term %}
+            <td colspan="5">Niciun produs nu corespunde termenului de căutare "{{ search_term }}".</td>
+            {% else %}
+            <td colspan="5">Nu există niciun produs generic înregistrat.</td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Pagination Controls -->
+{% if pagination and pagination.pages > 1 %}
+<div class="pagination">
+    <!-- Previous Page Link -->
+    <a href="{{ url_for('produse.produse', page=pagination.prev_num, search=search_term, category_filter=category_filter_id) if pagination.has_prev else '#' }}"
+        class="{{ 'disabled' if not pagination.has_prev }}">
+        &laquo; Anterioară
+    </a>
+
+    <!-- Page Numbers -->
+    {% for p in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+    {% if p %}
+    <a href="{{ url_for('produse.produse', page=p, search=search_term, category_filter=category_filter_id) }}"
+        class="{{ 'active' if p == pagination.page }}">{{ p }}</a>
+    {% else %}
+    <span class="ellipsis">…</span>
+    {% endif %}
+    {% endfor %}
+
+    <!-- Next Page Link -->
+    <a href="{{ url_for('produse.produse', page=pagination.next_num, search=search_term, category_filter=category_filter_id) if pagination.has_next else '#' }}"
+        class="{{ 'disabled' if not pagination.has_next }}">
+        Următoare &raquo;
+    </a>
+</div>
+{% endif %}
+
+<style>
+    .card {
+        background: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .button-edit {
+        background-color: #ffc107;
+        color: black;
+        padding: 5px 10px;
+        border-radius: 4px;
+        text-decoration: none;
+    }
+
+    .button-danger {
+        background-color: #dc3545;
+        padding: 5px 10px;
+        font-size: 14px;
+    }
+
+    .button-danger:hover {
+        background-color: #c82333;
+    }
+
+    .search-form {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .search-form input[type="text"] {
+        flex-grow: 1;
+        margin-bottom: 0;
+    }
+
+    .search-form select {
+        padding: 8px;
+        margin-bottom: 0;
+    }
+
+    .button-secondary {
+        background-color: #6c757d;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 4px;
+        text-decoration: none;
+    }
+
+    .pagination {
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .pagination a,
+    .pagination span {
+        display: inline-block;
+        padding: 8px 16px;
+        text-decoration: none;
+        border: 1px solid #ddd;
+        color: #4CAF50;
+        margin: 0 2px;
+        border-radius: 4px;
+    }
+
+    .pagination a.active {
+        background-color: #4CAF50;
+        color: white;
+        border: 1px solid #4CAF50;
+    }
+
+    .pagination a.disabled {
+        color: #ccc;
+        pointer-events: none;
+        cursor: default;
+    }
+
+    .pagination span.ellipsis {
+        border: none;
+    }
+</style>
+{% endblock %}

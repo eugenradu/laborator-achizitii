@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Autentificare</h2>
+    <form method="POST">
+        <label for="username">Nume Utilizator:</label><br>
+        <input type="text" id="username" name="username" required><br><br>
+        
+        <label for="password">Parolă:</label><br>
+        <input type="password" id="password" name="password" required><br><br>
+        
+        <button type="submit">Autentificare</button>
+    </form>
+    <p>Nu ai cont? <a href="{{ url_for('register') }}">Înregistrează-te aici</a>.</p>
+{% endblock %}

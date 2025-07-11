@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Creează Licitație Nouă</h2>
+    <form method="POST">
+        <label for="nume_licitatie">Nume Licitație:</label><br>
+        <input type="text" id="nume_licitatie" name="nume_licitatie" required><br><br>
+
+        <label for="stare">Stare:</label><br>
+        <select id="stare" name="stare">
+            <option value="In Desfasurare" selected>În Desfășurare</option>
+            <option value="Anulata">Anulată</option>
+            <option value="Finalizata">Finalizată</option>
+        </select><br><br>
+
+        <label for="loturi_incluse">Selectează Loturi pentru a le include în licitație:</label><br>
+        <p style="font-size: 0.9em; color: #666;">(Poți selecta mai multe folosind Ctrl+Click sau Cmd+Click)</p>
+        <select id="loturi_incluse" name="loturi_incluse" multiple required size="10">
+            {% for lot in loturi_disponibile %}
+                <option value="{{ lot.ID_Lot }}">Lot #{{ lot.ID_Lot }}: {{ lot.Nume_Lot }} (din Referat #{{ lot.ID_Referat }})</option>
+            {% endfor %}
+        </select><br><br>
+        
+        <button type="submit">Creează Licitație</button>
+    </form>
+{% endblock %}

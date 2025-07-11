@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Adaugă Furnizor Nou</h2>
+
+<form method="POST" action="{{ url_for('furnizori.adauga_furnizor') }}">
+    <fieldset>
+        <legend>Date de Identificare</legend>
+        <label for="nume_furnizor">Nume Furnizor (Obligatoriu):</label>
+        <input type="text" id="nume_furnizor" name="nume_furnizor" value="{{ form_data.get('nume_furnizor', '') }}"
+            required>
+
+        <label for="cui">CUI (Cod Unic de Înregistrare):</label>
+        <input type="text" id="cui" name="cui" value="{{ form_data.get('cui', '') }}">
+
+        <label for="adresa">Adresă:</label>
+        <textarea id="adresa" name="adresa" rows="3">{{ form_data.get('adresa', '') }}</textarea>
+    </fieldset>
+
+    <fieldset>
+        <legend>Date de Contact</legend>
+        <label for="persoana_contact">Persoană de Contact:</label>
+        <input type="text" id="persoana_contact" name="persoana_contact"
+            value="{{ form_data.get('persoana_contact', '') }}">
+
+        <label for="email_contact">Email Contact:</label>
+        <input type="email" id="email_contact" name="email_contact" value="{{ form_data.get('email_contact', '') }}">
+
+        <label for="telefon_contact">Telefon Contact:</label>
+        <input type="tel" id="telefon_contact" name="telefon_contact"
+            value="{{ form_data.get('telefon_contact', '') }}">
+    </fieldset>
+
+    <br>
+    <button type="submit">Salvează Furnizor</button>
+    <a href="{{ url_for('furnizori.list_furnizori') }}" class="button-secondary" style="margin-left: 10px;">Anulează</a>
+</form>
+
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Detalii Comandă #{{ comanda.ID_Comanda_General }}</h2>
+    <p>
+        <strong>Număr Comandă:</strong> {{ comanda.Numar_Comanda or 'N/A' }}<br>
+        <strong>Data Comandă:</strong> {{ comanda.Data_Comanda }}<br>
+        <strong>Stare:</strong> {{ comanda.Stare_Comanda }}<br>
+        <strong>Contract Aferent:</strong> <a href="{{ url_for('detalii_contract', contract_id=comanda.ID_Contract) }}">{{ comanda.contract_comanda.Numar_Contract }}</a><br>
+        <strong>Distribuitor:</strong> {{ comanda.contract_comanda.Nume_Distribuitor }}<br>
+        <strong>Creat de:</strong> {{ comanda.creator_comanda.Nume_Utilizator if comanda.creator_comanda else 'N/A' }}
+    </p>
+    <p><strong>Valoare Totală Comandă: {{ "%.2f"|format(total_comanda) }} RON</strong></p>
+
+    <h3>Articole Comandate</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Produs Generic</th>
+                <th>Varianta Comercială</th>
+                <th>Cantitate Comandată (Pachete)</th>
+                <th>Preț Unitar Pachet (RON)</th>
+                <th>Valoare Totală Articol (RON)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for dcp, acl, vcp, prod, producator in detalii_produse %}
+            <tr>
+                <td>{{ prod.Nume_Generic }}</td>
+                <td>
+                    <strong>{{ producator.Nume_Producator }}</strong><br>
+                    {{ vcp.Nume_Comercial_Extins or vcp.Descriere_Ambalare }}<br>
+                    <small>(Cod: {{ vcp.Cod_Catalog }})</small>
+                </td>
+                <td>{{ dcp.Cantitate_Comandata_Pachete }}</td>
+                <td>{{ "%.2f"|format(acl.Pret_Unitar_Pachet_Contract) }}</td>
+                <td>{{ "%.2f"|format(dcp.Cantitate_Comandata_Pachete * acl.Pret_Unitar_Pachet_Contract) }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5">Această comandă nu conține articole.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {# Aici vom adăuga în viitor acțiuni, cum ar fi "Înregistrează Livrare" #}
+
+{% endblock %}

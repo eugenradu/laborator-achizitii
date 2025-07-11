@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Creează Comandă Nouă pe Contractul: {{ contract.Numar_Contract }}</h2>
+    <p>
+        <strong>Distribuitor:</strong> {{ contract.Nume_Distribuitor }}
+    </p>
+
+    <form method="POST">
+        <h3>Detalii Comandă</h3>
+        <label for="numar_comanda">Număr Comandă (Opțional):</label><br>
+        <input type="text" id="numar_comanda" name="numar_comanda"><br><br>
+
+        <label for="data_comanda">Data Comandă:</label><br>
+        <input type="date" id="data_comanda" name="data_comanda" value="{{ today }}" required><br><br>
+
+        <h3>Selectează Articolele și Cantitățile de Comandat</h3>
+        <p>Completează cantitatea doar pentru articolele pe care dorești să le comanzi acum.</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Produs Generic</th>
+                    <th>Varianta Comercială Contractată</th>
+                    <th>Preț Unitar Pachet (RON)</th>
+                    <th>Cantitate de Comandat (Pachete)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for articol, vcp, prod, producator in articole_contractate %}
+                <tr>
+                    <td>{{ prod.Nume_Generic }}</td>
+                    <td>
+                        <strong>{{ producator.Nume_Producator }}</strong><br>
+                        {{ vcp.Nume_Comercial_Extins or vcp.Descriere_Ambalare }}<br>
+                        <small>(Cod: {{ vcp.Cod_Catalog }})</small>
+                    </td>
+                    <td>{{ "%.2f"|format(articol.Pret_Unitar_Pachet_Contract) }}</td>
+                    <td>
+                        <input type="number" name="cantitate_{{ articol.ID_Articol_Contractat }}" min="0" placeholder="0">
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <br>
+        <button type="submit" class="button-primary" style="background-color: #007bff;">Plasează Comanda</button>
+    </form>
+{% endblock %}

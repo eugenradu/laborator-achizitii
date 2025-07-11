@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Lista Contractelor</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Număr Contract</th>
+                <th>Data Semnare</th>
+                <th>Distribuitor</th>
+                <th>Licitatie</th>
+                <th>Lot</th>
+                <th>Valoare Totală (RON)</th>
+                <th>Creat de</th>
+                <th>Acțiuni</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for contract, nume_licitatie, nume_lot, nume_creator in contracte %}
+            <tr>
+                <td>{{ contract.Numar_Contract }}</td>
+                <td>{{ contract.Data_Semnare }}</td>
+                <td>{{ contract.Nume_Distribuitor }}</td>
+                <td>{{ nume_licitatie }}</td>
+                <td>{{ nume_lot }}</td>
+                <td>{{ "%.2f"|format(contract.Pret_Total_Contract) }}</td>
+                <td>{{ nume_creator if nume_creator else 'N/A' }}</td>
+                <td>
+                    <a href="{{ url_for('detalii_contract', contract_id=contract.ID_Contract) }}">Detalii</a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="8">Nu există niciun contract înregistrat.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

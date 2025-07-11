@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Editează Furnizorul: {{ furnizor.Nume_Furnizor }}</h2>
+
+<form method="POST" action="{{ url_for('furnizori.edit_furnizor', furnizor_id=furnizor.ID_Furnizor) }}">
+    <fieldset>
+        <legend>Date de Identificare</legend>
+        <label for="nume_furnizor">Nume Furnizor (Obligatoriu):</label>
+        <input type="text" id="nume_furnizor" name="nume_furnizor" value="{{ furnizor.Nume_Furnizor }}" required>
+
+        <label for="cui">CUI (Cod Unic de Înregistrare):</label>
+        <input type="text" id="cui" name="cui" value="{{ furnizor.CUI or '' }}">
+
+        <label for="adresa">Adresă:</label>
+        <textarea id="adresa" name="adresa" rows="3">{{ furnizor.Adresa or '' }}</textarea>
+    </fieldset>
+
+    <fieldset>
+        <legend>Date de Contact</legend>
+        <label for="persoana_contact">Persoană de Contact:</label>
+        <input type="text" id="persoana_contact" name="persoana_contact" value="{{ furnizor.Persoana_Contact or '' }}">
+
+        <label for="email_contact">Email Contact:</label>
+        <input type="email" id="email_contact" name="email_contact" value="{{ furnizor.Email_Contact or '' }}">
+
+        <label for="telefon_contact">Telefon Contact:</label>
+        <input type="tel" id="telefon_contact" name="telefon_contact" value="{{ furnizor.Telefon_Contact or '' }}">
+    </fieldset>
+
+    <br>
+    <button type="submit">Salvează Modificările</button>
+    <a href="{{ url_for('furnizori.list_furnizori') }}" class="button-secondary" style="margin-left: 10px;">Anulează</a>
+</form>
+
+{% endblock %}

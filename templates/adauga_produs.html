@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Adaugă Produs Generic Nou</h2>
+    <form method="POST">
+        <label for="nume_generic">Nume Generic Produs:</label><br>
+        <input type="text" id="nume_generic" name="nume_generic" required><br><br>
+        
+        <label for="specificatii">Specificații Tehnice:</label><br>
+        <textarea id="specificatii" name="specificatii" rows="5"></textarea><br><br>
+        
+        <label for="unitate_masura">Unitate de Măsură:</label><br>
+        <input type="text" id="unitate_masura" name="unitate_masura"><br><br>
+
+        <label for="id_categorie">Categorie:</label><br>
+        <select id="id_categorie" name="id_categorie" required>
+            <option value="">-- Selectează o categorie --</option>
+            {% for categorie in categorii %}
+                <option value="{{ categorie.ID_Categorie }}">{{ categorie.Nume_Categorie }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <button type="submit">Adaugă Produs</button>
+    </form>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Editează Varianta Comercială</h2>
+    
+    <div class="product-info-card">
+        <h4>Produs Generic Asociat</h4>
+        <p><strong>Nume:</strong> {{ varianta.produs_generic.Nume_Generic }}</p>
+        <p><strong>Categorie:</strong> {{ varianta.produs_generic.categorie.Nume_Categorie }}</p>
+        <p><strong>Unitate de Măsură Generică:</strong> {{ varianta.produs_generic.Unitate_Masura }}</p>
+        <p><small>Produsul generic nu poate fi schimbat din acest ecran pentru a menține integritatea datelor.</small></p>
+    </div>
+
+    <form method="POST">
+        <label for="cod_catalog">Cod Catalog:</label><br>
+        <input type="text" id="cod_catalog" name="cod_catalog" value="{{ varianta.Cod_Catalog }}" required><br><br>
+
+        <label for="id_producator">Producător:</label><br>
+        <select id="id_producator" name="id_producator" required>
+            <option value="">-- Selectează un producător --</option>
+            {% for producator in producatori %}
+                <option value="{{ producator.ID_Producator }}" {% if producator.ID_Producator == varianta.ID_Producator %}selected{% endif %}>{{ producator.Nume_Producator }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <label for="nume_comercial_extins">Nume Comercial Extins (opțional):</label><br>
+        <input type="text" id="nume_comercial_extins" name="nume_comercial_extins" value="{{ varianta.Nume_Comercial_Extins or '' }}"><br><br>
+        
+        <label for="descriere_ambalare">Descriere Ambalare:</label><br>
+        <input type="text" id="descriere_ambalare" name="descriere_ambalare" value="{{ varianta.Descriere_Ambalare }}" placeholder="ex: Kit 48 teste, Cutie 500 buc" required><br><br>
+
+        <label for="cantitate_standard_ambalare">Cantitate Standard Ambalare (unități generice per pachet):</label><br>
+        <input type="number" id="cantitate_standard_ambalare" name="cantitate_standard_ambalare" value="{{ varianta.Cantitate_Standard_Ambalare }}" min="1" required><br><br>
+        
+        <button type="submit">Salvează Modificările</button>
+        <a href="{{ url_for('variante_comerciale') }}" class="button-secondary" style="margin-left: 10px;">Anulează</a>
+    </form>
+
+    <style>
+        .product-info-card {
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #ced4da;
+        }
+        .product-info-card h4 {
+            margin-top: 0;
+        }
+        .button-secondary {
+            background-color: #6c757d;
+        }
+    </style>
+{% endblock %}
+

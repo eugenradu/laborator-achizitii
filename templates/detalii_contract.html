@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Detalii Contract: {{ contract.Numar_Contract }}</h2>
+    <p>
+        <strong>Distribuitor:</strong> {{ contract.Nume_Distribuitor }}<br>
+        <strong>Data Semnare:</strong> {{ contract.Data_Semnare }}<br>
+        <strong>Valoare Totală:</strong> {{ "%.2f"|format(contract.Pret_Total_Contract) }} RON<br>
+        <strong>Licitație Aferentă:</strong> <a href="{{ url_for('detalii_licitatie', licitatie_id=contract.ID_Licitatie) }}">{{ contract.licitatie_contract.Nume_Licitatie }}</a><br>
+        <strong>Lot Aferent:</strong> {{ contract.lot_contract.Nume_Lot }}<br>
+        <strong>Creat de:</strong> {{ contract.creator_contract.Nume_Utilizator if contract.creator_contract else 'N/A' }}
+    </p>
+
+    <h3>Articole Incluse în Contract</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Produs Generic</th>
+                <th>Varianta Comercială Contractată</th>
+                <th>Cantitate (Pachete)</th>
+                <th>Preț Unitar Pachet (RON)</th>
+                <th>Valoare Totală Articol (RON)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for articol, vcp, producator, pir, prod in articole_contractate %}
+            <tr>
+                <td>{{ prod.Nume_Generic }}</td>
+                <td>
+                    <strong>{{ producator.Nume_Producator }}</strong><br>
+                    {{ vcp.Nume_Comercial_Extins or vcp.Descriere_Ambalare }}<br>
+                    <small>(Cod: {{ vcp.Cod_Catalog }})</small>
+                </td>
+                <td>{{ articol.Cantitate_Contractata_Pachete }}</td>
+                <td>{{ "%.2f"|format(articol.Pret_Unitar_Pachet_Contract) }}</td>
+                <td>{{ "%.2f"|format(articol.Cantitate_Contractata_Pachete * articol.Pret_Unitar_Pachet_Contract) }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5">Acest contract nu are articole detaliate.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="actions" style="margin-top: 20px;">
+        <a href="{{ url_for('creeaza_comanda_contract', contract_id=contract.ID_Contract) }}" class="button-primary" style="background-color: #007bff;">Creează Comandă pe Contract</a>
+    </div>
+
+{% endblock %}

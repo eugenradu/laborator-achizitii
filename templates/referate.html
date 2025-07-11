@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Lista Referatelor de Necesitate</h2>
+<div class="actions">
+    <a href="{{ url_for('referate.adauga_referat') }}" class="button">Adaugă Referat Nou</a>
+</div>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Număr Referat</th>
+            <th>Stare</th>
+            <th>Data Creare</th>
+            <th>Creat de</th>
+            <th>Acțiuni</th>
+        </tr>
+    </thead>
+    <tbody>
+        {# Dezasamblăm tuplul (obiect_referat, obiect_creator) primit de la view #}
+        {% for referat, creator in referate %}
+        <tr>
+            <td>{{ referat.ID_Referat }}</td>
+            <td>{{ referat.Numar_Referat or 'N/A' }}</td>
+            <td>{{ referat.Stare }}</td>
+            <td>{{ referat.Data_Creare }}</td>
+            <td>{{ creator.Nume_Utilizator if creator else 'N/A' }}</td>
+            <td>
+                <a href="{{ url_for('referate.detalii_referat', referat_id=referat.ID_Referat) }}">Detalii</a>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="6">Nu există niciun referat de necesitate înregistrat.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

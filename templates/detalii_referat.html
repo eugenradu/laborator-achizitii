@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Detalii Referat de Necesitate #{{ referat.ID_Referat }}</h2>
+<p>Număr Referat: <strong>{{ referat.Numar_Referat if referat.Numar_Referat else 'N/A' }}</strong></p>
+<p>Data Creare: <strong>{{ referat.Data_Creare }}</strong></p>
+<p>Stare: <strong>{{ referat.Stare }}</strong></p>
+<p>Creat de: <strong>{{ referat.creator_referat.Nume_Utilizator if referat.creator_referat else 'N/A' }}</strong></p>
+{% if referat.Numar_Inregistrare_Document %}
+<p>Nr. Înregistrare Doc.: <strong>{{ referat.Numar_Inregistrare_Document }}</strong></p>
+<p>Data Înregistrare Doc.: <strong>{{ referat.Data_Inregistrare_Document }}</strong></p>
+{% endif %}
+{% if referat.Link_Scan_PDF %}
+<p>Scan Document: <a href="{{ referat.Link_Scan_PDF }}" target="_blank">Vezi PDF</a></p>
+{% endif %}
+<div style="margin-top: 15px;">
+    <h4>Observații Referat</h4>
+    <form method="POST" action="{{ url_for('referate.edit_observatii_referat', referat_id=referat.ID_Referat) }}">
+        <textarea name="observatii" rows="5" style="width: 100%;">{{ referat.Observatii or '' }}</textarea>
+        <br><br>
+        <button type="submit">Salvează Observațiile</button>
+    </form>
+</div>
+<div class="actions">
+    <a href="{{ url_for('referate.genereaza_referat_doc', referat_id=referat.ID_Referat) }}" class="button">Generează
+        Document Referat (.txt)</a>
+</div>
+
+<h3>Produse Solicitate în Acest Referat</h3>
+
+<h4>Adaugă Produs în Referat</h4>
+<form method="POST" action="{{ url_for('referate.adauga_produs_referat', referat_id=referat.ID_Referat) }}">
+    <label for="categorie_select_referat">Categorie:</label><br>
+    <select id="categorie_select_referat" name="id_categorie" required>
+        <option value="">-- Selectează o categorie --</option>
+        {% for categorie in categorii_disponibile %}
+        <option value="{{ categorie.ID_Categorie }}">{{ categorie.Nume_Categorie }}</option>
+        {% endfor %}
+    </select><br><br>
+
+    <label for="id_produs_generic">Selectează Produs Generic:</label><br>
+    <select id="id_produs_generic" name="id_produs_generic" required disabled>
+        <option value="">-- Mai întâi selectează o categorie --</option>
+    </select><br><br>
+
+    <label for="cantitate_solicitata">Cantitate Solicitată:</label><br>
+    <input type="number" id="cantitate_solicitata" name="cantitate_solicitata" min="1" required><br><br>
+
+    <button type="submit">Adaugă Produs</button>
+</form>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID Produs Referat</th>
+            <th>Nume Generic Produs</th>
+            <th>Cantitate Solicitată</th>
+            <th>Unitate Măsură</th>
+            <th>Specificatii Tehnice</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for pir, prod in produse_in_referat %}
+        <tr>
+            <td>{{ pir.ID_Produs_Referat }}</td>
+            <td>{{ prod.Nume_Generic }}</td>
+            <td>{{ pir.Cantitate_Solicitata }}</td>
+            <td>{{ prod.Unitate_Masura }}</td>
+            <td class="pre-formatted-text">{{ prod.Specificatii_Tehnice }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="5">Niciun produs adăugat în acest referat.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h3>Loturi pentru Licitatie</h3>
+<h4>Creează Lot Nou</h4>
+<form method="POST" action="{{ url_for('referate.adauga_lot_referat', referat_id=referat.ID_Referat) }}">
+    <label for="nume_lot">Nume Lot:</label><br>
+    <input type="text" id="nume_lot" name="nume_lot" required><br><br>
+    <label for="descriere_lot">Descriere Lot (opțional):</label><br>
+    <textarea id="descriere_lot" name="descriere_lot" rows="3"></textarea><br><br>
+    <button type="submit">Creează Lot</button>
+</form>
+
+{% for lot in loturi_referat %}
+<div style="border: 1px solid #ccc; padding: 10px; margin-top: 15px;">
+    <h4>Lot #{{ lot.ID_Lot }}: {{ lot.Nume_Lot }}</h4>
+    {% if lot.Descriere_Lot %}<p>Descriere: <span class="pre-formatted-text">{{ lot.Descriere_Lot }}</span></p>{% endif
+    %}
+
+    <h5>Produse în Acest Lot</h5>
+    <table>
+        <thead>
+            <tr>
+                <th>ID Produs Lot</th>
+                <th>Nume Generic Produs</th>
+                <th>Cantitate Solicitată</th>
+                <th>Unitate Măsură</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if produse_in_loturi[lot.ID_Lot] %}
+            {% for pil, pir, prod in produse_in_loturi[lot.ID_Lot] %}
+            <tr>
+                <td>{{ pil.ID_Produs_Lot }}</td>
+                <td>{{ prod.Nume_Generic }}</td>
+                <td>{{ pir.Cantitate_Solicitata }}</td>
+                <td>{{ prod.Unitate_Masura }}</td>
+            </tr>
+            {% endfor %}
+            {% else %}
+            <tr>
+                <td colspan="4">Acest lot nu conține produse încă.</td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+    <h5>Adaugă Produs la Acest Lot</h5>
+    {% if produse_nealocate %}
+    <form method="POST"
+        action="{{ url_for('referate.aloca_produs_lot', referat_id=referat.ID_Referat, lot_id=lot.ID_Lot) }}">
+        <label for="id_produs_referat_alloc_{{ lot.ID_Lot }}">Selectează Produs din Referat:</label><br>
+        <select id="id_produs_referat_alloc_{{ lot.ID_Lot }}" name="id_produs_referat_alloc" required>
+            <option value="">-- Selectează un produs --</option>
+            {% for pir_na, prod_na in produse_nealocate %}
+            <option value="{{ pir_na.ID_Produs_Referat }}">{{ prod_na.Nume_Generic }} ({{ pir_na.Cantitate_Solicitata }}
+                {{ prod_na.Unitate_Masura }})</option>
+            {% endfor %}
+        </select><br><br>
+        <button type="submit">Alocă Produs</button>
+    </form>
+    {% else %}
+    <p>Toate produsele din acest referat sunt deja alocate unor loturi.</p>
+    {% endif %}
+</div>
+{% else %}
+<p>Niciun lot definit pentru acest referat încă.</p>
+{% endfor %}
+
+<h3>Oferte Asociate cu Acest Referat</h3>
+<div class="actions" style="margin-bottom: 15px;">
+    <a href="{{ url_for('oferte.adauga_oferta', referat_id=referat.ID_Referat) }}" class="button">Adaugă Ofertă pentru
+        Acest Referat</a>
+</div>
+<table>
+    <thead>
+        <tr>
+            <th>ID Ofertă</th>
+            <th>Furnizor</th>
+            <th>Data Ofertei</th>
+            <th>Nr. Articole</th>
+            <th>Acțiuni</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for oferta in oferte_asociate %}
+        <tr>
+            <td>#{{ oferta.ID_Oferta }}</td>
+            <td>{{ oferta.furnizor.Nume_Furnizor }}</td>
+            <td>{{ oferta.Data_Oferta }}</td>
+            <td>{{ oferta.articole|length }}</td>
+            <td>
+                <a href="{{ url_for('oferte.detalii_oferta', oferta_id=oferta.ID_Oferta) }}">Vezi Detalii Ofertă</a>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="5">Nicio ofertă nu a fost asociată cu acest referat încă.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const categorieSelect = document.getElementById('categorie_select_referat');
+        const produsSelect = document.getElementById('id_produs_generic');
+
+        categorieSelect.addEventListener('change', function () {
+            const categorieId = this.value;
+            produsSelect.innerHTML = '<option value="">-- Se încarcă... --</option>';
+            produsSelect.disabled = true;
+
+            if (categorieId) {
+                // Construim URL-ul dinamic folosind un template generat de url_for
+                const urlTemplate = "{{ url_for('api.get_produse_by_categorie', categorie_id='__ID__') }}";
+                fetch(urlTemplate.replace('__ID__', categorieId))
+                    .then(response => response.json())
+                    .then(data => {
+                        produsSelect.innerHTML = '<option value="">-- Selectează un produs --</option>';
+                        data.forEach(produs => {
+                            const optionText = `${produs.nume} (${produs.unitate_masura})`;
+                            const option = new Option(optionText, produs.id);
+                            produsSelect.appendChild(option);
+                        });
+                        produsSelect.disabled = false;
+                    })
+                    .catch(error => {
+                        console.error('Eroare la preluarea produselor:', error);
+                        produsSelect.innerHTML = '<option value="">-- Eroare la încărcare --</option>';
+                    });
+            } else {
+                produsSelect.innerHTML = '<option value="">-- Mai întâi selectează o categorie --</option>';
+            }
+        });
+    });
+</script>
+{% endblock %}

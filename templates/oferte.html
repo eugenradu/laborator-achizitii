@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Lista Ofertelor</h2>
+<div class="actions">
+    <a href="{{ url_for('oferte.adauga_oferta') }}" class="button">Adaugă Ofertă Nouă</a>
+</div>
+<table>
+    <thead>
+        <tr>
+            <th>ID Ofertă</th>
+            <th>Furnizor</th>
+            <th>Data Ofertei</th>
+            <th>Nr. Articole</th>
+            <th>Asociere</th>
+            <th>Acțiuni</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for oferta in oferte %}
+        <tr>
+            <td>#{{ oferta.ID_Oferta }}</td>
+            <td>{{ oferta.furnizor.Nume_Furnizor }}</td>
+            <td>{{ oferta.Data_Oferta }}</td>
+            <td>{{ oferta.articole|length }}</td>
+            <td>
+                {% if oferta.ID_Licitatie %}
+                Licitație #{{ oferta.ID_Licitatie }}
+                {% elif oferta.ID_Referat %}
+                Referat #{{ oferta.ID_Referat }}
+                {% else %}
+                Generală
+                {% endif %}
+            </td>
+            <td>
+                <a href="{{ url_for('oferte.detalii_oferta', oferta_id=oferta.ID_Oferta) }}"
+                    class="action-link">Detalii</a>
+                <a href="{{ url_for('oferte.edit_oferta', oferta_id=oferta.ID_Oferta) }}"
+                    class="action-link">Editează</a>
+                <form method="POST" action="{{ url_for('oferte.sterge_oferta', oferta_id=oferta.ID_Oferta) }}"
+                    class="inline-form"
+                    onsubmit="return confirm('Sunteți sigur că doriți să ștergeți această ofertă? Acțiunea este ireversibilă.');">
+                    <button type="submit" class="link-button">Șterge</button>
+                </form>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="6">Nu există nicio ofertă înregistrată.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<style>
+    .action-link {
+        margin-right: 10px;
+    }
+
+    .inline-form {
+        display: inline;
+    }
+
+    .link-button {
+        background: none;
+        border: none;
+        color: #f44336;
+        /* A more danger-like color */
+        text-decoration: underline;
+        cursor: pointer;
+        padding: 0;
+        font-size: inherit;
+        font-family: inherit;
+    }
+</style>
+{% endblock %}

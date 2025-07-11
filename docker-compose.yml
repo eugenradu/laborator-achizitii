@@ -1,0 +1,43 @@
+# version: "3.8"
+
+services:
+  db:
+    image: postgres:15-alpine # Folosim o imagine oficială de PostgreSQL, versiunea 15, cu Alpine pentru dimensiune mică
+    container_name: laborator_achizitii_db_local
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - db_data:/var/lib/postgresql/data # Volume persistent pentru datele bazei de date
+    ports:
+      - "5432:5432" # Mapează portul 5432 al containerului la portul 5432 al gazdei
+    healthcheck: # Verificare de sănătate pentru a ne asigura că DB-ul e gata
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: . # Construiește imaginea aplicației din Dockerfile-ul din directorul curent
+    container_name: laborator_achizitii_app_local
+    ports:
+      - "5001:5000" # Mapează portul 5000 al containerului la portul 5001 al gazdei, 5000 e ocupat
+    volumes:
+      - .:/app # Mapează directorul local al proiectului la /app în container (utile pentru modificări live în dev)
+    environment:
+      SECRET_KEY: ${SECRET_KEY}
+      # Aceste variabile vin din serviciul 'db' din docker-compose, nu din .env-ul local
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_HOST: db # Numele serviciului DB din docker-compose (Coolify va face ceva similar)
+      POSTGRES_PORT: 5432
+    depends_on:
+      db:
+        condition: service_healthy # Asigură-te că DB-ul e pornit și sănătos înainte de a porni aplicația
+    env_file:
+      - ./.env # Încarcă variabilele de mediu din .env-ul local pentru SECRET_KEY (sau altele nespecifice DB)
+
+volumes:
+  db_data: # Definește volumul persistent

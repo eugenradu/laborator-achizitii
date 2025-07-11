@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Lista Licitațiilor</h2>
+    <div class="actions">
+        <a href="{{ url_for('adauga_licitatie') }}" class="button">Adaugă Licitație Nouă</a>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Nume Licitație</th>
+                <th>Stare</th>
+                <th>Data Creării</th>
+                <th>Creat de</th>
+                <th>Acțiuni</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for licitatie, creator in licitatii %}
+            <tr>
+                <td>{{ licitatie.Nume_Licitatie }}</td>
+                <td>{{ licitatie.Stare }}</td>
+                <td>{{ licitatie.Data_Creare }}</td>
+                <td>{{ creator.Nume_Utilizator if creator else 'N/A' }}</td>
+                <td>
+                    <a href="{{ url_for('detalii_licitatie', licitatie_id=licitatie.ID_Licitatie) }}">Detalii</a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5">Nu există nicio licitație înregistrată.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

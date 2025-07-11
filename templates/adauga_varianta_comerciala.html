@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Adaugă Variantă Comercială Nouă</h2>
+    <form method="POST">
+        <label for="id_categorie">Categorie:</label><br>
+        <select id="id_categorie" name="id_categorie" required>
+            <option value="">-- Selectează o categorie --</option>
+            {% for categorie in categorii %}
+                <option value="{{ categorie.ID_Categorie }}">{{ categorie.Nume_Categorie }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <label for="id_produs_generic">Produs Generic:</label><br>
+        <select id="id_produs_generic" name="id_produs_generic" required disabled>
+            <option value="">-- Mai întâi selectează o categorie --</option>
+        </select><br><br>
+
+        <label for="id_producator">Producător:</label><br>
+        <select id="id_producator" name="id_producator" required>
+            <option value="">-- Selectează un producător --</option>
+            {% for producator in producatori %}
+                <option value="{{ producator.ID_Producator }}">{{ producator.Nume_Producator }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <label for="cod_catalog">Cod Catalog:</label><br>
+        <input type="text" id="cod_catalog" name="cod_catalog" required><br><br>
+
+        <label for="nume_comercial_extins">Nume Comercial Extins (opțional):</label><br>
+        <input type="text" id="nume_comercial_extins" name="nume_comercial_extins"><br><br>
+        
+        <label for="descriere_ambalare">Descriere Ambalare:</label><br>
+        <input type="text" id="descriere_ambalare" name="descriere_ambalare" placeholder="ex: Kit 48 teste, Cutie 500 buc" required><br><br>
+
+        <label for="cantitate_standard_ambalare">Cantitate Standard Ambalare (unități generice per pachet):</label><br>
+        <input type="number" id="cantitate_standard_ambalare" name="cantitate_standard_ambalare" min="1" required><br><br>
+        
+        <button type="submit">Adaugă Variantă</button>
+    </form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const categorieSelect = document.getElementById('id_categorie');
+            const produsSelect = document.getElementById('id_produs_generic');
+
+            categorieSelect.addEventListener('change', function() {
+                const categorieId = this.value;
+                // Golește și dezactivează dropdown-ul de produse
+                produsSelect.innerHTML = '<option value="">-- Se încarcă... --</option>';
+                produsSelect.disabled = true;
+
+                if (categorieId) {
+                    fetch(`/api/produse_by_categorie/${categorieId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            produsSelect.innerHTML = '<option value="">-- Selectează un produs --</option>';
+                            data.forEach(produs => {
+                                const option = new Option(`${produs.nume} (${produs.unitate_masura})`, produs.id);
+                                produsSelect.appendChild(option);
+                            });
+                            produsSelect.disabled = false;
+                        })
+                        .catch(error => {
+                            console.error('Eroare la preluarea produselor:', error);
+                            produsSelect.innerHTML = '<option value="">-- Eroare la încărcare --</option>';
+                        });
+                } else {
+                    produsSelect.innerHTML = '<option value="">-- Mai întâi selectează o categorie --</option>';
+                }
+            });
+        });
+    </script>
+{% endblock %}
