@@ -2,9 +2,46 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from datetime import date
 from sqlalchemy.orm import joinedload
-from models import (db, ComandaGeneral, DetaliiComandaProdus, LivrareComanda, DocumentLivrare, TipDocument)
+from sqlalchemy import or_
+from models import (db, ComandaGeneral, DetaliiComandaProdus, LivrareComanda, DocumentLivrare, TipDocument,
+                    ArticolContractat, VariantaComercialaProdus, Produs, Contract, Furnizor)
 
 livrari_bp = Blueprint('livrari', __name__, url_prefix='/livrari')
+
+@livrari_bp.route('/')
+@login_required
+def list_livrari():
+    """Afișează lista tuturor livrărilor, cu căutare și paginare."""
+    search_term = request.args.get('search', '').strip()
+    page = request.args.get('page', 1, type=int)
+    PER_PAGE = 20
+
+    # Interogare de bază complexă pentru a aduna toate informațiile necesare
+    query = db.session.query(
+        LivrareComanda,
+        Produs,
+        ComandaGeneral,
+        Furnizor
+    ).join(DetaliiComandaProdus, LivrareComanda.ID_Detalii_Comanda_Produs == DetaliiComandaProdus.ID_Detalii_Comanda_Produs)\
+     .join(ComandaGeneral, DetaliiComandaProdus.ID_Comanda_General == ComandaGeneral.ID_Comanda_General)\
+     .join(Contract, ComandaGeneral.ID_Contract == Contract.ID_Contract)\
+     .join(Furnizor, Contract.ID_Furnizor == Furnizor.ID_Furnizor)\
+     .join(ArticolContractat, DetaliiComandaProdus.ID_Articol_Contractat == ArticolContractat.ID_Articol_Contractat)\
+     .join(VariantaComercialaProdus, ArticolContractat.ID_Varianta_Comerciala == VariantaComercialaProdus.ID_Varianta_Comerciala)\
+     .join(Produs, VariantaComercialaProdus.ID_Produs_Generic == Produs.ID_Produs)
+
+    if search_term:
+        search_filter = or_(
+            LivrareComanda.Numar_Lot_Producator.ilike(f'%{search_term}%'),
+            ComandaGeneral.Numar_Comanda.ilike(f'%{search_term}%'),
+            Furnizor.Nume_Furnizor.ilike(f'%{search_term}%'),
+            Produs.Nume_Generic.ilike(f'%{search_term}%')
+        )
+        query = query.filter(search_filter)
+
+    pagination = query.order_by(LivrareComanda.Data_Livrare.desc(), LivrareComanda.ID_Livrare.desc()).paginate(page=page, per_page=PER_PAGE, error_out=False)
+
+    return render_template('livrari.html', pagination=pagination, search_term=search_term)
 
 @livrari_bp.route('/adauga/<int:comanda_id>', methods=['GET', 'POST'])
 @login_required
@@ -18,7 +55,6 @@ def adauga_livrare(comanda_id):
     # --- Logica POST (Salvarea formularului) ---
     if request.method == 'POST':
         try:
-            documente_adaugate = False
             prima_livrare_creata = None
             cel_putin_o_livrare = False
 
@@ -112,7 +148,6 @@ def adauga_livrare(comanda_id):
         return redirect(url_for('comenzi.detalii_comanda', comanda_id=comanda_id))
 
     return render_template('adauga_livrare.html', 
-                           comanda=comanda, 
-                           articole_de_livrat=articole_de_livrat,
-                           tipuri_document=TipDocument)
-
+                        comanda=comanda, 
+                        articole_de_livrat=articole_de_livrat,
+                        tipuri_document=TipDocument)

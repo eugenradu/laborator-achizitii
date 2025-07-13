@@ -142,6 +142,7 @@ Acest document descrie funcționarea și interacțiunile modulelor cheie ale apl
 - **Scop:** Gestionează înregistrarea recepției fizice a mărfurilor și a documentelor asociate (facturi, avize). Finalizează ciclul de achiziție.
 - **Entități Cheie:** `LivrareComanda`, `DocumentLivrare`, `TipDocument`.
 - **Funcționalități Principale:**
+  - Listarea tuturor livrărilor, cu căutare și paginare.
   - Înregistrarea unei livrări pentru o comandă, cu suport pentru livrări parțiale.
   - Înregistrarea datelor cheie pentru viitoarea aplicație de stocuri: `Numar_Lot_Producator` și `Data_Expirare`.
   - Adăugarea dinamică a mai multor documente (facturi, avize, etc.) la o singură livrare.
