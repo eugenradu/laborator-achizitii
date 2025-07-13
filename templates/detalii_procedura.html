@@ -16,81 +16,86 @@
 
 <h3>Loturi Incluse în Procedură</h3>
 
-{% for lot_id, detalii in detalii_loturi.items() %}
+{% for lot_id, data in loturi_cu_oferte.items() %}
 <div class="lot-container">
-    <h4>Lot #{{ detalii.lot_obj.ID_Lot }}: {{ detalii.lot_obj.Nume_Lot }}</h4>
+    <h4>Lot #{{ data.lot_obj.ID_Lot }}: {{ data.lot_obj.Nume_Lot }}</h4>
     <p>
         <small>
             (Provenit din
-            <a href="{{ url_for('referate.detalii_referat', referat_id=detalii.lot_obj.referat_parinte.ID_Referat) }}">
-                Referat #{{ detalii.lot_obj.referat_parinte.ID_Referat }}
+            <a href="{{ url_for('referate.detalii_referat', referat_id=data.lot_obj.referat_parinte.ID_Referat) }}">
+                Referat #{{ data.lot_obj.referat_parinte.ID_Referat }}
             </a>)
         </small>
     </p>
-    {% if detalii.lot_obj.Descriere_Lot %}<p>Descriere: <span class="pre-formatted-text">{{
-            detalii.lot_obj.Descriere_Lot }}</span></p>{% endif %}
+    {% if data.lot_obj.Descriere_Lot %}<p>Descriere: <span class="pre-formatted-text">{{
+            data.lot_obj.Descriere_Lot }}</span></p>{% endif %}
 
     <h5>Produse în Acest Lot</h5>
     <table>
         <thead>
             <tr>
                 <th>Nume Generic Produs</th>
-                <th>Cantitate Solicitată</th>
-                <th>Unitate Măsură</th>
+                <th>Cantitate Solicitată (U.M.)</th>
             </tr>
         </thead>
         <tbody>
-            {% for prod, pir in detalii.produse %}
+            {% for prod, pir in data.produse %}
             <tr>
                 <td>{{ prod.Nume_Generic }}</td>
-                <td>{{ pir.Cantitate_Solicitata }}</td>
-                <td>{{ prod.Unitate_Masura }}</td>
+                <td>{{ pir.Cantitate_Solicitata }} {{ prod.Unitate_Masura }}</td>
             </tr>
             {% else %}
             <tr>
-                <td colspan="3">Acest lot nu conține produse.</td>
+                <td colspan="2">Acest lot nu conține produse.</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+
+    <h5 style="margin-top: 20px;">Analiză Oferte pentru Acest Lot</h5>
+    {% if data.oferte_comparative %}
+    <table>
+        <thead>
+            <tr>
+                <th>Furnizor</th>
+                <th>Valoare Ofertată (Lot)</th>
+                <th>Nr. Articole Ofertate</th>
+                <th>Acțiuni</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for oferta, valoare, nr_articole in data.oferte_comparative %}
+            <tr>
+                <td>
+                    <a href="{{ url_for('oferte.detalii_oferta', oferta_id=oferta.ID_Oferta) }}">
+                        {{ oferta.furnizor.Nume_Furnizor }} (Oferta #{{ oferta.ID_Oferta }})
+                    </a>
+                </td>
+                <td><strong>{{ "%.2f"|format(valoare) }} {{ oferta.Moneda }}</strong></td>
+                <td>{{ nr_articole }} / {{ data.produse|length }}</td>
+                <td>
+                    <a href="{{ url_for('contracte.adauga_contract', oferta_id=oferta.ID_Oferta, lot_id=data.lot_obj.ID_Lot) }}"
+                        class="button">Generează Contract</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>Nu au fost primite oferte care să acopere produsele din acest lot.</p>
+    {% endif %}
 </div>
 {% else %}
 <p>Această procedură nu are loturi asociate.</p>
 {% endfor %}
 
-<h3>Oferte Primite pentru Această Procedură</h3>
+<hr style="margin-top: 30px; margin-bottom: 30px;">
+
+<h3>Management Oferte</h3>
 <div class="actions" style="margin-bottom: 15px;">
     <a href="{{ url_for('oferte.adauga_oferta', procedura_id=procedura.ID_Procedura) }}" class="button">Adaugă Ofertă
         pentru Această Procedură</a>
 </div>
-<table>
-    <thead>
-        <tr>
-            <th>ID Ofertă</th>
-            <th>Furnizor</th>
-            <th>Data Ofertei</th>
-            <th>Nr. Articole</th>
-            <th>Acțiuni</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for oferta in oferte_asociate %}
-        <tr>
-            <td>#{{ oferta.ID_Oferta }}</td>
-            <td>{{ oferta.furnizor.Nume_Furnizor }}</td>
-            <td>{{ oferta.Data_Oferta.strftime('%d-%m-%Y') }}</td>
-            <td>{{ oferta.articole|length }}</td>
-            <td>
-                <a href="{{ url_for('oferte.detalii_oferta', oferta_id=oferta.ID_Oferta) }}">Vezi Detalii Ofertă</a>
-            </td>
-        </tr>
-        {% else %}
-        <tr>
-            <td colspan="5">Nicio ofertă nu a fost asociată cu această procedură încă.</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
 
 <style>
     .lot-container {

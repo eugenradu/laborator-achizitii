@@ -59,6 +59,7 @@ Acest document descrie funcționarea și interacțiunile modulelor cheie ale apl
   - CRUD complet pentru `Oferta`.
   - Adăugare/ștergere dinamică de `ArticolOferta` în formulare.
   - Asociere opțională cu un `Referat` sau o `ProceduraAchizitie`.
+  - Filtrare contextuală a produselor: la crearea unei oferte pentru un referat/procedură, lista de produse este restrânsă la cele solicitate în contextul respectiv.
   - Filtrare dinamică în doi pași pentru selecția produselor.
   - Căutare după nume furnizor sau număr de înregistrare, cu paginare.
 - **Interacțiuni:**
@@ -98,7 +99,23 @@ Acest document descrie funcționarea și interacțiunile modulelor cheie ale apl
 
 ---
 
-## 7. Modulul `api` (`blueprints/api.py`)
+## 7. Modulul `contracte` (`blueprints/contracte.py`)
+
+- **Scop:** Gestionează formalizarea legală a achizițiilor, de la generarea contractului până la vizualizarea detaliilor acestuia.
+- **Entități Cheie:** `Contract`, `ArticolContractat`.
+- **Funcționalități Principale:**
+  - Listarea tuturor contractelor.
+  - Vizualizarea detaliilor unui contract, inclusiv loturile și articolele contractate.
+  - Generarea unui nou contract pe baza unei oferte câștigătoare pentru un lot dintr-o procedură.
+  - Consolidarea mai multor loturi câștigate de același furnizor (în aceeași procedură) într-un singur contract.
+- **Interacțiuni:**
+  - **Este inițiat** din modulul `proceduri`, prin interfața de adjudecare a ofertelor pe lot.
+  - **Consumă** date din `oferte` (furnizor, prețuri, articole) și `proceduri` (loturi, produse) pentru a pre-popula formularul de creare.
+  - **Va furniza** date pentru viitorul modul de `Comenzi`.
+
+---
+
+## 8. Modulul `api` (`blueprints/api.py`)
 
 - **Scop:** Centralizează toate endpoint-urile API care returnează date în format JSON.
 - **Entități Cheie:** Citește (`Produs`, `VariantaComercialaProdus`, `Producator`). Creează (`VariantaComercialaProdus`, `Furnizor`, `Producator`).

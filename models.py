@@ -114,7 +114,7 @@ class VariantaComercialaProdus(db.Model):
 
     # Relații
     articole_oferta = db.relationship('ArticolOferta', backref='varianta_comerciala_ofertata', lazy=True)
-    articole_contractate = db.relationship('ArticolContractatInLot', backref='varianta_comerciala_contractata', lazy=True)
+    articole_contractate = db.relationship('ArticolContractat', backref='varianta_comerciala_contractata', lazy=True)
     loturi_stoc = db.relationship('LotStoc', backref='varianta_comerciala_stoc', lazy=True)
 
     def __repr__(self):
@@ -152,7 +152,6 @@ class Lot(db.Model):
 
     # Relații
     produse_in_loturi = db.relationship('ProdusInLot', backref='lot_parinte', lazy=True)
-    contracte = db.relationship('Contract', backref='lot_contract', lazy=True)
 
     def __repr__(self):
         return f"<Lot {self.Nume_Lot}>"
@@ -168,7 +167,7 @@ class ProdusInReferat(db.Model):
     # Relații
     produse_in_loturi = db.relationship('ProdusInLot', backref='produs_referat_alloc', lazy=True)
     articole_oferta = db.relationship('ArticolOferta', backref='produs_referat_ofertat', lazy=True)
-    articole_contractate = db.relationship('ArticolContractatInLot', backref='produs_referat_contractat', lazy=True)
+    articole_contractate = db.relationship('ArticolContractat', backref='produs_referat_contractat', lazy=True)
 
     def __repr__(self):
         return f"<ProdusInReferat {self.ID_Produs_Referat} (Ref: {self.ID_Referat})>"
@@ -186,8 +185,12 @@ class ProdusInLot(db.Model):
     def __repr__(self):
         return f"<ProdusInLot {self.ID_Produs_Lot} (Lot: {self.ID_Lot}, ProdRef: {self.ID_Produs_Referat})>"
 
-# Tabela de legătură pentru many-to-many între Proceduri și Loturi
-# O Procedură poate include mai multe Loturi, iar un Lot poate fi inclus în mai multe Proceduri
+# --- Tabele de Asociere (Many-to-Many) ---
+
+# Tabela de legătură pentru Proceduri <-> Loturi
+# O Procedură poate include mai multe Loturi.
+# Un Lot (teoretic) ar putea fi în mai multe proceduri, deși în logica actuală nu permitem asta.
+# Păstrăm M-M pentru flexibilitate viitoare.
 proceduri_loturi_asociere = db.Table(
     'proceduri_loturi_asociere',
     db.Column('procedura_id', db.Integer, db.ForeignKey('Proceduri_Achizitie.ID_Procedura'), primary_key=True),
@@ -202,6 +205,13 @@ class TipProcedura(enum.Enum):
     NEGOCIERE_COMPETITIVA = "Negociere competitiva"
     ALTELE = "Altele"
 
+# Tabela de legătură pentru Contracte <-> Loturi
+# Un Contract poate acoperi mai multe Loturi.
+contracte_loturi_asociere = db.Table(
+    'contracte_loturi_asociere',
+    db.Column('contract_id', db.Integer, db.ForeignKey('Contracte.ID_Contract'), primary_key=True),
+    db.Column('lot_id', db.Integer, db.ForeignKey('Loturi.ID_Lot'), primary_key=True)
+)
 # 11. Model pentru Proceduri de Achiziție (fostul Licitatii)
 class ProceduraAchizitie(db.Model):
     __tablename__ = 'Proceduri_Achizitie'
@@ -268,9 +278,9 @@ class Contract(db.Model):
     __tablename__ = 'Contracte'
     ID_Contract = db.Column(db.Integer, primary_key=True)
     ID_Procedura = db.Column(db.Integer, db.ForeignKey('Proceduri_Achizitie.ID_Procedura'), nullable=False)
-    ID_Lot = db.Column(db.Integer, db.ForeignKey('Loturi.ID_Lot'), nullable=False)
     ID_Furnizor = db.Column(db.Integer, db.ForeignKey('Furnizori.ID_Furnizor'), nullable=False)
     Pret_Total_Contract = db.Column(db.Float, nullable=False)
+    Moneda = db.Column(db.Text, nullable=False, default='RON')
     Data_Semnare = db.Column(db.Date, nullable=False, default=date.today)
     Numar_Contract = db.Column(db.Text, nullable=False)
     Numar_Inregistrare_Document = db.Column(db.Text)
@@ -278,16 +288,22 @@ class Contract(db.Model):
     Link_Scan_PDF = db.Column(db.Text)
     ID_Utilizator_Creare = db.Column(db.Integer, db.ForeignKey('Utilizatori.ID_Utilizator'))
 
-    # Relații
-    articole_contractate_rel = db.relationship('ArticolContractatInLot', backref='contract_parinte', lazy=True)
+    # Relație Many-to-Many cu Loturi
+    loturi_contractate = db.relationship(
+        'Lot',
+        secondary=contracte_loturi_asociere,
+        backref=db.backref('contracte_asociate', lazy='dynamic'),
+        lazy='dynamic'
+    )
+    articole_contractate = db.relationship('ArticolContractat', backref='contract_parinte', lazy=True, cascade="all, delete-orphan")
     comenzi_rel = db.relationship('ComandaGeneral', backref='contract_comanda', lazy=True)
 
     def __repr__(self):
         return f"<Contract {self.Numar_Contract}>"
 
-# 14. Model pentru Articole_Contractate_In_Lot
-class ArticolContractatInLot(db.Model):
-    __tablename__ = 'Articole_Contractate_In_Lot'
+# 14. Model pentru Articole_Contractate (fost ArticolContractatInLot)
+class ArticolContractat(db.Model):
+    __tablename__ = 'Articole_Contractate'
     ID_Articol_Contractat = db.Column(db.Integer, primary_key=True)
     ID_Contract = db.Column(db.Integer, db.ForeignKey('Contracte.ID_Contract'), nullable=False)
     ID_Produs_Referat = db.Column(db.Integer, db.ForeignKey('Produse_In_Referate.ID_Produs_Referat'), nullable=False)
@@ -322,7 +338,7 @@ class DetaliiComandaProdus(db.Model):
     __tablename__ = 'Detalii_Comanda_Produs'
     ID_Detalii_Comanda_Produs = db.Column(db.Integer, primary_key=True)
     ID_Comanda_General = db.Column(db.Integer, db.ForeignKey('Comanda_General.ID_Comanda_General'), nullable=False)
-    ID_Articol_Contractat = db.Column(db.Integer, db.ForeignKey('Articole_Contractate_In_Lot.ID_Articol_Contractat'), nullable=False)
+    ID_Articol_Contractat = db.Column(db.Integer, db.ForeignKey('Articole_Contractate.ID_Articol_Contractat'), nullable=False)
     Cantitate_Comandata_Pachete = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):

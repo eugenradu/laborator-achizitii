@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Generează Contract Nou</h2>
+
+<div class="card">
+    <p><strong>Procedura:</strong> <a
+            href="{{ url_for('proceduri.detalii_procedura', procedura_id=procedura.ID_Procedura) }}">{{
+            procedura.Nume_Procedura }}</a></p>
+    <p><strong>Furnizor Câștigător:</strong> {{ oferta.furnizor.Nume_Furnizor }}</p>
+    <p><strong>Pe baza ofertei:</strong> <a
+            href="{{ url_for('oferte.detalii_oferta', oferta_id=oferta.ID_Oferta) }}">Oferta #{{ oferta.ID_Oferta }}</a>
+        din data de {{ oferta.Data_Oferta.strftime('%d-%m-%Y') }}</p>
+</div>
+
+<form method="POST" id="contractForm">
+    <input type="hidden" name="id_procedura" value="{{ procedura.ID_Procedura }}">
+    <input type="hidden" name="id_furnizor" value="{{ oferta.furnizor.ID_Furnizor }}">
+    <input type="hidden" name="moneda" value="{{ oferta.Moneda }}">
+
+    <fieldset>
+        <legend>Detalii Document Contract</legend>
+        <label for="numar_contract">Număr Contract (Obligatoriu):</label>
+        <input type="text" id="numar_contract" name="numar_contract" required>
+
+        <label for="data_semnare">Data Semnare (Obligatoriu):</label>
+        <input type="date" id="data_semnare" name="data_semnare" value="{{ today }}" required>
+
+        <label for="numar_inregistrare">Număr Înregistrare Document (Opțional):</label>
+        <input type="text" id="numar_inregistrare" name="numar_inregistrare">
+
+        <label for="data_inregistrare">Data Înregistrare Document (Opțional):</label>
+        <input type="date" id="data_inregistrare" name="data_inregistrare">
+
+        <label for="link_scan_pdf">Link Scan PDF (Opțional):</label>
+        <input type="url" id="link_scan_pdf" name="link_scan_pdf" placeholder="https://...">
+    </fieldset>
+
+    <fieldset>
+        <legend>Loturi Incluse în Contract</legend>
+        <p>Următorul lot este inclus automat:</p>
+        <ul>
+            <li><strong>{{ lot_initial.Nume_Lot }}</strong> (Lot #{{ lot_initial.ID_Lot }})</li>
+        </ul>
+        <input type="hidden" name="loturi_incluse" value="{{ lot_initial.ID_Lot }}">
+
+        {% if loturi_suplimentare_eligibile %}
+        <p>Selectați loturile suplimentare pe care doriți să le includeți în acest contract (de la același furnizor, din
+            aceeași procedură):</p>
+        <div class="lot-list">
+            {% for lot in loturi_suplimentare_eligibile %}
+            <label class="checkbox-label">
+                <input type="checkbox" name="loturi_incluse" value="{{ lot.ID_Lot }}">
+                Lot #{{ lot.ID_Lot }}: {{ lot.Nume_Lot }}
+            </label>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </fieldset>
+
+    <fieldset>
+        <legend>Articole de Contractat</legend>
+        <p>Confirmați cantitățile finale pentru articolele din loturile selectate. Acestea sunt pre-populate cu valorile
+            din oferta inițială.</p>
+        <table id="articole-contract-tabel">
+            <thead>
+                <tr>
+                    <th>Produs Generic (din Lot)</th>
+                    <th>Varianta Comercială Ofertată</th>
+                    <th>Preț Unitar Ofertat</th>
+                    <th>Cantitate Contractată (Pachete)</th>
+                    <th>Valoare Linie</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for articol in articole_de_contractat %}
+                <tr class="articol-row">
+                    <td>
+                        {{ articol.produs_generic.Nume_Generic }}
+                        <input type="hidden" name="id_articol_oferta"
+                            value="{{ articol.articol_oferta.ID_Articol_Oferta }}">
+                    </td>
+                    <td>
+                        <strong>{{ articol.varianta_comerciala.producator.Nume_Producator }}</strong><br>
+                        {{ articol.varianta_comerciala.Descriere_Ambalare }}<br>
+                        <small>Cod: {{ articol.varianta_comerciala.Cod_Catalog }}</small>
+                    </td>
+                    <td class="pret-unitar">{{ "%.2f"|format(articol.articol_oferta.Pret_Unitar_Pachet) }}</td>
+                    <td>
+                        <input type="number" name="cantitate_contractata" class="cantitate-input"
+                            value="{{ articol.cantitate_solicitata }}" min="0" required>
+                    </td>
+                    <td class="valoare-linie">0.00</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4" style="text-align: right; font-weight: bold;">Valoare Totală Contract:</td>
+                    <td id="valoare-totala" style="font-weight: bold;">0.00 {{ oferta.Moneda }}</td>
+                </tr>
+            </tfoot>
+        </table>
+        <input type="hidden" name="pret_total_contract" id="pret_total_contract_hidden" value="0">
+    </fieldset>
+
+    <br>
+    <button type="submit">Generează Contract</button>
+    <a href="{{ url_for('proceduri.detalii_procedura', procedura_id=procedura.ID_Procedura) }}" class="button-secondary"
+        style="margin-left: 10px;">Anulează</a>
+</form>
+
+<style>
+    .card {
+        background: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 1px 20px;
+        margin-bottom: 20px;
+    }
+
+    .lot-list {
+        padding-left: 20px;
+    }
+
+    .checkbox-label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: normal;
+    }
+
+    .checkbox-label input {
+        margin-right: 10px;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('contractForm');
+        const valoareTotalaEl = document.getElementById('valoare-totala');
+        const valoareTotalaHiddenInput = document.getElementById('pret_total_contract_hidden');
+        const moneda = "{{ oferta.Moneda }}";
+
+        function calculeazaTotal() {
+            let total = 0;
+            const rows = form.querySelectorAll('.articol-row');
+
+            rows.forEach(row => {
+                const pretUnitar = parseFloat(row.querySelector('.pret-unitar').textContent);
+                const cantitate = parseInt(row.querySelector('.cantitate-input').value, 10) || 0;
+                const valoareLinie = pretUnitar * cantitate;
+
+                row.querySelector('.valoare-linie').textContent = valoareLinie.toFixed(2);
+                total += valoareLinie;
+            });
+
+            valoareTotalaEl.textContent = total.toFixed(2) + ' ' + moneda;
+            valoareTotalaHiddenInput.value = total.toFixed(2);
+        }
+
+        form.addEventListener('input', function (event) {
+            if (event.target.classList.contains('cantitate-input')) {
+                calculeazaTotal();
+            }
+        });
+
+        // Calcul inițial la încărcarea paginii
+        calculeazaTotal();
+    });
+</script>
+{% endblock %}

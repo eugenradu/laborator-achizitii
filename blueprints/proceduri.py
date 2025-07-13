@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, make_response
 from flask_login import login_required, current_user 
-from models import (db, ProceduraAchizitie, TipProcedura, Lot, Utilizator, ReferatNecesitate, 
-                    ProdusInLot, ProdusInReferat, Produs, Oferta)
+from models import (db, ProceduraAchizitie, TipProcedura, Lot, Utilizator, ReferatNecesitate,
+                    ProdusInLot, ProdusInReferat, Produs, Oferta, ArticolOferta)
 from datetime import date
 from sqlalchemy.orm import joinedload
 from collections import defaultdict
@@ -65,7 +65,7 @@ def adauga_procedura():
 @proceduri_bp.route('/<int:procedura_id>/detalii')
 @login_required
 def detalii_procedura(procedura_id):
-    """Afișează detaliile complete ale unei proceduri de achiziție."""
+    """Afișează detaliile complete ale unei proceduri, inclusiv ofertele comparative pe lot."""
     procedura = ProceduraAchizitie.query.options(
         joinedload(ProceduraAchizitie.creator_procedura)
     ).get_or_404(procedura_id)
@@ -73,20 +73,50 @@ def detalii_procedura(procedura_id):
     # Preluăm loturile incluse în procedură
     loturi_incluse = procedura.loturi_incluse.order_by(Lot.Nume_Lot).all()
 
-    # Preluăm detaliile pentru fiecare lot (produse)
-    detalii_loturi = {}
+    # Structură pentru a stoca toate datele necesare în template
+    # Cheie: ID_Lot, Valoare: dicționar cu detalii lot și oferte
+    loturi_cu_oferte = {}
+
     for lot in loturi_incluse:
+        # Pas 1: Găsim toate produsele solicitate în acest lot
         produse_in_lot = db.session.query(Produs, ProdusInReferat)\
             .join(ProdusInReferat, Produs.ID_Produs == ProdusInReferat.ID_Produs_Generic)\
             .join(ProdusInLot, ProdusInReferat.ID_Produs_Referat == ProdusInLot.ID_Produs_Referat)\
             .filter(ProdusInLot.ID_Lot == lot.ID_Lot)\
             .order_by(Produs.Nume_Generic).all()
-        detalii_loturi[lot.ID_Lot] = { 'lot_obj': lot, 'produse': produse_in_lot }
+
+        # Pas 2: Găsim ofertele relevante pentru acest lot și calculăm valoarea totală
+        # Subquery pentru a obține ID-urile ProdusInReferat pentru lotul curent
+        produse_in_lot_sq = db.session.query(ProdusInReferat.ID_Produs_Referat)\
+            .join(ProdusInLot)\
+            .filter(ProdusInLot.ID_Lot == lot.ID_Lot).subquery()
+
+        # Interogare principală pentru a obține ofertele și valorile lor pentru acest lot
+        oferte_si_valori = db.session.query(
+            Oferta,
+            db.func.sum(ArticolOferta.Pret_Unitar_Pachet * ProdusInReferat.Cantitate_Solicitata).label('valoare_lot'),
+            db.func.count(ArticolOferta.ID_Articol_Oferta).label('numar_articole_ofertate')
+        ).join(ArticolOferta, Oferta.ID_Oferta == ArticolOferta.ID_Oferta)\
+         .join(ProdusInReferat, ArticolOferta.ID_Produs_Referat == ProdusInReferat.ID_Produs_Referat)\
+         .filter(Oferta.ID_Procedura == procedura_id)\
+         .filter(ArticolOferta.ID_Produs_Referat.in_(produse_in_lot_sq))\
+         .group_by(Oferta)\
+         .order_by('valoare_lot')\
+         .all()
+
+        loturi_cu_oferte[lot.ID_Lot] = {
+            'lot_obj': lot,
+            'produse': produse_in_lot,
+            'oferte_comparative': oferte_si_valori
+        }
 
     # Preluăm ofertele asociate cu această procedură
-    oferte_asociate = Oferta.query.options(joinedload(Oferta.furnizor)).filter_by(ID_Procedura=procedura_id).all()
+    oferte_asociate = Oferta.query.options(joinedload(Oferta.furnizor)).filter_by(ID_Procedura=procedura_id).order_by(Oferta.Data_Oferta.desc()).all()
 
-    return render_template('detalii_procedura.html', procedura=procedura, detalii_loturi=detalii_loturi, oferte_asociate=oferte_asociate)
+    return render_template('detalii_procedura.html', 
+                           procedura=procedura, 
+                           loturi_cu_oferte=loturi_cu_oferte,
+                           oferte_asociate=oferte_asociate) # Păstrăm și lista generală pentru referință
 
 @proceduri_bp.route('/<int:procedura_id>/genereaza_documentatie')
 @login_required
