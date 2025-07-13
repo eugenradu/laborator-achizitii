@@ -59,6 +59,14 @@
 
     <fieldset>
         <legend>Articole Ofertate</legend>
+        {% if referat_id_preselectat or procedura_id_preselectat %}
+        <p class="info-box">Notă: Lista de produse generice este filtrată pentru a afișa doar articolele solicitate în
+            <strong>{% if referat_id_preselectat %}Referatul #{{ referat_id_preselectat }}{% else %}Procedura #{{
+                procedura_id_preselectat }}{% endif %}</strong>.
+        </p>
+        {% endif %}
+
+        {% if produse_generice %}
         <table id="articole-tabel">
             <thead>
                 <tr>
@@ -74,6 +82,10 @@
             </tbody>
         </table>
         <button type="button" id="add-articol-btn" class="button-secondary">Adaugă Articol</button>
+        {% else %}
+        <p>Nu există produse solicitate în contextul selectat (referat/procedură) sau nu au fost definite produse
+            generice în sistem.</p>
+        {% endif %}
     </fieldset>
 
     <br>
@@ -204,6 +216,13 @@
         padding: 4px 10px;
         margin-left: 5px;
         cursor: pointer;
+    }
+
+    .info-box {
+        background-color: #e7f3fe;
+        border-left: 6px solid #2196F3;
+        padding: 15px;
+        margin-bottom: 20px;
     }
 
     .modal {

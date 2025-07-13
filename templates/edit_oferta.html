@@ -61,6 +61,13 @@
 
     <fieldset>
         <legend>Articole Ofertate</legend>
+        {% if oferta.ID_Referat or oferta.ID_Procedura %}
+        <p class="info-box">Notă: Lista de produse generice este filtrată pentru a afișa doar articolele solicitate în
+            <strong>{% if oferta.ID_Referat %}Referatul #{{ oferta.ID_Referat }}{% else %}Procedura #{{
+                oferta.ID_Procedura }}{% endif %}</strong>.
+        </p>
+        {% endif %}
+
         <table id="articole-tabel">
             <thead>
                 <tr>
@@ -111,7 +118,12 @@
                 {% endfor %}
             </tbody>
         </table>
+        {% if produse_generice %}
         <button type="button" id="add-articol-btn" class="button-secondary">Adaugă Articol</button>
+        {% else %}
+        <p>Nu se pot adăuga articole noi deoarece nu există produse disponibile în contextul selectat
+            (referat/procedură).</p>
+        {% endif %}
     </fieldset>
 
     <br>
@@ -245,6 +257,13 @@
         padding: 4px 10px;
         margin-left: 5px;
         cursor: pointer;
+    }
+
+    .info-box {
+        background-color: #e7f3fe;
+        border-left: 6px solid #2196F3;
+        padding: 15px;
+        margin-bottom: 20px;
     }
 
     .modal {

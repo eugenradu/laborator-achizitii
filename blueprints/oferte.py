@@ -3,8 +3,9 @@ from flask_login import login_required, current_user
 from datetime import date
 from sqlalchemy.orm import joinedload
 from sqlalchemy import or_
-from models import (db, Oferta, ArticolOferta, VariantaComercialaProdus, Produs, Producator, 
-                    ProceduraAchizitie, ReferatNecesitate, Furnizor)
+from models import (db, Oferta, ArticolOferta, VariantaComercialaProdus, Produs, Producator,
+                    ProceduraAchizitie, ReferatNecesitate, Furnizor, Lot, ProdusInLot,
+                    ProdusInReferat, proceduri_loturi_asociere)
 
 oferte_bp = Blueprint('oferte', __name__, url_prefix='/oferte')
 
@@ -91,10 +92,26 @@ def adauga_oferta():
     referate = ReferatNecesitate.query.order_by(ReferatNecesitate.ID_Referat.desc()).all()
     furnizori = Furnizor.query.order_by(Furnizor.Nume_Furnizor).all()
     producatori = Producator.query.order_by(Producator.Nume_Producator).all()
-    produse_generice = Produs.query.order_by(Produs.Nume_Generic).all()
     referat_id_preselectat = request.args.get('referat_id', type=int)
     procedura_id_preselectat = request.args.get('procedura_id', type=int)
     
+    # Filtrare produse generice în funcție de context (referat sau procedură)
+    produse_generice_query = db.session.query(Produs)
+    if referat_id_preselectat:
+        produse_generice_query = produse_generice_query\
+            .join(ProdusInReferat)\
+            .filter(ProdusInReferat.ID_Referat == referat_id_preselectat)
+    elif procedura_id_preselectat:
+        # Join prin Lot și tabela de asociere pentru a filtra după procedură
+        produse_generice_query = produse_generice_query.distinct()\
+            .join(ProdusInReferat)\
+            .join(ProdusInLot)\
+            .join(Lot)\
+            .join(proceduri_loturi_asociere)\
+            .filter(proceduri_loturi_asociere.c.procedura_id == procedura_id_preselectat)
+    
+    produse_generice = produse_generice_query.order_by(Produs.Nume_Generic).all()
+
     return render_template('adauga_oferta.html', 
                            variante_comerciale=variante_comerciale,
                            proceduri=proceduri,
@@ -157,8 +174,23 @@ def edit_oferta(oferta_id):
     referate = ReferatNecesitate.query.order_by(ReferatNecesitate.ID_Referat.desc()).all()
     furnizori = Furnizor.query.order_by(Furnizor.Nume_Furnizor).all()
     producatori = Producator.query.order_by(Producator.Nume_Producator).all()
-    produse_generice = Produs.query.order_by(Produs.Nume_Generic).all()
 
+    # Filtrare produse generice în funcție de context (referat sau procedură)
+    produse_generice_query = db.session.query(Produs)
+    if oferta.ID_Referat:
+        produse_generice_query = produse_generice_query\
+            .join(ProdusInReferat)\
+            .filter(ProdusInReferat.ID_Referat == oferta.ID_Referat)
+    elif oferta.ID_Procedura:
+        produse_generice_query = produse_generice_query.distinct()\
+            .join(ProdusInReferat)\
+            .join(ProdusInLot)\
+            .join(Lot)\
+            .join(proceduri_loturi_asociere)\
+            .filter(proceduri_loturi_asociere.c.procedura_id == oferta.ID_Procedura)
+
+    produse_generice = produse_generice_query.order_by(Produs.Nume_Generic).all()
+    
     return render_template('edit_oferta.html', oferta=oferta, 
                            variante_comerciale=variante_comerciale, 
                            proceduri=proceduri, referate=referate,

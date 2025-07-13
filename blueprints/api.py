@@ -84,6 +84,31 @@ def api_adauga_furnizor():
         db.session.rollback()
         return jsonify({'error': f'Eroare la salvarea în baza de date: {str(e)}'}), 500
 
+@api_bp.route('/producatori/adauga', methods=['POST'])
+@login_required
+def api_adauga_producator():
+    """Endpoint API pentru a adăuga un nou producător dinamic."""
+    data = request.get_json()
+    if not data:
+        return jsonify({'error': 'Date JSON invalide'}), 400
+
+    nume_producator = data.get('nume_producator', '').strip()
+    if not nume_producator:
+        return jsonify({'error': 'Numele producătorului este obligatoriu.'}), 400
+
+    try:
+        # Verificăm unicitatea
+        if Producator.query.filter_by(Nume_Producator=nume_producator).first():
+            return jsonify({'error': f'Producătorul "{nume_producator}" există deja.'}), 409 # Conflict
+
+        new_producator = Producator(Nume_Producator=nume_producator)
+        db.session.add(new_producator)
+        db.session.commit()
+        return jsonify({'id': new_producator.ID_Producator, 'text': new_producator.Nume_Producator}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': f'Eroare la salvarea în baza de date: {str(e)}'}), 500
+
 @api_bp.route('/variante_by_produs/<int:produs_id>')
 @login_required
 def get_variante_by_produs(produs_id):
