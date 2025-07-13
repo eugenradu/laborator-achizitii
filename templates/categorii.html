@@ -1,50 +1,74 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h2>Management Categorii Produse</h2>
+<h2>Gestionează Categorii de Produse</h2>
 
-    <div class="form-container">
-        <h3>Adaugă Categorie Nouă</h3>
-        <form action="{{ url_for('categorii') }}" method="POST">
-            <label for="nume_categorie">Nume Categorie:</label>
-            <input type="text" id="nume_categorie" name="nume_categorie" required>
-            <button type="submit">Adaugă</button>
-        </form>
-    </div>
+<div class="form-container">
+    <h3>Adaugă Categorie Nouă</h3>
+    <form method="POST" action="{{ url_for('produse.categorii') }}">
+        <label for="nume_categorie">Nume Categorie:</label>
+        <input type="text" id="nume_categorie" name="nume_categorie" required>
+        <button type="submit">Adaugă</button>
+    </form>
+</div>
 
-    <h3>Categorii Existente</h3>
-    <table>
-        <thead>
-            <tr>
-                <th>Nume Categorie</th>
-                <th style="width: 50%;">Acțiuni</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for categorie in categorii %}
-            <tr>
-                <td>{{ categorie.Nume_Categorie }}</td>
-                <td>
-                    <form action="{{ url_for('modifica_categorie', categorie_id=categorie.ID_Categorie) }}" method="POST" style="display: inline-flex; align-items: center; gap: 10px; margin-right: 10px;">
-                        <input type="text" name="nume_categorie_nou" placeholder="Nume nou" required style="margin-bottom: 0;">
-                        <button type="submit">Redenumește</button>
-                    </form>
-                    <form action="{{ url_for('sterge_categorie', categorie_id=categorie.ID_Categorie) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Ești sigur că vrei să ștergi categoria? Acțiunea este ireversibilă.');">
-                        <button type="submit" class="button-danger">Șterge</button>
-                    </form>
-                </td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="2">Nu există nicio categorie definită.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <style>
-        .button-danger { background-color: #dc3545; }
-        .button-danger:hover { background-color: #c82333; }
-        .form-container { margin-bottom: 30px; }
-    </style>
+<h3>Categorii Existente</h3>
+<table>
+    <thead>
+        <tr>
+            <th>Nume Categorie</th>
+            <th style="width: 25%;">Acțiuni</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for categorie in categorii %}
+        <tr>
+            <td>
+                <form method="POST"
+                    action="{{ url_for('produse.modifica_categorie', categorie_id=categorie.ID_Categorie) }}"
+                    class="inline-form">
+                    <input type="text" name="nume_categorie_nou" value="{{ categorie.Nume_Categorie }}" required>
+                    <button type="submit">Redenumește</button>
+                </form>
+            </td>
+            <td>
+                <form method="POST"
+                    action="{{ url_for('produse.sterge_categorie', categorie_id=categorie.ID_Categorie) }}"
+                    class="inline-form"
+                    onsubmit="return confirm('Sunteți sigur că doriți să ștergeți categoria \'{{ categorie.Nume_Categorie }}\'?');">
+                    <button type="submit" class="button-danger">Șterge</button>
+                </form>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="2">Nu există nicio categorie înregistrată.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<style>
+    .form-container {
+        margin-bottom: 30px;
+    }
+
+    .inline-form {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .inline-form input[type="text"] {
+        margin-bottom: 0;
+        flex-grow: 1;
+    }
+
+    .button-danger {
+        background-color: #f44336;
+    }
+
+    .button-danger:hover {
+        background-color: #da190b;
+    }
+</style>
 {% endblock %}
-

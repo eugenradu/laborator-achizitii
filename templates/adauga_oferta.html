@@ -125,13 +125,19 @@
                 {% endfor %}
             </select>
 
-            <label for="modalProducator">Producător:</label>
-            <select id="modalProducator" name="id_producator" required>
-                <option value="">-- Selectează un producător --</option>
-                {% for producator in producatori %}
-                <option value="{{ producator.ID_Producator }}">{{ producator.Nume_Producator }}</option>
-                {% endfor %}
-            </select>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="flex-grow: 1;">
+                    <label for="modalProducator">Producător:</label>
+                    <select id="modalProducator" name="id_producator" required>
+                        <option value="">-- Selectează un producător --</option>
+                        {% for producator in producatori %}
+                        <option value="{{ producator.ID_Producator }}">{{ producator.Nume_Producator }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="button" id="add-producator-in-modal-btn" class="add-variant-btn" style="margin-top: 15px;"
+                    title="Adaugă un producător nou.">+</button>
+            </div>
 
             <label for="modalCodCatalog">Cod Catalog:</label>
             <input type="text" id="modalCodCatalog" name="cod_catalog" required>
@@ -148,6 +154,22 @@
 
             <button type="submit">Salvează Varianta</button>
             <div id="modalError" class="error-message" style="margin-top: 10px; color: #721c24;"></div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal pentru adăugare producător nou -->
+<div id="addProducatorModal" class="modal">
+    <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <h4>Adaugă Producător Nou</h4>
+        <form id="addProducatorForm">
+
+            <label for="modalNumeProducator">Nume Producător:</label>
+            <input type="text" id="modalNumeProducator" name="nume_producator" required>
+
+            <button type="submit">Salvează Producător</button>
+            <div id="modalProducatorError" class="error-message" style="margin-top: 10px; color: #721c24;"></div>
         </form>
     </div>
 </div>
@@ -219,12 +241,21 @@
         const container = document.getElementById('articole-container');
         const template = document.getElementById('articol-template');
 
+        // --- Elemente pentru Modal Variante ---
         const variantModal = document.getElementById('addVariantModal');
         const closeVariantModalButton = variantModal.querySelector('.close-button');
         const addVariantForm = document.getElementById('addVariantForm');
         const modalErrorDiv = document.getElementById('modalError');
         const modalProdusGenericSelect = document.getElementById('modalProdusGeneric');
+        const modalProducatorSelect = document.getElementById('modalProducator');
+        const addProducatorInModalBtn = document.getElementById('add-producator-in-modal-btn');
         let targetSelectElement = null;
+
+        // --- Elemente pentru Modal Producători ---
+        const producatorModal = document.getElementById('addProducatorModal');
+        const closeProducatorModalButton = producatorModal.querySelector('.close-button');
+        const addProducatorForm = document.getElementById('addProducatorForm');
+        const modalProducatorErrorDiv = document.getElementById('modalProducatorError');
 
         const furnizorModal = document.getElementById('addFurnizorModal');
         const closeFurnizorModalButton = furnizorModal.querySelector('.close-button');
@@ -271,8 +302,8 @@
                 variantaSelect.disabled = true;
 
                 if (produsId) {
-                    const urlTemplate = "{{ url_for('api.get_variante_by_produs', produs_id='__ID__') }}";
-                    fetch(urlTemplate.replace('__ID__', produsId))
+                    const urlTemplate = "{{ url_for('api.get_variante_by_produs', produs_id=999999) }}";
+                    fetch(urlTemplate.replace('999999', produsId))
                         .then(response => response.json())
                         .then(data => {
                             variantaSelect.innerHTML = '<option value="">-- Selectează o variantă --</option>';
@@ -291,7 +322,6 @@
             }
         });
 
-        // --- Logica pentru Modal Furnizori ---
         addFurnizorBtn.addEventListener('click', function () {
             modalFurnizorErrorDiv.textContent = '';
             addFurnizorForm.reset();
@@ -320,6 +350,40 @@
                 .catch(error => {
                     modalFurnizorErrorDiv.textContent = error.message;
                 });
+        });
+
+        // --- Logica pentru Modal Producători (în interiorul modalului de variante) ---
+        addProducatorInModalBtn.addEventListener('click', function () {
+            variantModal.style.display = 'none'; // Ascunde modalul de variante
+            modalProducatorErrorDiv.textContent = '';
+            addProducatorForm.reset();
+            producatorModal.style.display = 'block'; // Afișează modalul de producători
+        });
+
+        closeProducatorModalButton.onclick = () => {
+            producatorModal.style.display = 'none';
+            variantModal.style.display = 'block'; // Re-afișează modalul de variante
+        };
+
+        addProducatorForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+            modalProducatorErrorDiv.textContent = '';
+            const data = Object.fromEntries(new FormData(addProducatorForm).entries());
+
+            fetch("{{ url_for('api.api_adauga_producator') }}", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+                .then(response => response.json().then(json => ({ ok: response.ok, json })))
+                .then(({ ok, json }) => {
+                    if (!ok) throw new Error(json.error || 'A apărut o eroare.');
+                    const newOption = new Option(json.text, json.id, false, true);
+                    modalProducatorSelect.appendChild(newOption);
+                    producatorModal.style.display = 'none';
+                    variantModal.style.display = 'block';
+                })
+                .catch(error => modalProducatorErrorDiv.textContent = error.message);
         });
 
         // --- Logica pentru Modal Variante Comerciale ---
@@ -353,6 +417,7 @@
         window.onclick = (event) => {
             if (event.target == variantModal) variantModal.style.display = 'none';
             if (event.target == furnizorModal) furnizorModal.style.display = 'none';
+            if (event.target == producatorModal) producatorModal.style.display = 'none';
         };
 
         // Adaugă un rând la încărcarea paginii pentru a începe

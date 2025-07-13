@@ -151,11 +151,57 @@ def aloca_produs_lot(referat_id, lot_id):
 @referate_bp.route('/referate/<int:referat_id>/genereaza_referat')
 @login_required
 def genereaza_referat_doc(referat_id):
+    """Generează un fișier .txt cu detaliile referatului de necesitate."""
     referat = ReferatNecesitate.query.get_or_404(referat_id)
-    # ... (toată logica de generare a documentului rămâne aceeași)
+
+    # Construim conținutul text al documentului
+    referat_text = f"REFERAT DE NECESITATE\n"
+    referat_text += f"{'='*40}\n"
+    referat_text += f"Număr: {referat.Numar_Referat or 'N/A'}\n"
+    referat_text += f"Data: {referat.Data_Creare.strftime('%d-%m-%Y')}\n"
+    referat_text += f"Stare: {referat.Stare}\n"
+    if referat.creator_referat:
+        referat_text += f"Creat de: {referat.creator_referat.Nume_Utilizator}\n"
+    referat_text += f"{'='*40}\n"
+
+    # Preluăm loturile și produsele grupate pe lot
+    loturi = Lot.query.filter_by(ID_Referat=referat_id).order_by(Lot.Nume_Lot).all()
+    produse_alocate_ids = set()
+
+    for lot in loturi:
+        referat_text += f"\n--- LOT: {lot.Nume_Lot.upper()} ---\n"
+        if lot.Descriere_Lot:
+            referat_text += f"Descriere: {lot.Descriere_Lot}\n"
+        referat_text += "\n"
+
+        produse_in_lot = db.session.query(Produs, ProdusInReferat)\
+            .join(ProdusInReferat, Produs.ID_Produs == ProdusInReferat.ID_Produs_Generic)\
+            .join(ProdusInLot, ProdusInReferat.ID_Produs_Referat == ProdusInLot.ID_Produs_Referat)\
+            .filter(ProdusInLot.ID_Lot == lot.ID_Lot)\
+            .order_by(Produs.Nume_Generic).all()
+
+        for i, (produs, pir) in enumerate(produse_in_lot):
+            referat_text += f"{i+1}. {produs.Nume_Generic}\n"
+            referat_text += f"   - Cantitate solicitată: {pir.Cantitate_Solicitata} {produs.Unitate_Masura}\n"
+            referat_text += f"   - Specificații tehnice: {produs.Specificatii_Tehnice or 'N/A'}\n\n"
+            produse_alocate_ids.add(pir.ID_Produs_Referat)
+
+    # Preluăm produsele nealocate
+    produse_nealocate = db.session.query(Produs, ProdusInReferat)\
+        .join(ProdusInReferat, Produs.ID_Produs == ProdusInReferat.ID_Produs_Generic)\
+        .filter(ProdusInReferat.ID_Referat == referat_id, ProdusInReferat.ID_Produs_Referat.notin_(produse_alocate_ids))\
+        .order_by(Produs.Nume_Generic).all()
+
+    if produse_nealocate:
+        referat_text += f"\n--- PRODUSE NEALOCATE ---\n\n"
+        for i, (produs, pir) in enumerate(produse_nealocate):
+            referat_text += f"{i+1}. {produs.Nume_Generic}\n"
+            referat_text += f"   - Cantitate solicitată: {pir.Cantitate_Solicitata} {produs.Unitate_Masura}\n"
+            referat_text += f"   - Specificații tehnice: {produs.Specificatii_Tehnice or 'N/A'}\n\n"
+
     response = make_response(referat_text)
     response.headers["Content-Disposition"] = f"attachment; filename=referat_necesitate_{referat_id}.txt"
-    response.headers["Content-type"] = "text/plain"
+    response.headers["Content-type"] = "text/plain; charset=utf-8"
     return response
 
 @referate_bp.route('/referate/<int:referat_id>/edit_observatii', methods=['POST'])

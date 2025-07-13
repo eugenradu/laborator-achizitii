@@ -188,8 +188,8 @@
 
             if (categorieId) {
                 // Construim URL-ul dinamic folosind un template generat de url_for
-                const urlTemplate = "{{ url_for('api.get_produse_by_categorie', categorie_id='__ID__') }}";
-                fetch(urlTemplate.replace('__ID__', categorieId))
+                const urlTemplate = "{{ url_for('api.get_produse_by_categorie', categorie_id=999999) }}";
+                fetch(urlTemplate.replace('999999', categorieId))
                     .then(response => response.json())
                     .then(data => {
                         produsSelect.innerHTML = '<option value="">-- Selectează un produs --</option>';

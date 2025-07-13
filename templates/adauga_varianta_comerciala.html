@@ -1,74 +1,81 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h2>Adaugă Variantă Comercială Nouă</h2>
-    <form method="POST">
-        <label for="id_categorie">Categorie:</label><br>
+<h2>Adaugă Variantă Comercială Nouă</h2>
+
+<form method="POST" action="{{ url_for('produse.adauga_varianta_comerciala') }}">
+    <fieldset>
+        <legend>Asociere Produs</legend>
+
+        <label for="id_categorie">Selectează Categoria:</label>
         <select id="id_categorie" name="id_categorie" required>
-            <option value="">-- Selectează o categorie --</option>
+            <option value="">-- Alege o categorie --</option>
             {% for categorie in categorii %}
-                <option value="{{ categorie.ID_Categorie }}">{{ categorie.Nume_Categorie }}</option>
+            <option value="{{ categorie.ID_Categorie }}">{{ categorie.Nume_Categorie }}</option>
             {% endfor %}
-        </select><br><br>
+        </select>
 
-        <label for="id_produs_generic">Produs Generic:</label><br>
+        <label for="id_produs_generic">Selectează Produsul Generic:</label>
         <select id="id_produs_generic" name="id_produs_generic" required disabled>
-            <option value="">-- Mai întâi selectează o categorie --</option>
-        </select><br><br>
+            <option value="">-- Mai întâi alege o categorie --</option>
+        </select>
 
-        <label for="id_producator">Producător:</label><br>
+        <label for="id_producator">Selectează Producătorul:</label>
         <select id="id_producator" name="id_producator" required>
-            <option value="">-- Selectează un producător --</option>
+            <option value="">-- Alege un producător --</option>
             {% for producator in producatori %}
-                <option value="{{ producator.ID_Producator }}">{{ producator.Nume_Producator }}</option>
+            <option value="{{ producator.ID_Producator }}">{{ producator.Nume_Producator }}</option>
             {% endfor %}
-        </select><br><br>
+        </select>
+    </fieldset>
 
-        <label for="cod_catalog">Cod Catalog:</label><br>
-        <input type="text" id="cod_catalog" name="cod_catalog" required><br><br>
+    <fieldset>
+        <legend>Detalii Comerciale</legend>
 
-        <label for="nume_comercial_extins">Nume Comercial Extins (opțional):</label><br>
-        <input type="text" id="nume_comercial_extins" name="nume_comercial_extins"><br><br>
-        
-        <label for="descriere_ambalare">Descriere Ambalare:</label><br>
-        <input type="text" id="descriere_ambalare" name="descriere_ambalare" placeholder="ex: Kit 48 teste, Cutie 500 buc" required><br><br>
+        <label for="cod_catalog">Cod Catalog (Obligatoriu):</label>
+        <input type="text" id="cod_catalog" name="cod_catalog" required>
 
-        <label for="cantitate_standard_ambalare">Cantitate Standard Ambalare (unități generice per pachet):</label><br>
-        <input type="number" id="cantitate_standard_ambalare" name="cantitate_standard_ambalare" min="1" required><br><br>
-        
-        <button type="submit">Adaugă Variantă</button>
-    </form>
+        <label for="descriere_ambalare">Descriere Ambalare (Obligatoriu):</label>
+        <input type="text" id="descriere_ambalare" name="descriere_ambalare" placeholder="ex: Kit 96 teste" required>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const categorieSelect = document.getElementById('id_categorie');
-            const produsSelect = document.getElementById('id_produs_generic');
+        <label for="cantitate_standard_ambalare">Cantitate Standard Ambalare (Obligatoriu):</label>
+        <input type="number" id="cantitate_standard_ambalare" name="cantitate_standard_ambalare" min="1" required>
 
-            categorieSelect.addEventListener('change', function() {
-                const categorieId = this.value;
-                // Golește și dezactivează dropdown-ul de produse
-                produsSelect.innerHTML = '<option value="">-- Se încarcă... --</option>';
-                produsSelect.disabled = true;
+        <label for="nume_comercial_extins">Nume Comercial Extins (Opțional):</label>
+        <input type="text" id="nume_comercial_extins" name="nume_comercial_extins">
+    </fieldset>
 
-                if (categorieId) {
-                    fetch(`/api/produse_by_categorie/${categorieId}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            produsSelect.innerHTML = '<option value="">-- Selectează un produs --</option>';
-                            data.forEach(produs => {
-                                const option = new Option(`${produs.nume} (${produs.unitate_masura})`, produs.id);
-                                produsSelect.appendChild(option);
-                            });
-                            produsSelect.disabled = false;
-                        })
-                        .catch(error => {
-                            console.error('Eroare la preluarea produselor:', error);
-                            produsSelect.innerHTML = '<option value="">-- Eroare la încărcare --</option>';
+    <br>
+    <button type="submit">Salvează Varianta Comercială</button>
+    <a href="{{ url_for('produse.variante_comerciale') }}" class="button-secondary"
+        style="margin-left: 10px;">Anulează</a>
+</form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const categorySelect = document.getElementById('id_categorie');
+        const productSelect = document.getElementById('id_produs_generic');
+
+        categorySelect.addEventListener('change', function () {
+            const categoryId = this.value;
+            productSelect.innerHTML = '<option value="">-- Se încarcă... --</option>';
+            productSelect.disabled = true;
+
+            if (categoryId) {
+                const urlTemplate = "{{ url_for('api.get_produse_by_categorie', categorie_id=999999) }}";
+                fetch(urlTemplate.replace('999999', categoryId))
+                    .then(response => response.json())
+                    .then(data => {
+                        productSelect.innerHTML = '<option value="">-- Alege un produs --</option>';
+                        data.forEach(produs => {
+                            productSelect.appendChild(new Option(produs.nume, produs.id));
                         });
-                } else {
-                    produsSelect.innerHTML = '<option value="">-- Mai întâi selectează o categorie --</option>';
-                }
-            });
+                        productSelect.disabled = false;
+                    });
+            } else {
+                productSelect.innerHTML = '<option value="">-- Mai întâi alege o categorie --</option>';
+            }
         });
-    </script>
+    });
+</script>
 {% endblock %}

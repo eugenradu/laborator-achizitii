@@ -1,152 +1,226 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h2>Lista Variantelor Comerciale</h2>
+<h2>Lista Variantelor Comerciale</h2>
 
-    <div class="card">
-        <h3>Filtrează și Caută Variante</h3>
-        <form method="GET" action="{{ url_for('variante_comerciale') }}" class="search-form">
-            <input type="text" name="search" placeholder="Caută după cod, nume, descriere..." value="{{ search_term or '' }}">
-            
-            <select id="category_filter" name="category_filter">
-                <option value="">-- Toate Categoriile --</option>
-                {% for cat in categorii %}
-                    <option value="{{ cat.ID_Categorie }}" {% if cat.ID_Categorie == category_filter_id %}selected{% endif %}>
-                        {{ cat.Nume_Categorie }}
-                    </option>
-                {% endfor %}
-            </select>
+<div class="card">
+    <h3>Filtrează și Caută Variante</h3>
+    <form method="GET" action="{{ url_for('produse.variante_comerciale') }}" class="search-form">
+        <input type="text" name="search" placeholder="Caută după cod, nume, descriere..."
+            value="{{ search_term or '' }}">
 
-            <select id="product_filter" name="product_filter" {% if not category_filter_id %}disabled{% endif %}>
-                <option value="">-- Toate Produsele --</option>
-                {# Acest dropdown va fi populat de JavaScript #}
-            </select>
-
-            <button type="submit">Filtrează</button>
-            {% if search_term or category_filter_id or product_filter_id %}
-                <a href="{{ url_for('variante_comerciale') }}" class="button-secondary">Șterge Filtrele</a>
-            {% endif %}
-        </form>
-    </div>
-
-    <div class="actions">
-        <a href="{{ url_for('adauga_varianta_comerciala') }}" class="button">Adaugă Variantă Comercială Nouă</a>
-    </div>
-
-    <table>
-        <thead>
-            <tr>
-                <th>Produs Generic</th>
-                <th>Categorie</th>
-                <th>Producător</th>
-                <th>Cod Catalog</th>
-                <th>Nume Comercial Extins</th>
-                <th>Descriere Ambalare</th>
-                <th>Acțiuni</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for varianta, produs, categorie, producator in variante %}
-            <tr>
-                <td>{{ produs.Nume_Generic }}</td>
-                <td>{{ categorie.Nume_Categorie }}</td>
-                <td>{{ producator.Nume_Producator }}</td>
-                <td>{{ varianta.Cod_Catalog }}</td>
-                <td>{{ varianta.Nume_Comercial_Extins if varianta.Nume_Comercial_Extins else 'N/A' }}</td>
-                <td>{{ varianta.Descriere_Ambalare }}</td>
-                <td>
-                    <a href="{{ url_for('edit_varianta_comerciala', varianta_id=varianta.ID_Varianta_Comerciala) }}" class="button-edit" style="margin-right: 5px;">Editează</a>
-                    <form action="{{ url_for('sterge_varianta_comerciala', varianta_id=varianta.ID_Varianta_Comerciala) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Ești sigur că vrei să ștergi această variantă comercială? Acțiunea este ireversibilă.');">
-                        <button type="submit" class="button-danger">Șterge</button>
-                    </form>
-                </td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="7">Nicio variantă comercială nu corespunde filtrelor selectate.</td>
-            </tr>
+        <select id="category_filter" name="category_filter">
+            <option value="">-- Toate Categoriile --</option>
+            {% for cat in categorii %}
+            <option value="{{ cat.ID_Categorie }}" {% if cat.ID_Categorie==category_filter_id %}selected{% endif %}>
+                {{ cat.Nume_Categorie }}
+            </option>
             {% endfor %}
-        </tbody>
-    </table>
+        </select>
 
-    <!-- Pagination Controls -->
-    {% if pagination and pagination.pages > 1 %}
-    <div class="pagination">
-        <a href="{{ url_for('variante_comerciale', page=pagination.prev_num, search=search_term, category_filter=category_filter_id, product_filter=product_filter_id) if pagination.has_prev else '#' }}" class="{{ 'disabled' if not pagination.has_prev }}">
-            &laquo; Anterioară
-        </a>
-        {% for p in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
-            {% if p %}
-                <a href="{{ url_for('variante_comerciale', page=p, search=search_term, category_filter=category_filter_id, product_filter=product_filter_id) }}" class="{{ 'active' if p == pagination.page }}">{{ p }}</a>
-            {% else %}
-                <span class="ellipsis">…</span>
-            {% endif %}
+        <select id="product_filter" name="product_filter" {% if not category_filter_id %}disabled{% endif %}>
+            <option value="">-- Toate Produsele --</option>
+            {# Acest dropdown va fi populat de JavaScript #}
+        </select>
+
+        <button type="submit">Filtrează</button>
+        {% if search_term or category_filter_id or product_filter_id %}
+        <a href="{{ url_for('produse.variante_comerciale') }}" class="button-secondary">Șterge Filtrele</a>
+        {% endif %}
+    </form>
+</div>
+
+<div class="actions">
+    <a href="{{ url_for('produse.adauga_varianta_comerciala') }}" class="button">Adaugă Variantă Comercială Nouă</a>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>Produs Generic</th>
+            <th>Categorie</th>
+            <th>Producător</th>
+            <th>Cod Catalog</th>
+            <th>Nume Comercial Extins</th>
+            <th>Descriere Ambalare</th>
+            <th>Acțiuni</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for varianta, produs, categorie, producator in variante %}
+        <tr>
+            <td>{{ produs.Nume_Generic }}</td>
+            <td>{{ categorie.Nume_Categorie }}</td>
+            <td>{{ producator.Nume_Producator }}</td>
+            <td>{{ varianta.Cod_Catalog }}</td>
+            <td>{{ varianta.Nume_Comercial_Extins if varianta.Nume_Comercial_Extins else 'N/A' }}</td>
+            <td>{{ varianta.Descriere_Ambalare }}</td>
+            <td>
+                <a href="{{ url_for('produse.edit_varianta_comerciala', varianta_id=varianta.ID_Varianta_Comerciala) }}"
+                    class="button-edit" style="margin-right: 5px;">Editează</a>
+                <form
+                    action="{{ url_for('produse.sterge_varianta_comerciala', varianta_id=varianta.ID_Varianta_Comerciala) }}"
+                    method="POST" style="display: inline-block;"
+                    onsubmit="return confirm('Ești sigur că vrei să ștergi această variantă comercială? Acțiunea este ireversibilă.');">
+                    <button type="submit" class="button-danger">Șterge</button>
+                </form>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="7">Nicio variantă comercială nu corespunde filtrelor selectate.</td>
+        </tr>
         {% endfor %}
-        <a href="{{ url_for('variante_comerciale', page=pagination.next_num, search=search_term, category_filter=category_filter_id, product_filter=product_filter_id) if pagination.has_next else '#' }}" class="{{ 'disabled' if not pagination.has_next }}">
-            Următoare &raquo;
-        </a>
-    </div>
-    {% endif %}
+    </tbody>
+</table>
 
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
+<!-- Pagination Controls -->
+{% if pagination and pagination.pages > 1 %}
+<div class="pagination">
+    <a href="{{ url_for('produse.variante_comerciale', page=pagination.prev_num, search=search_term, category_filter=category_filter_id, product_filter=product_filter_id) if pagination.has_prev else '#' }}"
+        class="{{ 'disabled' if not pagination.has_prev }}">
+        &laquo; Anterioară
+    </a>
+    {% for p in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+    {% if p %}
+    <a href="{{ url_for('produse.variante_comerciale', page=p, search=search_term, category_filter=category_filter_id, product_filter=product_filter_id) }}"
+        class="{{ 'active' if p == pagination.page }}">{{ p }}</a>
+    {% else %}
+    <span class="ellipsis">…</span>
+    {% endif %}
+    {% endfor %}
+    <a href="{{ url_for('produse.variante_comerciale', page=pagination.next_num, search=search_term, category_filter=category_filter_id, product_filter=product_filter_id) if pagination.has_next else '#' }}"
+        class="{{ 'disabled' if not pagination.has_next }}">
+        Următoare &raquo;
+    </a>
+</div>
+{% endif %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
         const categorySelect = document.getElementById('category_filter');
         const productSelect = document.getElementById('product_filter');
-        const currentProductFilterId = {{ product_filter_id|tojson }};
+        const currentProductFilterId = {{ product_filter_id| tojson
+    }};
 
-        function fetchProducts(categoryId, selectedProductId) {
-            if (!categoryId) {
-                productSelect.innerHTML = '<option value="">-- Toate Produsele --</option>';
-                productSelect.disabled = true;
-                return;
-            }
-
-            fetch(`/api/produse_by_categorie/${categoryId}`)
-                .then(response => response.json())
-                .then(data => {
-                    productSelect.innerHTML = '<option value="">-- Toate Produsele --</option>';
-                    data.forEach(produs => {
-                        const option = new Option(produs.nume, produs.id);
-                        if (produs.id === selectedProductId) {
-                            option.selected = true;
-                        }
-                        productSelect.appendChild(option);
-                    });
-                    productSelect.disabled = false;
-                })
-                .catch(error => console.error('Eroare la preluarea produselor:', error));
-        }
-
-        // La încărcarea paginii, populează produsele dacă o categorie este deja selectată
-        if (categorySelect.value) {
-            fetchProducts(categorySelect.value, currentProductFilterId);
-        }
-
-        // La schimbarea categoriei, actualizează lista de produse
-        categorySelect.addEventListener('change', function() {
-            // Când schimbăm categoria, resetăm filtrul de produs
+    function fetchProducts(categoryId, selectedProductId) {
+        if (!categoryId) {
             productSelect.innerHTML = '<option value="">-- Toate Produsele --</option>';
-            fetchProducts(this.value, null);
-        });
-    });
-    </script>
+            productSelect.disabled = true;
+            return;
+        }
 
-    <style>
-        .card { background: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
-        .search-form { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-        .search-form input[type="text"], .search-form select { flex-grow: 1; margin-bottom: 0; padding: 8px; }
-        .button-secondary { background-color: #6c757d; color: white; padding: 10px 15px; border-radius: 4px; text-decoration: none; }
-        .button-edit {
-            background-color: #ffc107; color: black; padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 14px;
-        }
-        .button-danger {
-            background-color: #dc3545; padding: 5px 10px; font-size: 14px;
-        }
-        .button-danger:hover { background-color: #c82333; }
-        .pagination { margin-top: 20px; text-align: center; }
-        .pagination a, .pagination span { display: inline-block; padding: 8px 16px; text-decoration: none; border: 1px solid #ddd; color: #4CAF50; margin: 0 2px; border-radius: 4px; }
-        .pagination a.active { background-color: #4CAF50; color: white; border: 1px solid #4CAF50; }
-        .pagination a.disabled { color: #ccc; pointer-events: none; cursor: default; }
-        .pagination span.ellipsis { border: none; }
-    </style>
+        const urlTemplate = "{{ url_for('api.get_produse_by_categorie', categorie_id=999999) }}";
+        fetch(urlTemplate.replace('999999', categoryId))
+            .then(response => response.json())
+            .then(data => {
+                productSelect.innerHTML = '<option value="">-- Toate Produsele --</option>';
+                data.forEach(produs => {
+                    const option = new Option(produs.nume, produs.id);
+                    if (produs.id === selectedProductId) {
+                        option.selected = true;
+                    }
+                    productSelect.appendChild(option);
+                });
+                productSelect.disabled = false;
+            })
+            .catch(error => console.error('Eroare la preluarea produselor:', error));
+    }
+
+    // La încărcarea paginii, populează produsele dacă o categorie este deja selectată
+    if (categorySelect.value) {
+        fetchProducts(categorySelect.value, currentProductFilterId);
+    }
+
+    // La schimbarea categoriei, actualizează lista de produse
+    categorySelect.addEventListener('change', function () {
+        // Când schimbăm categoria, resetăm filtrul de produs
+        productSelect.innerHTML = '<option value="">-- Toate Produsele --</option>';
+        fetchProducts(this.value, null);
+    });
+    });
+</script>
+
+<style>
+    .card {
+        background: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .search-form {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .search-form input[type="text"],
+    .search-form select {
+        flex-grow: 1;
+        margin-bottom: 0;
+        padding: 8px;
+    }
+
+    .button-secondary {
+        background-color: #6c757d;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 4px;
+        text-decoration: none;
+    }
+
+    .button-edit {
+        background-color: #ffc107;
+        color: black;
+        padding: 5px 10px;
+        border-radius: 4px;
+        text-decoration: none;
+        font-size: 14px;
+    }
+
+    .button-danger {
+        background-color: #dc3545;
+        padding: 5px 10px;
+        font-size: 14px;
+    }
+
+    .button-danger:hover {
+        background-color: #c82333;
+    }
+
+    .pagination {
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .pagination a,
+    .pagination span {
+        display: inline-block;
+        padding: 8px 16px;
+        text-decoration: none;
+        border: 1px solid #ddd;
+        color: #4CAF50;
+        margin: 0 2px;
+        border-radius: 4px;
+    }
+
+    .pagination a.active {
+        background-color: #4CAF50;
+        color: white;
+        border: 1px solid #4CAF50;
+    }
+
+    .pagination a.disabled {
+        color: #ccc;
+        pointer-events: none;
+        cursor: default;
+    }
+
+    .pagination span.ellipsis {
+        border: none;
+    }
+</style>
 {% endblock %}
