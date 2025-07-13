@@ -397,7 +397,7 @@ def sterge_varianta_comerciala(varianta_id):
     varianta = VariantaComercialaProdus.query.get_or_404(varianta_id)
 
     # Verificare de siguranță: nu ștergem variante cu dependențe
-    if varianta.oferte_referat or varianta.oferte_licitatie or varianta.articole_contractate or varianta.loturi_stoc:
+    if varianta.articole_oferta or varianta.articole_contractate or varianta.loturi_stoc:
         flash(f'Varianta comercială "{varianta.Cod_Catalog}" nu poate fi ștearsă deoarece este utilizată în oferte, contracte sau stocuri.', 'danger')
         return redirect(url_for('produse.variante_comerciale'))
 

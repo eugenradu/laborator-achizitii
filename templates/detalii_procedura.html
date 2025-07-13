@@ -10,8 +10,8 @@
         }}</strong></p>
 
 <div class="actions">
-    {# TODO: Adaugă link pentru generare documentație #}
-    <a href="#" class="button-secondary">Generează Documentație (.txt)</a>
+    <a href="{{ url_for('proceduri.genereaza_documentatie', procedura_id=procedura.ID_Procedura) }}"
+        class="button-secondary">Generează Documentație (.txt)</a>
 </div>
 
 <h3>Loturi Incluse în Procedură</h3>

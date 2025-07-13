@@ -12,6 +12,7 @@ Acest document inventariază sarcinile planificate pentru dezvoltarea viitoare a
   - [x] Crearea blueprint-ului `proceduri.py`.
   - [x] Implementarea unui formular de creare care grupează loturile pe referate.
   - [x] Integrarea cu `Oferte` (asociere și pre-selectare).
+  - [x] Generare documentație text pentru o procedură.
 - [ ] **Implementare Modul Contracte:**
   - [ ] Crearea blueprint-ului `contracte.py`.
   - [ ] Implementarea logicii de creare a unui contract pe baza unei oferte câștigătoare dintr-o procedură.
@@ -29,9 +30,7 @@ Acest document inventariază sarcinile planificate pentru dezvoltarea viitoare a
 - [x] Adăugare dinamică de furnizori din pagina de oferte (similar cu variantele comerciale).
 - [x] Adăugare dinamică de producători din pagina de oferte (flux secvențial).
 - [ ] **Funcționalitate de Clonare a Referatelor:**
-  - [ ] Adăugare buton "Clonează" în pagina de detalii a referatului.
-  - [ ] Implementare logică de backend pentru a copia referatul și produsele asociate.
-  - [ ] Resetarea stării noului referat la "Ciorna".
+- [x] **Funcționalitate de Clonare a Referatelor (Finalizat)**
 - [ ] Adăugarea unei funcționalități de căutare/filtrare în listele principale:
 - [ ] Adăugarea unei funcționalități de căutare/filtrare în listele principale (oferte, referate, etc.).
 - [ ] Implementarea paginării în toate listele lungi pentru a îmbunătăți performanța.

@@ -21,9 +21,14 @@
         <button type="submit">Salvează Observațiile</button>
     </form>
 </div>
-<div class="actions">
+<div class="actions" style="display: flex; gap: 10px; align-items: center;">
     <a href="{{ url_for('referate.genereaza_referat_doc', referat_id=referat.ID_Referat) }}" class="button">Generează
         Document Referat (.txt)</a>
+    <form method="POST" action="{{ url_for('referate.clone_referat', referat_id=referat.ID_Referat) }}"
+        style="margin: 0;"
+        onsubmit="return confirm('Sunteți sigur că doriți să clonați acest referat? Va fi creată o nouă ciornă.');">
+        <button type="submit" class="button-secondary">Clonează Referat</button>
+    </form>
 </div>
 
 <h3>Produse Solicitate în Acest Referat</h3>
@@ -76,7 +81,7 @@
     </tbody>
 </table>
 
-<h3>Loturi pentru Licitatie</h3>
+<h3>Loturi definite în Referat</h3>
 <h4>Creează Lot Nou</h4>
 <form method="POST" action="{{ url_for('referate.adauga_lot_referat', referat_id=referat.ID_Referat) }}">
     <label for="nume_lot">Nume Lot:</label><br>

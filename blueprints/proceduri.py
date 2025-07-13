@@ -1,5 +1,5 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
-from flask_login import login_required, current_user
+from flask import Blueprint, render_template, request, redirect, url_for, flash, make_response
+from flask_login import login_required, current_user 
 from models import (db, ProceduraAchizitie, TipProcedura, Lot, Utilizator, ReferatNecesitate, 
                     ProdusInLot, ProdusInReferat, Produs, Oferta)
 from datetime import date
@@ -87,3 +87,44 @@ def detalii_procedura(procedura_id):
     oferte_asociate = Oferta.query.options(joinedload(Oferta.furnizor)).filter_by(ID_Procedura=procedura_id).all()
 
     return render_template('detalii_procedura.html', procedura=procedura, detalii_loturi=detalii_loturi, oferte_asociate=oferte_asociate)
+
+@proceduri_bp.route('/<int:procedura_id>/genereaza_documentatie')
+@login_required
+def genereaza_documentatie(procedura_id):
+    """Generează un fișier .txt cu documentația completă a procedurii."""
+    procedura = ProceduraAchizitie.query.get_or_404(procedura_id)
+
+    # Construim conținutul text al documentului
+    doc_text = f"DOCUMENTAȚIE PROCEDURĂ DE ACHIZIȚIE\n"
+    doc_text += f"{'='*40}\n"
+    doc_text += f"Nume Procedură: {procedura.Nume_Procedura}\n"
+    doc_text += f"Tip: {procedura.Tip_Procedura.value}\n"
+    doc_text += f"Data Inițiere: {procedura.Data_Creare.strftime('%d-%m-%Y')}\n"
+    doc_text += f"Stare: {procedura.Stare}\n"
+    doc_text += f"{'='*40}\n\n"
+    doc_text += f"OBIECTUL ACHIZIȚIEI - LOTURI ȘI PRODUSE\n"
+    doc_text += f"{'-'*40}\n"
+
+    # Preluăm loturile și produsele pentru fiecare lot
+    loturi_incluse = procedura.loturi_incluse.order_by(Lot.Nume_Lot).all()
+
+    for lot in loturi_incluse:
+        doc_text += f"\nLOT #{lot.ID_Lot}: {lot.Nume_Lot.upper()}\n"
+        if lot.Descriere_Lot:
+            doc_text += f"Descriere Lot: {lot.Descriere_Lot}\n"
+        doc_text += f"(Provenit din Referat #{lot.ID_Referat})\n\n"
+
+        produse_in_lot = db.session.query(Produs, ProdusInReferat)\
+            .join(ProdusInReferat, Produs.ID_Produs == ProdusInReferat.ID_Produs_Generic)\
+            .join(ProdusInLot, ProdusInReferat.ID_Produs_Referat == ProdusInLot.ID_Produs_Referat)\
+            .filter(ProdusInLot.ID_Lot == lot.ID_Lot).order_by(Produs.Nume_Generic).all()
+
+        for i, (produs, pir) in enumerate(produse_in_lot):
+            doc_text += f"  {i+1}. {produs.Nume_Generic}\n"
+            doc_text += f"     - Cantitate solicitată: {pir.Cantitate_Solicitata} {produs.Unitate_Masura}\n"
+            doc_text += f"     - Specificații tehnice minime obligatorii:\n       {produs.Specificatii_Tehnice or 'N/A'}\n\n"
+
+    response = make_response(doc_text)
+    response.headers["Content-Disposition"] = f"attachment; filename=documentatie_procedura_{procedura_id}.txt"
+    response.headers["Content-type"] = "text/plain; charset=utf-8"
+    return response
