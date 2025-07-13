@@ -5,6 +5,7 @@
 
 <div class="card">
     <p><strong>Număr Contract:</strong> {{ contract.Numar_Contract }}</p>
+    <p><strong>Tip Contract:</strong> {{ contract.Tip_Contract.value }}</p>
     <p><strong>Data Semnare:</strong> {{ contract.Data_Semnare.strftime('%d-%m-%Y') }}</p>
     <p><strong>Furnizor:</strong> <a
             href="{{ url_for('furnizori.edit_furnizor', furnizor_id=contract.ID_Furnizor) }}">{{
@@ -66,8 +67,40 @@
     </tbody>
 </table>
 
+<h3>Comenzi Plasate pe Acest Contract</h3>
+<table>
+    <thead>
+        <tr>
+            <th>Număr Comandă</th>
+            <th>Data Comandă</th>
+            <th>Stare</th>
+            <th>Acțiuni</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for comanda in contract.comenzi_rel %}
+        <tr>
+            <td>{{ comanda.Numar_Comanda }}</td>
+            <td>{{ comanda.Data_Comanda.strftime('%d-%m-%Y') }}</td>
+            <td>{{ comanda.Stare_Comanda }}</td>
+            <td>
+                <a href="{{ url_for('comenzi.detalii_comanda', comanda_id=comanda.ID_Comanda_General) }}">Vezi
+                    Detalii</a>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="4">Nicio comandă nu a fost plasată pe acest contract.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
 <div class="actions" style="margin-top: 20px;">
-    <a href="#" class="button">Creează Comandă</a>
+    {% if contract.Tip_Contract.name == 'ACORD_CADRU' %}
+    <a href="{{ url_for('comenzi.adauga_comanda', contract_id=contract.ID_Contract) }}" class="button">Creează Comandă
+        Nouă</a>
+    {% endif %}
     <a href="{{ url_for('contracte.list_contracte') }}" class="button-secondary" style="margin-left: 10px;">Înapoi la
         Listă</a>
 </div>

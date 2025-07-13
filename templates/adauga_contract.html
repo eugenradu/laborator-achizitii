@@ -20,6 +20,13 @@
 
     <fieldset>
         <legend>Detalii Document Contract</legend>
+        <label for="tip_contract">Tipul Contractului (Obligatoriu):</label>
+        <select id="tip_contract" name="tip_contract" required>
+            {% for tip in tipuri_contract %}
+            <option value="{{ tip.name }}">{{ tip.value }}</option>
+            {% endfor %}
+        </select>
+
         <label for="numar_contract">Număr Contract (Obligatoriu):</label>
         <input type="text" id="numar_contract" name="numar_contract" required>
 

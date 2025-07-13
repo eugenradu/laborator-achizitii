@@ -1,37 +1,41 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h2>Lista Comenzilor</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>ID Comandă</th>
-                <th>Data Comandă</th>
-                <th>Număr Comandă</th>
-                <th>Contract Aferent</th>
-                <th>Distribuitor</th>
-                <th>Stare</th>
-                <th>Creat de</th>
-                <th>Acțiuni</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for comanda, contract, creator in comenzi %}
-            <tr>
-                <td>{{ comanda.ID_Comanda_General }}</td>
-                <td>{{ comanda.Data_Comanda }}</td>
-                <td>{{ comanda.Numar_Comanda or 'N/A' }}</td>
-                <td><a href="{{ url_for('detalii_contract', contract_id=contract.ID_Contract) }}">{{ contract.Numar_Contract }}</a></td>
-                <td>{{ contract.Nume_Distribuitor }}</td>
-                <td>{{ comanda.Stare_Comanda }}</td>
-                <td>{{ creator.Nume_Utilizator if creator else 'N/A' }}</td>
-                <td><a href="{{ url_for('detalii_comanda', comanda_id=comanda.ID_Comanda_General) }}">Detalii</a></td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="8">Nu există nicio comandă înregistrată.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<h2>Lista Comenzilor</h2>
+
+<div class="actions">
+    <!-- Butonul de adăugare este comentat intenționat, deoarece fluxul corect este generarea dintr-un contract. -->
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>Număr Comandă</th>
+            <th>Data Comandă</th>
+            <th>Stare</th>
+            <th>Contract Asociat</th>
+            <th>Furnizor</th>
+            <th>Acțiuni</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for comanda in comenzi %}
+        <tr>
+            <td>{{ comanda.Numar_Comanda }}</td>
+            <td>{{ comanda.Data_Comanda.strftime('%d-%m-%Y') }}</td>
+            <td>{{ comanda.Stare_Comanda }}</td>
+            <td><a href="{{ url_for('contracte.detalii_contract', contract_id=comanda.ID_Contract) }}">{{
+                    comanda.contract_comanda.Numar_Contract }}</a></td>
+            <td>{{ comanda.contract_comanda.furnizor.Nume_Furnizor if comanda.contract_comanda and
+                comanda.contract_comanda.furnizor else 'N/A' }}</td>
+            <td><a href="{{ url_for('comenzi.detalii_comanda', comanda_id=comanda.ID_Comanda_General) }}">Detalii</a>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="6">Nu există nicio comandă înregistrată.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 {% endblock %}

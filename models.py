@@ -205,6 +205,11 @@ class TipProcedura(enum.Enum):
     NEGOCIERE_COMPETITIVA = "Negociere competitiva"
     ALTELE = "Altele"
 
+# Enum pentru tipurile de contracte
+class TipContract(enum.Enum):
+    CONTRACT_FERM = "Contract de furnizare (livrare integrala)"
+    ACORD_CADRU = "Acord-cadru (comenzi subsecvente)"
+
 # Tabela de legătură pentru Contracte <-> Loturi
 # Un Contract poate acoperi mai multe Loturi.
 contracte_loturi_asociere = db.Table(
@@ -276,6 +281,7 @@ class ArticolOferta(db.Model):
 # 13. Model pentru Contracte
 class Contract(db.Model):
     __tablename__ = 'Contracte'
+    Tip_Contract = db.Column(db.Enum(TipContract), nullable=False, default=TipContract.ACORD_CADRU)
     ID_Contract = db.Column(db.Integer, primary_key=True)
     ID_Procedura = db.Column(db.Integer, db.ForeignKey('Proceduri_Achizitie.ID_Procedura'), nullable=False)
     ID_Furnizor = db.Column(db.Integer, db.ForeignKey('Furnizori.ID_Furnizor'), nullable=False)

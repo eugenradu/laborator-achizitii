@@ -17,6 +17,7 @@ from blueprints.oferte import oferte_bp
 from blueprints.proceduri import proceduri_bp
 from blueprints.furnizori import furnizori_bp
 from blueprints.contracte import contracte_bp
+from blueprints.comenzi import comenzi_bp
 from blueprints.api import api_bp
 
 print("--- app.py (re)loaded by Flask reloader ---")
@@ -40,6 +41,7 @@ app.register_blueprint(oferte_bp)
 app.register_blueprint(furnizori_bp)
 app.register_blueprint(proceduri_bp)
 app.register_blueprint(contracte_bp)
+app.register_blueprint(comenzi_bp)
 app.register_blueprint(api_bp)
 
 # --- User Loader pentru Flask-Login ---

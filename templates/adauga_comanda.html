@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Creează Comandă Nouă (Subsecventă)</h2>
+
+<div class="card">
+    <p><strong>Acord-Cadru:</strong> <a
+            href="{{ url_for('contracte.detalii_contract', contract_id=contract.ID_Contract) }}">{{
+            contract.Numar_Contract }}</a></p>
+    <p><strong>Furnizor:</strong> {{ contract.furnizor.Nume_Furnizor }}</p>
+</div>
+
+<form method="POST">
+    <fieldset>
+        <legend>Detalii Comandă</legend>
+        <label for="numar_comanda">Număr Comandă (Obligatoriu):</label>
+        <input type="text" id="numar_comanda" name="numar_comanda" required>
+
+        <label for="data_comanda">Data Comandă (Obligatoriu):</label>
+        <input type="date" id="data_comanda" name="data_comanda" value="{{ today }}" required>
+    </fieldset>
+
+    <fieldset>
+        <legend>Articole de Comandat</legend>
+        <p>Introduceți cantitățile dorite pentru fiecare articol. Puteți comanda orice cantitate până la "Cantitatea
+            Rămasă".</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Articol Contractat</th>
+                    <th>Cantitate Contractată</th>
+                    <th>Cantitate Deja Comandată</th>
+                    <th>Cantitate Rămasă</th>
+                    <th>Cantitate de Comandat Acum</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for articol_info in articole_disponibile %}
+                <tr>
+                    <td>
+                        <strong>{{ articol_info.articol_obj.varianta_comerciala_contractata.produs_generic.Nume_Generic
+                            }}</strong><br>
+                        <small>{{ articol_info.articol_obj.varianta_comerciala_contractata.producator.Nume_Producator }}
+                            - Cod: {{ articol_info.articol_obj.varianta_comerciala_contractata.Cod_Catalog }}</small>
+                    </td>
+                    <td>{{ articol_info.cantitate_contractata }}</td>
+                    <td>{{ articol_info.cantitate_comandata }}</td>
+                    <td style="font-weight: bold;">{{ articol_info.cantitate_ramasa }}</td>
+                    <td>
+                        <input type="number" name="cantitate_{{ articol_info.articol_obj.ID_Articol_Contractat }}"
+                            min="0" max="{{ articol_info.cantitate_ramasa }}" placeholder="0" style="width: 120px;">
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </fieldset>
+
+    <br>
+    <button type="submit">Plasează Comanda</button>
+    <a href="{{ url_for('contracte.detalii_contract', contract_id=contract.ID_Contract) }}" class="button-secondary"
+        style="margin-left: 10px;">Anulează</a>
+</form>
+
+<style>
+    .card {
+        background: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 1px 20px;
+        margin-bottom: 20px;
+    }
+</style>
+{% endblock %}

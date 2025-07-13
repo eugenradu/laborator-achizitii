@@ -3,8 +3,8 @@ from flask_login import login_required, current_user
 from datetime import date
 from sqlalchemy.orm import joinedload
 from models import (db, Contract, ArticolContractat, Oferta, Lot, ProceduraAchizitie, 
-                    ArticolOferta, ProdusInReferat, Produs, VariantaComercialaProdus,
-                    proceduri_loturi_asociere)
+                    ArticolOferta, ProdusInReferat, Produs, VariantaComercialaProdus, TipContract,
+                    proceduri_loturi_asociere, ComandaGeneral, DetaliiComandaProdus)
 
 contracte_bp = Blueprint('contracte', __name__, url_prefix='/contracte')
 
@@ -29,7 +29,8 @@ def detalii_contract(contract_id):
         joinedload(Contract.creator_contract),
         joinedload(Contract.loturi_contractate),
         joinedload(Contract.articole_contractate).joinedload(ArticolContractat.varianta_comerciala_contractata).joinedload(VariantaComercialaProdus.produs_generic),
-        joinedload(Contract.articole_contractate).joinedload(ArticolContractat.varianta_comerciala_contractata).joinedload(VariantaComercialaProdus.producator)
+        joinedload(Contract.articole_contractate).joinedload(ArticolContractat.varianta_comerciala_contractata).joinedload(VariantaComercialaProdus.producator),
+        joinedload(Contract.comenzi_rel)
     ).get_or_404(contract_id)
     
     return render_template('detalii_contract.html', contract=contract)
@@ -42,6 +43,7 @@ def adauga_contract():
     # --- Logica POST (Salvarea formularului) ---
     if request.method == 'POST':
         # 1. Preluare date formular
+        tip_contract_str = request.form.get('tip_contract')
         numar_contract = request.form.get('numar_contract')
         data_semnare_str = request.form.get('data_semnare')
         pret_total_contract = request.form.get('pret_total_contract', type=float)
@@ -53,7 +55,8 @@ def adauga_contract():
         articol_oferta_ids = request.form.getlist('id_articol_oferta')
         cantitati_contractate = request.form.getlist('cantitate_contractata')
 
-        if not all([numar_contract, data_semnare_str, pret_total_contract is not None, id_procedura, id_furnizor, lot_ids]):
+        if not all([tip_contract_str, numar_contract, data_semnare_str, pret_total_contract is not None, 
+                    id_procedura, id_furnizor, lot_ids]):
             flash('Eroare: Datele din formular sunt incomplete. Vă rugăm reîncercați.', 'danger')
             return redirect(url_for('proceduri.list_proceduri'))
 
@@ -61,6 +64,7 @@ def adauga_contract():
         new_contract = Contract(
             Numar_Contract=numar_contract,
             Data_Semnare=date.fromisoformat(data_semnare_str),
+            Tip_Contract=TipContract[tip_contract_str],
             Pret_Total_Contract=pret_total_contract,
             Moneda=moneda,
             ID_Procedura=id_procedura,
@@ -91,9 +95,31 @@ def adauga_contract():
                     new_contract.articole_contractate.append(new_articol_contractat)
         
         db.session.add(new_contract)
-        db.session.commit()
+        db.session.flush() # Facem flush pentru a obține ID-urile pentru contract și articolele sale
 
-        flash(f'Contractul #{new_contract.ID_Contract} a fost generat cu succes!', 'success')
+        # 5. Generare automată comandă pentru Contract Ferm
+        if new_contract.Tip_Contract == TipContract.CONTRACT_FERM:
+            new_comanda = ComandaGeneral(
+                ID_Contract=new_contract.ID_Contract,
+                Numar_Comanda=f"CMD-AUT-{new_contract.Numar_Contract}",
+                Stare_Comanda="Generata Automat",
+                ID_Utilizator_Creare=current_user.ID_Utilizator
+            )
+            
+            # Adăugăm articolele în comandă, copiind cantitățile din contract
+            for articol_contractat in new_contract.articole_contractate:
+                detaliu_comanda = DetaliiComandaProdus(
+                    ID_Articol_Contractat=articol_contractat.ID_Articol_Contractat,
+                    Cantitate_Comandata_Pachete=articol_contractat.Cantitate_Contractata_Pachete
+                )
+                new_comanda.detalii_produse_comanda_rel.append(detaliu_comanda)
+            
+            db.session.add(new_comanda)
+            flash(f'Contractul ferm #{new_contract.ID_Contract} și comanda asociată au fost generate cu succes!', 'success')
+        else:
+            flash(f'Acordul-cadru #{new_contract.ID_Contract} a fost generat cu succes!', 'success')
+
+        db.session.commit() # Commit final pentru contract și eventuala comandă
         return redirect(url_for('contracte.detalii_contract', contract_id=new_contract.ID_Contract))
 
     # --- Logica GET (Pregătirea formularului) ---
@@ -144,4 +170,5 @@ def adauga_contract():
                            lot_initial=lot_initial,
                            articole_de_contractat=articole_de_contractat,
                            loturi_suplimentare_eligibile=loturi_suplimentare_eligibile,
-                           today=date.today().isoformat())
+                           today=date.today().isoformat(),
+                           tipuri_contract=TipContract)

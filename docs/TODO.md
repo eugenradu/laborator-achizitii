@@ -6,20 +6,6 @@ Acest document inventariază sarcinile planificate pentru dezvoltarea aplicație
 
 ### Următorul Obiectiv Major
 
-- [ ] **Implementare Modul Contracte:**
-  - [x] Definirea modelelor de date `Contract` și `ArticolContractat` (cu relație M-M între Contract și Lot).
-  - [ ] Implementarea interfeței de adjudecare în pagina de detalii a procedurii.
-  - [ ] Crearea formularului de adăugare contract (`adauga_contract.html`).
-  - [ ] Implementarea logicii de pre-populare a formularului cu datele ofertei și lotului inițial.
-  - [ ] Adăugarea în formular a funcționalității de a selecta loturi suplimentare (de la același furnizor, din aceeași procedură).
-  - [ ] Implementarea logicii de salvare a contractului consolidat.
-  - [x] Implementarea paginii de listare a contractelor.
-  - [x] Implementarea paginii de detalii pentru contracte.
-
----
-
-### Funcționalități Noi Planificate
-
 - [ ] **Implementare Modul Gestiune Stocuri:**
   - [ ] Crearea blueprint-ului `stocuri.py`.
   - [ ] Implementarea logicii de recepție a mărfii (creare `LotStoc` din `LivrareComanda`).
@@ -52,4 +38,5 @@ Acest document inventariază sarcinile planificate pentru dezvoltarea aplicație
 - [x] **Funcționalitate de Clonare a Referatelor**
 - [x] **Implementare Modul Proceduri de Achiziție** (bază)
 - [x] **Adăugare Dinamică de Entități** (Furnizori, Producători din formulare)
-- [x] **Refactorizare `Furnizor`** (entitate dedicată)
+- [x] **Implementare Modul Contracte (Bază)**
+- [x] **Implementare Modul Comenzi (Bază)**
