@@ -1,9 +1,11 @@
 import os
 from flask import Flask
+import click
 from config import Config
 from models import db, Utilizator
 from flask_login import LoginManager
 from datetime import date
+from seed import seed_data
 
 # --- Import Blueprints ---
 from blueprints.auth import auth_bp
@@ -47,7 +49,8 @@ def load_user(user_id):
 
 # --- Comandă CLI pentru Inițializarea Bazei de Date ---
 @app.cli.command("init-db")
-def init_db_command():
+@click.option('--seed/--no-seed', default=False, help='Populează baza de date cu date demo.')
+def init_db_command(seed):
     """Creează tabelele bazei de date și inițializează un utilizator admin."""
     with app.app_context():
         db.create_all()
@@ -61,6 +64,10 @@ def init_db_command():
             print("Utilizator 'admin' implicit creat (Nume: admin, Parola: adminpass).")
         else:
             print("Utilizator 'admin' există deja.")
+        
+        if seed:
+            seed_data()
+
     print("Baza de date a fost inițializată cu succes.")
 
 # ==============================================================================
