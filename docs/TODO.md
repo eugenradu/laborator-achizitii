@@ -13,8 +13,17 @@ Acest document inventariază sarcinile planificate pentru dezvoltarea viitoare a
   - [ ] Crearea entității `Departament` și legarea eidif de `ReferatNecesitate` pentru trasabilitate bugetară.
   - [ ] Crearea entităților `UnitateMasura` și `Moneda` pentru a standardiza datele.
 - [x] Adăugare dinamică de furnizori din pagina de oferte (similar cu variantele comerciale).
-- [ ] Adăugarea unei funcționalități de căutare/filtrare în listele principale (oferte, referate, etc.).
-- [ ] Implementarea paginării în toate listele lungi pentru a îmbunătăți performanța.
+- [x] Adăugare dinamică de producători din pagina de oferte (flux secvențial).
+- [ ] Adăugarea unei funcționalități de căutare/filtrare în listele principale:
+  - [x] Căutare/Filtrare în lista de produse.
+  - [x] Căutare/Filtrare în lista de variante comerciale.
+  - [x] Căutare în lista de oferte.
+  - [ ] Filtrare avansată în lista de referate.
+- [ ] Implementarea paginării în toate listele lungi:
+  - [x] Paginare în lista de produse.
+  - [x] Paginare în lista de variante comerciale.
+  - [x] Paginare în lista de oferte.
+  - [ ] Paginare în lista de referate.
 - [ ] Îmbunătățirea validărilor în formulare (atât pe frontend, cât și pe backend).
 - [ ] Standardizarea mesajelor flash și a stilurilor CSS pentru butoane/alerte.
 - [ ] Verificarea și adăugarea de indecși în baza de date pentru a optimiza interogările frecvente.

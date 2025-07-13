@@ -2,6 +2,23 @@
 
 {% block content %}
 <h2>Lista Ofertelor</h2>
+
+<div class="card"
+    style="background: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+    <h3>Caută Oferte</h3>
+    <form method="GET" action="{{ url_for('oferte.list_oferte') }}"
+        style="display: flex; gap: 10px; align-items: center;">
+        <input type="text" name="search" placeholder="Caută după furnizor sau nr. înregistrare..."
+            value="{{ search_term or '' }}" style="flex-grow: 1; margin-bottom: 0;">
+        <button type="submit">Caută</button>
+        {% if search_term %}
+        <a href="{{ url_for('oferte.list_oferte') }}" class="button-secondary"
+            style="background-color: #6c757d; color: white; padding: 10px 15px; border-radius: 4px; text-decoration: none;">Șterge
+            Căutarea</a>
+        {% endif %}
+    </form>
+</div>
+
 <div class="actions">
     <a href="{{ url_for('oferte.adauga_oferta') }}" class="button">Adaugă Ofertă Nouă</a>
 </div>
@@ -51,6 +68,29 @@
         {% endfor %}
     </tbody>
 </table>
+
+<!-- Pagination Controls -->
+{% if pagination and pagination.pages > 1 %}
+<div class="pagination">
+    <a href="{{ url_for('oferte.list_oferte', page=pagination.prev_num, search=search_term) if pagination.has_prev else '#' }}"
+        class="page-link {{ 'disabled' if not pagination.has_prev }}">
+        &laquo; Anterioară
+    </a>
+    {% for p in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+    {% if p %}
+    <a href="{{ url_for('oferte.list_oferte', page=p, search=search_term) }}"
+        class="page-link {{ 'active' if p == pagination.page }}">{{ p }}</a>
+    {% else %}
+    <span class="ellipsis">…</span>
+    {% endif %}
+    {% endfor %}
+    <a href="{{ url_for('oferte.list_oferte', page=pagination.next_num, search=search_term) if pagination.has_next else '#' }}"
+        class="page-link {{ 'disabled' if not pagination.has_next }}">
+        Următoare &raquo;
+    </a>
+</div>
+{% endif %}
+
 <style>
     .action-link {
         margin-right: 10px;
@@ -70,6 +110,38 @@
         padding: 0;
         font-size: inherit;
         font-family: inherit;
+    }
+
+    .pagination {
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .pagination .page-link,
+    .pagination .ellipsis {
+        display: inline-block;
+        padding: 8px 16px;
+        text-decoration: none;
+        border: 1px solid #ddd;
+        color: #4CAF50;
+        margin: 0 2px;
+        border-radius: 4px;
+    }
+
+    .pagination .ellipsis {
+        border: none;
+    }
+
+    .pagination .page-link.active {
+        background-color: #4CAF50;
+        color: white;
+        border: 1px solid #4CAF50;
+    }
+
+    .pagination .page-link.disabled {
+        color: #ccc;
+        pointer-events: none;
+        cursor: default;
     }
 </style>
 {% endblock %}

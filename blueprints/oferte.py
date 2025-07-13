@@ -2,9 +2,9 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from datetime import date
 from sqlalchemy.orm import joinedload
-from models import (
-    db, Oferta, ArticolOferta, VariantaComercialaProdus, Produs, Producator, Licitatie, ReferatNecesitate, Furnizor
-)
+from sqlalchemy import or_
+from models import (db, Oferta, ArticolOferta, VariantaComercialaProdus, Produs,
+                    Producator, Licitatie, ReferatNecesitate, Furnizor)
 
 oferte_bp = Blueprint('oferte', __name__, url_prefix='/oferte')
 
@@ -13,8 +13,26 @@ oferte_bp = Blueprint('oferte', __name__, url_prefix='/oferte')
 @login_required
 def list_oferte():
     """Afișează o listă cu toate ofertele înregistrate."""
-    oferte_list = Oferta.query.options(joinedload(Oferta.furnizor)).order_by(Oferta.Data_Oferta.desc()).all()
-    return render_template('oferte.html', oferte=oferte_list)
+    search_term = request.args.get('search', '').strip()
+    page = request.args.get('page', 1, type=int)
+    PER_PAGE = 15
+
+    # Interogare de bază
+    query = Oferta.query.options(joinedload(Oferta.furnizor))
+
+    if search_term:
+        # Alătură tabela Furnizori pentru a putea căuta după nume
+        query = query.join(Furnizor)
+        search_filter = or_(
+            Furnizor.Nume_Furnizor.ilike(f'%{search_term}%'),
+            Oferta.Numar_Inregistrare.ilike(f'%{search_term}%')
+        )
+        query = query.filter(search_filter)
+
+    pagination = query.order_by(Oferta.Data_Oferta.desc()).paginate(page=page, per_page=PER_PAGE, error_out=False)
+    oferte_list = pagination.items
+
+    return render_template('oferte.html', oferte=oferte_list, pagination=pagination, search_term=search_term)
 
 # Ruta pentru a adăuga o nouă ofertă
 @oferte_bp.route('/adauga', methods=['GET', 'POST'])

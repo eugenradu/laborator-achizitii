@@ -59,10 +59,12 @@ Acest document descrie funcționarea și interacțiunile modulelor cheie ale apl
   - Adăugare/ștergere dinamică de `ArticolOferta` în formulare.
   - Asociere opțională cu un `Referat` sau o `Licitatie`.
   - Filtrare dinamică în doi pași pentru selecția produselor.
+  - Căutare după nume furnizor sau număr de înregistrare, cu paginare.
 - **Interacțiuni:**
   - **Consumă** date din `produse` (lista de `Produs` și `Producator`) și din `furnizori` (lista de `Furnizor`).
   - **Apelează** API-ul `get_variante_by_produs` pentru filtrarea în doi pași.
   - **Apelează** API-ul `api_adauga_varianta_comerciala` pentru a crea dinamic variante noi.
+  - **Apelează** API-ul `api_adauga_producator` pentru a crea dinamic producători noi.
   - **Apelează** API-ul `api_adauga_furnizor` pentru a crea dinamic furnizori noi.
 
 ---
@@ -81,11 +83,12 @@ Acest document descrie funcționarea și interacțiunile modulelor cheie ale apl
 ## 6. Modulul `api` (`blueprints/api.py`)
 
 - **Scop:** Centralizează toate endpoint-urile API care returnează date în format JSON.
-- **Entități Cheie:** Citește (`Produs`, `VariantaComercialaProdus`, `Producator`). Creează (`VariantaComercialaProdus`, `Furnizor`).
+- **Entități Cheie:** Citește (`Produs`, `VariantaComercialaProdus`, `Producator`). Creează (`VariantaComercialaProdus`, `Furnizor`, `Producator`).
 - **Funcționalități Principale (Endpoint-uri):**
   - `/produse_by_categorie/<id>`: Returnează produsele dintr-o categorie.
   - `/variante_by_produs/<id>`: Returnează variantele comerciale ale unui produs generic.
   - `/variante_comerciale/adauga`: Creează o nouă variantă comercială în baza de date.
 - `/furnizori/adauga`: Creează un nou furnizor în baza de date.
+- `/producatori/adauga`: Creează un nou producător în baza de date.
 - **Interacțiuni:**
   - Este **apelat** prin JavaScript (Fetch API) din template-urile modulelor `Referate` și `Oferte` pentru a oferi interactivitate formularelor.
