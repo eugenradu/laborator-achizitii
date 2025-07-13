@@ -112,6 +112,7 @@ Acest document descrie funcționarea și interacțiunile modulelor cheie ale apl
   - Listarea tuturor contractelor.
   - Vizualizarea detaliilor unui contract, inclusiv loturile și articolele contractate.
   - Generarea unui nou contract pe baza unei oferte câștigătoare pentru un lot dintr-o procedură.
+  - Căutare după număr, furnizor sau creator, cu paginare în lista de contracte.
   - Consolidarea mai multor loturi câștigate de același furnizor (în aceeași procedură) într-un singur contract.
 - **Interacțiuni:**
   - **Este inițiat** din modulul `proceduri`, prin interfața de adjudecare a ofertelor pe lot.

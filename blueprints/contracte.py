@@ -2,8 +2,9 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from datetime import date
 from sqlalchemy.orm import joinedload
+from sqlalchemy import or_
 from models import (db, Contract, ArticolContractat, Oferta, Lot, ProceduraAchizitie, 
-                    ArticolOferta, ProdusInReferat, Produs, VariantaComercialaProdus, TipContract,
+                    ArticolOferta, ProdusInReferat, Produs, VariantaComercialaProdus, TipContract, Utilizator, Furnizor,
                     proceduri_loturi_asociere, ComandaGeneral, DetaliiComandaProdus)
 
 contracte_bp = Blueprint('contracte', __name__, url_prefix='/contracte')
@@ -11,13 +12,27 @@ contracte_bp = Blueprint('contracte', __name__, url_prefix='/contracte')
 @contracte_bp.route('/')
 @login_required
 def list_contracte():
-    """Afișează lista tuturor contractelor."""
-    contracte_list = Contract.query.options(
-        joinedload(Contract.furnizor),
-        joinedload(Contract.procedura_contract)
-    ).order_by(Contract.Data_Semnare.desc()).all()
+    """Afișează lista tuturor contractelor, cu căutare și paginare."""
+    search_term = request.args.get('search', '').strip()
+    page = request.args.get('page', 1, type=int)
+    PER_PAGE = 15
+
+    # Interogare de bază
+    query = db.session.query(Contract, Utilizator, Furnizor)\
+        .join(Furnizor, Contract.ID_Furnizor == Furnizor.ID_Furnizor)\
+        .outerjoin(Utilizator, Contract.ID_Utilizator_Creare == Utilizator.ID_Utilizator)
+
+    if search_term:
+        search_filter = or_(
+            Contract.Numar_Contract.ilike(f'%{search_term}%'),
+            Furnizor.Nume_Furnizor.ilike(f'%{search_term}%'),
+            Utilizator.Nume_Utilizator.ilike(f'%{search_term}%')
+        )
+        query = query.filter(search_filter)
+
+    pagination = query.order_by(Contract.Data_Semnare.desc()).paginate(page=page, per_page=PER_PAGE, error_out=False)
     
-    return render_template('contracte.html', contracte=contracte_list)
+    return render_template('contracte.html', pagination=pagination, search_term=search_term)
 
 @contracte_bp.route('/<int:contract_id>/detalii')
 @login_required

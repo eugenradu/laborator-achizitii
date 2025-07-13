@@ -20,8 +20,7 @@ Acest document inventariază sarcinile planificate pentru dezvoltarea aplicație
   - [ ] Implementarea unei interfețe de editare a procedurii care permite crearea de "super-loturi".
   - [ ] Utilizatorul va putea aloca produse din loturile originale (din referate) în noile "super-loturi", având opțiunea de a exclude anumite produse.
 - [ ] **Îmbunătățiri Generale de Utilizabilitate și Performanță:**
-  - [x] Adăugarea unei funcționalități de căutare și paginare în lista de **proceduri**.
-  - [ ] Adăugarea unei funcționalități de căutare și paginare în lista de **contracte**.
+  - *Toate listele principale (Referate, Proceduri, Contracte) au acum funcționalități de căutare și paginare.*
 - [ ] **Refactorizare Entități:**
   - [ ] Crearea entității `Departament` și legarea ei de `ReferatNecesitate` pentru trasabilitate bugetară.
   - [ ] Crearea entităților `UnitateMasura` și `Moneda` pentru a standardiza datele.
@@ -40,6 +39,7 @@ Acest document inventariază sarcinile planificate pentru dezvoltarea aplicație
 - [x] **Tranziție Stare Referat (Ciornă -> În Aprobare)** cu validări
 - [x] **Flux de Aprobare/Respingere Referate** (cu motiv de respingere)
 - [x] **Căutare și Paginare în Lista de Referate**
+- [x] **Căutare și Paginare în Lista de Proceduri și Contracte**
 - [x] **Implementare Modul Proceduri de Achiziție** (bază)
 - [x] **Adăugare Dinamică de Entități** (Furnizori, Producători din formulare)
 - [x] **Implementare Modul Contracte (Bază)**

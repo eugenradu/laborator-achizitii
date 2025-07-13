@@ -3,42 +3,127 @@
 {% block content %}
 <h2>Lista Contractelor</h2>
 
-<div class="actions">
-    <!-- Butonul de adăugare este comentat intenționat, deoarece fluxul corect este generarea dintr-o procedură. -->
-    <!-- <a href="{{ url_for('contracte.adauga_contract') }}" class="button">Adaugă Contract Nou</a> -->
+<div class="card">
+    <h3>Filtrează și Caută Contracte</h3>
+    <form method="GET" action="{{ url_for('contracte.list_contracte') }}" class="search-form">
+        <input type="text" name="search" placeholder="Caută după nr. contract, furnizor, creator..."
+            value="{{ search_term or '' }}">
+        <button type="submit" class="button">Caută</button>
+        {% if search_term %}
+        <a href="{{ url_for('contracte.list_contracte') }}" class="button-secondary">Șterge Filtrele</a>
+        {% endif %}
+    </form>
 </div>
+
+<!-- Nu există un buton de "Adaugă" aici, deoarece contractele sunt generate din proceduri -->
 
 <table>
     <thead>
         <tr>
+            <th>ID</th>
             <th>Număr Contract</th>
-            <th>Data Semnare</th>
+            <th>Tip</th>
             <th>Furnizor</th>
-            <th>Procedură Asociată</th>
-            <th>Valoare Totală</th>
+            <th>Data Semnare</th>
+            <th>Valoare</th>
+            <th>Creat de</th>
             <th>Acțiuni</th>
         </tr>
     </thead>
     <tbody>
-        {% for contract in contracte %}
+        {% for contract, utilizator, furnizor in pagination.items %}
         <tr>
+            <td>#{{ contract.ID_Contract }}</td>
             <td>{{ contract.Numar_Contract }}</td>
-            <td>{{ contract.Data_Semnare.strftime('%d-%m-%Y') }}</td>
-            <td>{{ contract.furnizor.Nume_Furnizor if contract.furnizor else 'N/A' }}</td>
+            <td><span class="status-badge status-{{ contract.Tip_Contract.name.lower() }}">{{
+                    contract.Tip_Contract.value
+                    }}</span></td>
+            <td>{{ furnizor.Nume_Furnizor }}</td>
+            <td>{{ contract.Data_Semnare }}</td>
+            <td>{{ "%.2f"|format(contract.Pret_Total_Contract) }} {{ contract.Moneda }}</td>
+            <td>{{ utilizator.Nume_Utilizator if utilizator else 'N/A' }}</td>
             <td>
-                <a href="{{ url_for('proceduri.detalii_procedura', procedura_id=contract.ID_Procedura) }}">{{
-                    contract.procedura_contract.Nume_Procedura if contract.procedura_contract else 'N/A' }}</a>
-            </td>
-            <td><strong>{{ "%.2f"|format(contract.Pret_Total_Contract) }} {{ contract.Moneda }}</strong></td>
-            <td>
-                <a href="{{ url_for('contracte.detalii_contract', contract_id=contract.ID_Contract) }}">Detalii</a>
+                <a href="{{ url_for('contracte.detalii_contract', contract_id=contract.ID_Contract) }}">Vezi Detalii</a>
             </td>
         </tr>
         {% else %}
         <tr>
-            <td colspan="6">Nu există niciun contract înregistrat.</td>
+            <td colspan="8">
+                {% if search_term %}
+                Niciun contract nu corespunde termenului de căutare "{{ search_term }}".
+                {% else %}
+                Nu există niciun contract înregistrat.
+                {% endif %}
+            </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+
+<!-- Pagination Controls -->
+{% if pagination and pagination.pages > 1 %}
+<div class="pagination">
+    <a href="{{ url_for('contracte.list_contracte', page=pagination.prev_num, search=search_term) if pagination.has_prev else '#' }}"
+        class="{{ 'disabled' if not pagination.has_prev }}">
+        &laquo; Anterioară
+    </a>
+    {% for p in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+    {% if p %}
+    <a href="{{ url_for('contracte.list_contracte', page=p, search=search_term) }}"
+        class="{{ 'active' if p == pagination.page }}">{{ p }}</a>
+    {% else %}
+    <span class="ellipsis">…</span>
+    {% endif %}
+    {% endfor %}
+    <a href="{{ url_for('contracte.list_contracte', page=pagination.next_num, search=search_term) if pagination.has_next else '#' }}"
+        class="{{ 'disabled' if not pagination.has_next }}">
+        Următoare &raquo;
+    </a>
+</div>
+{% endif %}
+
+<style>
+    .card {
+        background: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .search-form {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .search-form input[type="text"] {
+        flex-grow: 1;
+        margin-bottom: 0;
+    }
+
+    .button-secondary {
+        background-color: #6c757d;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 4px;
+        text-decoration: none;
+    }
+
+    .status-badge {
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-size: 0.8em;
+        font-weight: bold;
+        color: white;
+    }
+
+    .status-contract_ferm {
+        background-color: #17a2b8;
+    }
+
+    .status-acord_cadru {
+        background-color: #6610f2;
+    }
+</style>
 {% endblock %}
