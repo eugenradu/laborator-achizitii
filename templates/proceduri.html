@@ -2,39 +2,132 @@
 
 {% block content %}
 <h2>Lista Procedurilor de Achiziție</h2>
+
+<div class="card">
+    <h3>Filtrează și Caută Proceduri</h3>
+    <form method="GET" action="{{ url_for('proceduri.list_proceduri') }}" class="search-form">
+        <input type="text" name="search" placeholder="Caută după nume, stare, creator..."
+            value="{{ search_term or '' }}">
+        <button type="submit" class="button">Caută</button>
+        {% if search_term %}
+        <a href="{{ url_for('proceduri.list_proceduri') }}" class="button-secondary">Șterge Filtrele</a>
+        {% endif %}
+    </form>
+</div>
+
 <div class="actions">
-    {# Acest link va funcționa după ce creăm ruta de adăugare #}
     <a href="{{ url_for('proceduri.adauga_procedura') }}" class="button">Inițiază Procedură Nouă</a>
 </div>
+
 <table>
     <thead>
         <tr>
+            <th>ID</th>
             <th>Nume Procedură</th>
             <th>Tip</th>
+            <th>Data Inițiere</th>
             <th>Stare</th>
-            <th>Data Creare</th>
             <th>Creat de</th>
             <th>Acțiuni</th>
         </tr>
     </thead>
     <tbody>
-        {% for procedura, creator in proceduri %}
+        {% for procedura, utilizator in pagination.items %}
         <tr>
+            <td>#{{ procedura.ID_Procedura }}</td>
             <td>{{ procedura.Nume_Procedura }}</td>
             <td>{{ procedura.Tip_Procedura.value }}</td>
-            <td>{{ procedura.Stare }}</td>
-            <td>{{ procedura.Data_Creare.strftime('%d-%m-%Y') }}</td>
-            <td>{{ creator.Nume_Utilizator if creator else 'N/A' }}</td>
+            <td>{{ procedura.Data_Creare }}</td>
+            <td><span class="status-badge status-{{ procedura.Stare | lower | replace(' ', '_') }}">{{ procedura.Stare
+                    }}</span></td>
+            <td>{{ utilizator.Nume_Utilizator if utilizator else 'N/A' }}</td>
             <td>
-                {# Acest link va funcționa după ce creăm ruta de detalii #}
-                <a href="{{ url_for('proceduri.detalii_procedura', procedura_id=procedura.ID_Procedura) }}">Detalii</a>
+                <a href="{{ url_for('proceduri.detalii_procedura', procedura_id=procedura.ID_Procedura) }}">Vezi
+                    Detalii</a>
             </td>
         </tr>
         {% else %}
         <tr>
-            <td colspan="6">Nu există nicio procedură de achiziție înregistrată.</td>
+            <td colspan="7">
+                {% if search_term %}
+                Nicio procedură nu corespunde termenului de căutare "{{ search_term }}".
+                {% else %}
+                Nu există nicio procedură de achiziție înregistrată.
+                {% endif %}
+            </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+
+<!-- Pagination Controls -->
+{% if pagination and pagination.pages > 1 %}
+<div class="pagination">
+    <a href="{{ url_for('proceduri.list_proceduri', page=pagination.prev_num, search=search_term) if pagination.has_prev else '#' }}"
+        class="{{ 'disabled' if not pagination.has_prev }}">
+        &laquo; Anterioară
+    </a>
+    {% for p in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+    {% if p %}
+    <a href="{{ url_for('proceduri.list_proceduri', page=p, search=search_term) }}"
+        class="{{ 'active' if p == pagination.page }}">{{ p }}</a>
+    {% else %}
+    <span class="ellipsis">…</span>
+    {% endif %}
+    {% endfor %}
+    <a href="{{ url_for('proceduri.list_proceduri', page=pagination.next_num, search=search_term) if pagination.has_next else '#' }}"
+        class="{{ 'disabled' if not pagination.has_next }}">
+        Următoare &raquo;
+    </a>
+</div>
+{% endif %}
+
+<style>
+    .card {
+        background: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .search-form {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .search-form input[type="text"] {
+        flex-grow: 1;
+        margin-bottom: 0;
+    }
+
+    .button-secondary {
+        background-color: #6c757d;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 4px;
+        text-decoration: none;
+    }
+
+    .status-badge {
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-size: 0.8em;
+        font-weight: bold;
+        color: white;
+    }
+
+    .status-in_desfasurare {
+        background-color: #007bff;
+    }
+
+    .status-finalizata {
+        background-color: #28a745;
+    }
+
+    .status-anulata {
+        background-color: #dc3545;
+    }
+</style>
 {% endblock %}

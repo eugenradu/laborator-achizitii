@@ -4,6 +4,7 @@ from models import (db, ProceduraAchizitie, TipProcedura, Lot, Utilizator, Refer
                     ProdusInLot, ProdusInReferat, Produs, Oferta, ArticolOferta)
 from datetime import date
 from sqlalchemy.orm import joinedload
+from sqlalchemy import or_
 from collections import defaultdict
 
 proceduri_bp = Blueprint('proceduri', __name__, url_prefix='/proceduri')
@@ -12,12 +13,26 @@ proceduri_bp = Blueprint('proceduri', __name__, url_prefix='/proceduri')
 @login_required
 def list_proceduri():
     """Afișează lista tuturor procedurilor de achiziție."""
-    proceduri_list = db.session.query(ProceduraAchizitie, Utilizator)\
-        .outerjoin(Utilizator, ProceduraAchizitie.ID_Utilizator_Creare == Utilizator.ID_Utilizator)\
-        .order_by(ProceduraAchizitie.Data_Creare.desc())\
-        .all()
-    # Vom crea template-ul 'proceduri.html' în pasul următor
-    return render_template('proceduri.html', proceduri=proceduri_list)
+    search_term = request.args.get('search', '').strip()
+    page = request.args.get('page', 1, type=int)
+    PER_PAGE = 15
+
+    # Interogare de bază
+    query = db.session.query(ProceduraAchizitie, Utilizator)\
+        .outerjoin(Utilizator, ProceduraAchizitie.ID_Utilizator_Creare == Utilizator.ID_Utilizator)
+
+    if search_term:
+        search_filter = or_(
+            ProceduraAchizitie.Nume_Procedura.ilike(f'%{search_term}%'),
+            ProceduraAchizitie.Stare.ilike(f'%{search_term}%'),
+            Utilizator.Nume_Utilizator.ilike(f'%{search_term}%')
+        )
+        query = query.filter(search_filter)
+
+    pagination = query.order_by(ProceduraAchizitie.Data_Creare.desc()).paginate(page=page, per_page=PER_PAGE, error_out=False)
+    
+    return render_template('proceduri.html', pagination=pagination, search_term=search_term)
+
 
 @proceduri_bp.route('/adauga', methods=['GET', 'POST'])
 @login_required

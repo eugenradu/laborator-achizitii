@@ -20,7 +20,7 @@ Acest document inventariază sarcinile planificate pentru dezvoltarea aplicație
   - [ ] Implementarea unei interfețe de editare a procedurii care permite crearea de "super-loturi".
   - [ ] Utilizatorul va putea aloca produse din loturile originale (din referate) în noile "super-loturi", având opțiunea de a exclude anumite produse.
 - [ ] **Îmbunătățiri Generale de Utilizabilitate și Performanță:**
-  - [ ] Adăugarea unei funcționalități de căutare și paginare în lista de **proceduri**.
+  - [x] Adăugarea unei funcționalități de căutare și paginare în lista de **proceduri**.
   - [ ] Adăugarea unei funcționalități de căutare și paginare în lista de **contracte**.
 - [ ] **Refactorizare Entități:**
   - [ ] Crearea entității `Departament` și legarea ei de `ReferatNecesitate` pentru trasabilitate bugetară.
