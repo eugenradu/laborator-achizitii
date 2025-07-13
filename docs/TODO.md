@@ -37,3 +37,12 @@ Acest document inventariază sarcinile planificate pentru dezvoltarea viitoare a
 - [ ] Îmbunătățirea validărilor în formulare (atât pe frontend, cât și pe backend).
 - [ ] Standardizarea mesajelor flash și a stilurilor CSS pentru butoane/alerte.
 - [ ] Verificarea și adăugarea de indecși în baza de date pentru a optimiza interogările frecvente.
+
+---
+
+### Îmbunătățiri Funcționalități Existente
+
+- [x] **Îmbunătățire Import Produse din JSON:**
+  - [x] Modificarea logicii de import pentru a detecta categoriile noi din fișierul JSON.
+  - [x] Crearea unei pagini intermediare de confirmare unde utilizatorul poate aproba crearea noilor categorii.
+  - [x] Implementarea logicii de creare a categoriilor și finalizarea importului după confirmare.

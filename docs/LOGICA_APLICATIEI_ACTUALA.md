@@ -23,7 +23,7 @@ Acest document descrie funcționarea și interacțiunile modulelor cheie ale apl
 - **Entități Cheie:** `Produs`, `Categorie`, `Producator`, `VariantaComercialaProdus`.
 - **Funcționalități Principale:**
   - CRUD complet pentru toate entitățile menționate.
-  - Import de produse generice dintr-un fișier JSON.
+  - Import de produse generice dintr-un fișier JSON, cu un flux interactiv pentru crearea de categorii noi (solicită confirmarea utilizatorului).
 - **Interacțiuni:**
   - Este **furnizorul principal de date** pentru modulele `Referate` și `Oferte`.
   - `Referate` consumă lista de `Produs` (produse generice).

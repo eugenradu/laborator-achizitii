@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from flask_login import login_required
 from sqlalchemy import or_
 import json
@@ -97,6 +97,50 @@ def sterge_produs(produs_id):
         flash(f'A apărut o eroare la ștergerea produsului: {str(e)}', 'danger')
     return redirect(url_for('produse.produse'))
 
+def _proceseaza_import_produse(data):
+    """Funcție ajutătoare pentru a procesa importul efectiv al produselor dintr-o listă de dicționare."""
+    added_count = 0
+    updated_count = 0
+
+    # Creăm un map pentru a evita interogări repetate în buclă
+    categorii_map = {cat.Nume_Categorie: cat.ID_Categorie for cat in Categorie.query.all()}
+    
+    # Asigură existența categoriei "Necategorizat"
+    default_category_name = "Necategorizat"
+    if default_category_name not in categorii_map:
+        new_default_category = Categorie(Nume_Categorie=default_category_name)
+        db.session.add(new_default_category)
+        db.session.flush() # Obținem ID-ul
+        categorii_map[default_category_name] = new_default_category.ID_Categorie
+    
+    default_category_id = categorii_map[default_category_name]
+
+    for item in data:
+        nume_generic = item.get('Nume_Generic')
+        specificatii = item.get('Specificatii_Tehnice')
+        unitate_masura = item.get('Unitate_Masura')
+
+        if not all([nume_generic, specificatii, unitate_masura]):
+            flash(f'Intrarea "{nume_generic or "N/A"}" a fost omisă deoarece îi lipsesc câmpuri obligatorii.', 'warning')
+            continue
+
+        categorie_nume = item.get('Categorie', '').strip()
+        categorie_id_to_assign = categorii_map.get(categorie_nume, default_category_id)
+
+        produs_existent = Produs.query.filter_by(Nume_Generic=nume_generic).first()
+        if produs_existent:
+            produs_existent.Specificatii_Tehnice = specificatii
+            produs_existent.Unitate_Masura = unitate_masura
+            produs_existent.ID_Categorie = categorie_id_to_assign
+            updated_count += 1
+        else:
+            new_produs = Produs(Nume_Generic=nume_generic, Specificatii_Tehnice=specificatii, Unitate_Masura=unitate_masura, ID_Categorie=categorie_id_to_assign)
+            db.session.add(new_produs)
+            added_count += 1
+
+    db.session.commit()
+    return added_count, updated_count
+
 
 @produse_bp.route('/import-json', methods=['POST'])
 @login_required
@@ -119,61 +163,23 @@ def import_produse_json():
             if not isinstance(data, list):
                 flash('Fișierul JSON trebuie să conțină o listă de obiecte.', 'danger')
                 return redirect(url_for('produse.produse'))
+            
+            # --- NOUA LOGICĂ: Detectare categorii noi ---
+            categorii_din_json = {item.get('Categorie', '').strip() for item in data if item.get('Categorie', '').strip()}
+            
+            if categorii_din_json:
+                categorii_existente_db = Categorie.query.with_entities(Categorie.Nume_Categorie).all()
+                categorii_existente = {cat[0] for cat in categorii_existente_db}
+                categorii_noi_de_creat = list(categorii_din_json - categorii_existente)
 
-            added_count = 0
-            updated_count = 0
+                if categorii_noi_de_creat:
+                    session['import_data'] = data
+                    session['categorii_noi'] = categorii_noi_de_creat
+                    flash('Am detectat categorii noi. Vă rugăm confirmați crearea lor pentru a continua importul.', 'info')
+                    return redirect(url_for('produse.confirm_import'))
 
-            # Pas 1: Asigură existența categoriei "Necategorizat"
-            default_category_name = "Necategorizat"
-            default_category = Categorie.query.filter_by(Nume_Categorie=default_category_name).first()
-            if not default_category:
-                default_category = Categorie(Nume_Categorie=default_category_name)
-                db.session.add(default_category)
-                db.session.commit() # Commit separat pentru a asigura existența și ID-ul
-                # Re-interogăm pentru a fi siguri că îl avem în sesiune corect
-                default_category = Categorie.query.filter_by(Nume_Categorie=default_category_name).first()
-
-            for item in data:
-                nume_generic = item.get('Nume_Generic')
-                specificatii = item.get('Specificatii_Tehnice')
-                unitate_masura = item.get('Unitate_Masura')
-
-                # Câmpurile de bază rămân obligatorii
-                if not all([nume_generic, specificatii, unitate_masura]):
-                    flash(f'Intrarea "{nume_generic or "N/A"}" a fost omisă deoarece îi lipsesc câmpuri obligatorii (Nume, Specificatii, Unitate Masura).', 'warning')
-                    continue
-
-                categorie_nume = item.get('Categorie')
-                categorie_id_to_assign = None
-
-                if categorie_nume:
-                    # Categoria este specificată, o căutăm
-                    categorie = Categorie.query.filter_by(Nume_Categorie=categorie_nume).first()
-                    if not categorie:
-                        flash(f'Categoria "{categorie_nume}" specificată pentru produsul "{nume_generic}" nu a fost găsită. Produsul a fost omis.', 'warning')
-                        continue
-                    categorie_id_to_assign = categorie.ID_Categorie
-                else:
-                    # Categoria lipsește, folosim cea implicită
-                    categorie_id_to_assign = default_category.ID_Categorie
-
-                produs_existent = Produs.query.filter_by(Nume_Generic=nume_generic).first()
-                if produs_existent:
-                    produs_existent.Specificatii_Tehnice = specificatii
-                    produs_existent.Unitate_Masura = unitate_masura
-                    produs_existent.ID_Categorie = categorie_id_to_assign
-                    updated_count += 1
-                else:
-                    new_produs = Produs(
-                        Nume_Generic=nume_generic, 
-                        Specificatii_Tehnice=specificatii, 
-                        Unitate_Masura=unitate_masura, 
-                        ID_Categorie=categorie_id_to_assign
-                    )
-                    db.session.add(new_produs)
-                    added_count += 1
-
-            db.session.commit()
+            # Dacă nu sunt categorii noi, procesăm direct folosind funcția ajutătoare
+            added_count, updated_count = _proceseaza_import_produse(data)
             flash(f'Import finalizat cu succes! Produse noi: {added_count}, Produse actualizate: {updated_count}.', 'success')
         except Exception as e:
             db.session.rollback()
@@ -182,6 +188,43 @@ def import_produse_json():
         flash('Format de fișier invalid. Vă rugăm încărcați un fișier .json.', 'danger')
     
     return redirect(url_for('produse.produse'))
+
+@produse_bp.route('/import-json/confirm', methods=['GET', 'POST'])
+@login_required
+def confirm_import():
+    if 'import_data' not in session or 'categorii_noi' not in session:
+        flash('Nu există date de import în sesiune. Vă rugăm reîncercați.', 'warning')
+        return redirect(url_for('produse.produse'))
+
+    if request.method == 'POST':
+        if 'cancel' in request.form:
+            session.pop('import_data', None)
+            session.pop('categorii_noi', None)
+            flash('Importul a fost anulat.', 'info')
+            return redirect(url_for('produse.produse'))
+
+        # --- Creare categorii noi ---
+        categorii_noi = session.get('categorii_noi', [])
+        for nume_cat in categorii_noi:
+            new_cat = Categorie(Nume_Categorie=nume_cat)
+            db.session.add(new_cat)
+        db.session.commit()
+        flash(f'Au fost create {len(categorii_noi)} categorii noi.', 'success')
+
+        # --- Procesare import ---
+        data = session.get('import_data')
+        added_count, updated_count = _proceseaza_import_produse(data)
+        flash(f'Import finalizat cu succes! Produse noi: {added_count}, Produse actualizate: {updated_count}.', 'success')
+        
+        # --- Curățare sesiune ---
+        session.pop('import_data', None)
+        session.pop('categorii_noi', None)
+
+        return redirect(url_for('produse.produse'))
+
+    # --- GET: Afișare pagină de confirmare ---
+    categorii_noi = session.get('categorii_noi')
+    return render_template('confirm_import.html', categorii_noi=categorii_noi)
 
 # --- Secțiunea Categorii de Produse ---
 @produse_bp.route('/categorii', methods=['GET', 'POST'])
