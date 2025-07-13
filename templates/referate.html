@@ -2,38 +2,135 @@
 
 {% block content %}
 <h2>Lista Referatelor de Necesitate</h2>
+
+<div class="card">
+    <h3>Filtrează și Caută Referate</h3>
+    <form method="GET" action="{{ url_for('referate.referate') }}" class="search-form">
+        <input type="text" name="search" placeholder="Caută după nr. referat, creator, observații..."
+            value="{{ search_term or '' }}">
+        <button type="submit" class="button">Caută</button>
+        {% if search_term %}
+        <a href="{{ url_for('referate.referate') }}" class="button-secondary">Șterge Filtrele</a>
+        {% endif %}
+    </form>
+</div>
+
 <div class="actions">
     <a href="{{ url_for('referate.adauga_referat') }}" class="button">Adaugă Referat Nou</a>
 </div>
+
 <table>
     <thead>
         <tr>
             <th>ID</th>
             <th>Număr Referat</th>
-            <th>Stare</th>
             <th>Data Creare</th>
+            <th>Stare</th>
             <th>Creat de</th>
             <th>Acțiuni</th>
         </tr>
     </thead>
     <tbody>
-        {# Dezasamblăm tuplul (obiect_referat, obiect_creator) primit de la view #}
-        {% for referat, creator in referate %}
+        {% for referat, utilizator in pagination.items %}
         <tr>
-            <td>{{ referat.ID_Referat }}</td>
+            <td>#{{ referat.ID_Referat }}</td>
             <td>{{ referat.Numar_Referat or 'N/A' }}</td>
-            <td>{{ referat.Stare }}</td>
             <td>{{ referat.Data_Creare }}</td>
-            <td>{{ creator.Nume_Utilizator if creator else 'N/A' }}</td>
+            <td><span class="status-badge status-{{ referat.Stare.name.lower() }}">{{ referat.Stare.value }}</span></td>
+            <td>{{ utilizator.Nume_Utilizator if utilizator else 'N/A' }}</td>
             <td>
-                <a href="{{ url_for('referate.detalii_referat', referat_id=referat.ID_Referat) }}">Detalii</a>
+                <a href="{{ url_for('referate.detalii_referat', referat_id=referat.ID_Referat) }}">Vezi Detalii</a>
             </td>
         </tr>
         {% else %}
         <tr>
-            <td colspan="6">Nu există niciun referat de necesitate înregistrat.</td>
+            <td colspan="6">
+                {% if search_term %}
+                Niciun referat nu corespunde termenului de căutare "{{ search_term }}".
+                {% else %}
+                Nu există niciun referat de necesitate înregistrat.
+                {% endif %}
+            </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+
+<!-- Pagination Controls -->
+{% if pagination and pagination.pages > 1 %}
+<div class="pagination">
+    <!-- Previous Page Link -->
+    <a href="{{ url_for('referate.referate', page=pagination.prev_num, search=search_term) if pagination.has_prev else '#' }}"
+        class="{{ 'disabled' if not pagination.has_prev }}">
+        &laquo; Anterioară
+    </a>
+
+    <!-- Page Numbers -->
+    {% for p in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+    {% if p %}
+    <a href="{{ url_for('referate.referate', page=p, search=search_term) }}"
+        class="{{ 'active' if p == pagination.page }}">{{ p }}</a>
+    {% else %}
+    <span class="ellipsis">…</span>
+    {% endif %}
+    {% endfor %}
+
+    <!-- Next Page Link -->
+    <a href="{{ url_for('referate.referate', page=pagination.next_num, search=search_term) if pagination.has_next else '#' }}"
+        class="{{ 'disabled' if not pagination.has_next }}">
+        Următoare &raquo;
+    </a>
+</div>
+{% endif %}
+
+<style>
+    .card {
+        background: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .search-form {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .search-form input[type="text"] {
+        flex-grow: 1;
+        margin-bottom: 0;
+    }
+
+    .button-secondary {
+        background-color: #6c757d;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 4px;
+        text-decoration: none;
+    }
+
+    .status-badge {
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-size: 0.8em;
+        font-weight: bold;
+        color: white;
+        text-transform: capitalize;
+    }
+
+    .status-ciorna {
+        background-color: #6c757d;
+    }
+
+    .status-in_aprobare {
+        background-color: #ffc107;
+        color: black;
+    }
+
+    .status-aprobat {
+        background-color: #28a745;
+    }
+</style>
 {% endblock %}

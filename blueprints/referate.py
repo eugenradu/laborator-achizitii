@@ -5,6 +5,7 @@ from models import (
     db, Utilizator, Categorie, Producator, Produs, VariantaComercialaProdus, ReferatNecesitate,
     Lot, ProdusInReferat, ProdusInLot, Oferta, StareReferat
 )
+from sqlalchemy import or_
 
 referate_bp = Blueprint('referate', __name__)
 
@@ -12,12 +13,25 @@ referate_bp = Blueprint('referate', __name__)
 @referate_bp.route('/referate')
 @login_required
 def referate():
-    # Pentru a afișa și numele creatorului
-    referate_list = db.session.query(ReferatNecesitate, Utilizator)\
-                            .outerjoin(Utilizator, ReferatNecesitate.ID_Utilizator_Creare == Utilizator.ID_Utilizator)\
-                            .order_by(ReferatNecesitate.Data_Creare.desc())\
-                            .all()
-    return render_template('referate.html', referate=referate_list)
+    search_term = request.args.get('search', '').strip()
+    page = request.args.get('page', 1, type=int)
+    PER_PAGE = 15
+
+    # Interogare de bază
+    query = db.session.query(ReferatNecesitate, Utilizator)\
+                      .outerjoin(Utilizator, ReferatNecesitate.ID_Utilizator_Creare == Utilizator.ID_Utilizator)
+
+    if search_term:
+        search_filter = or_(
+            ReferatNecesitate.Numar_Referat.ilike(f'%{search_term}%'),
+            ReferatNecesitate.Observatii.ilike(f'%{search_term}%'),
+            Utilizator.Nume_Utilizator.ilike(f'%{search_term}%')
+        )
+        query = query.filter(search_filter)
+
+    pagination = query.order_by(ReferatNecesitate.Data_Creare.desc()).paginate(page=page, per_page=PER_PAGE, error_out=False)
+    
+    return render_template('referate.html', pagination=pagination, search_term=search_term)
 
 @referate_bp.route('/referate/adauga', methods=('GET', 'POST'))
 @login_required
