@@ -148,6 +148,121 @@ def aloca_produs_lot(referat_id, lot_id):
 
     return redirect(url_for('referate.detalii_referat', referat_id=referat_id))
 
+@referate_bp.route('/referate/<int:referat_id>/sterge_produs/<int:produs_referat_id>', methods=['POST'])
+@login_required
+def sterge_produs_referat(referat_id, produs_referat_id):
+    referat = ReferatNecesitate.query.get_or_404(referat_id)
+    if referat.Stare != 'Ciorna':
+        flash('Produsele pot fi șterse doar dacă referatul este în starea "Ciornă".', 'danger')
+        return redirect(url_for('referate.detalii_referat', referat_id=referat_id))
+
+    produs_in_referat = ProdusInReferat.query.get_or_404(produs_referat_id)
+    
+    # Asigurăm că produsul aparține referatului corect
+    if produs_in_referat.ID_Referat != referat.ID_Referat:
+        flash('Eroare: Produsul nu aparține acestui referat.', 'danger')
+        return redirect(url_for('referate.detalii_referat', referat_id=referat_id))
+
+    try:
+        db.session.delete(produs_in_referat)
+        db.session.commit()
+        flash('Produsul a fost șters din referat cu succes.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'A apărut o eroare la ștergerea produsului: {str(e)}', 'danger')
+        
+    return redirect(url_for('referate.detalii_referat', referat_id=referat_id))
+
+
+@referate_bp.route('/referate/<int:referat_id>/sterge_lot/<int:lot_id>', methods=['POST'])
+@login_required
+def sterge_lot_referat(referat_id, lot_id):
+    referat = ReferatNecesitate.query.get_or_404(referat_id)
+    if referat.Stare != 'Ciorna':
+        flash('Loturile pot fi șterse doar dacă referatul este în starea "Ciornă".', 'danger')
+        return redirect(url_for('referate.detalii_referat', referat_id=referat_id))
+
+    lot = Lot.query.get_or_404(lot_id)
+
+    # Asigurăm că lotul aparține referatului corect
+    if lot.ID_Referat != referat.ID_Referat:
+        flash('Eroare: Lotul nu aparține acestui referat.', 'danger')
+        return redirect(url_for('referate.detalii_referat', referat_id=referat_id))
+
+    # Validare critică: nu ștergem loturi deja incluse în proceduri
+    if lot.proceduri_asociate.count() > 0:
+        flash(f'Lotul "{lot.Nume_Lot}" nu poate fi șters deoarece este deja inclus într-o procedură de achiziție.', 'danger')
+        return redirect(url_for('referate.detalii_referat', referat_id=referat_id))
+
+    try:
+        db.session.delete(lot)
+        db.session.commit()
+        flash(f'Lotul "{lot.Nume_Lot}" și produsele alocate lui au fost șterse cu succes.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'A apărut o eroare la ștergerea lotului: {str(e)}', 'danger')
+
+    return redirect(url_for('referate.detalii_referat', referat_id=referat_id))
+
+
+@referate_bp.route('/referate/<int:referat_id>/scoate_produs_din_lot/<int:produs_in_lot_id>', methods=['POST'])
+@login_required
+def scoate_produs_din_lot(referat_id, produs_in_lot_id):
+    referat = ReferatNecesitate.query.get_or_404(referat_id)
+    if referat.Stare != 'Ciorna':
+        flash('Produsele pot fi scoase din loturi doar dacă referatul este în starea "Ciornă".', 'danger')
+        return redirect(url_for('referate.detalii_referat', referat_id=referat_id))
+
+    produs_in_lot = ProdusInLot.query.get_or_404(produs_in_lot_id)
+
+    # Verificare de consistență
+    if produs_in_lot.lot_parinte.ID_Referat != referat.ID_Referat:
+        flash('Eroare de consistență: Încercare de a modifica un lot dintr-un alt referat.', 'danger')
+        return redirect(url_for('referate.detalii_referat', referat_id=referat_id))
+
+    try:
+        db.session.delete(produs_in_lot)
+        db.session.commit()
+        flash('Produsul a fost scos din lot cu succes.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'A apărut o eroare la scoaterea produsului din lot: {str(e)}', 'danger')
+
+    return redirect(url_for('referate.detalii_referat', referat_id=referat_id))
+
+@referate_bp.route('/referate/<int:referat_id>/trimite_spre_aprobare', methods=['POST'])
+@login_required
+def trimite_spre_aprobare(referat_id):
+    referat = ReferatNecesitate.query.get_or_404(referat_id)
+
+    # 1. Verifică starea curentă
+    if referat.Stare != 'Ciorna':
+        flash('Acest referat nu mai este în starea "Ciornă" și nu poate fi trimis spre aprobare.', 'warning')
+        return redirect(url_for('referate.detalii_referat', referat_id=referat_id))
+
+    # 2. Validare 1: Trebuie să conțină cel puțin un produs.
+    if not referat.produse_in_referate:
+        flash('Referatul nu poate fi trimis. Trebuie să conțină cel puțin un produs.', 'danger')
+        return redirect(url_for('referate.detalii_referat', referat_id=referat_id))
+
+    # 3. Validare 2: Toate produsele trebuie să fie alocate în loturi.
+    total_produse_in_referat_ids = {pir.ID_Produs_Referat for pir in referat.produse_in_referate}
+    
+    produse_alocate_ids_query = db.session.query(ProdusInLot.ID_Produs_Referat)\
+                                          .join(Lot, ProdusInLot.ID_Lot == Lot.ID_Lot)\
+                                          .filter(Lot.ID_Referat == referat_id).all()
+    set_produse_alocate_ids = {pid[0] for pid in produse_alocate_ids_query}
+
+    if total_produse_in_referat_ids != set_produse_alocate_ids:
+        flash('Referatul nu poate fi trimis. Toate produsele trebuie să fie alocate în loturi.', 'danger')
+        return redirect(url_for('referate.detalii_referat', referat_id=referat_id))
+
+    # 4. Toate validările au trecut, se schimbă starea
+    referat.Stare = 'În Aprobare'
+    db.session.commit()
+    flash('Referatul a fost trimis spre aprobare cu succes. Acesta nu mai poate fi editat.', 'success')
+    return redirect(url_for('referate.detalii_referat', referat_id=referat_id))
+
 @referate_bp.route('/referate/<int:referat_id>/genereaza_referat')
 @login_required
 def genereaza_referat_doc(referat_id):

@@ -40,6 +40,8 @@ Acest document descrie funcționarea și interacțiunile modulelor cheie ale apl
   - Adăugarea de `Produs` (generic) într-un referat, specificând cantitatea.
   - Crearea de `Lot`-uri și alocarea produselor din referat în aceste loturi.
   - Editarea observațiilor pe un referat.
+  - **Editarea unui referat în starea "Ciornă"**: Permite ștergerea produselor din referat, ștergerea loturilor (dacă nu sunt în proceduri) și scoaterea produselor din loturi.
+  - **Tranziția stării din "Ciornă" în "În Aprobare"**: Permite trimiterea unui referat pentru revizuire, blocându-l pentru editări ulterioare. Acțiunea este condiționată de validări (referatul trebuie să conțină produse și toate produsele trebuie să fie alocate în loturi).
   - Clonarea unui referat existent, inclusiv a produselor solicitate.
 - **Interacțiuni:**
   - **Consumă** date din `produse` (lista de `Produs` și `Categorie`).

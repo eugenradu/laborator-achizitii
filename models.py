@@ -135,8 +135,8 @@ class ReferatNecesitate(db.Model):
     Observatii = db.Column(db.Text)
 
     # Relații
-    loturi = db.relationship('Lot', backref='referat_parinte', lazy=True)
-    produse_in_referate = db.relationship('ProdusInReferat', backref='referat_necesitate', lazy=True)
+    loturi = db.relationship('Lot', backref='referat_parinte', lazy=True, cascade="all, delete-orphan")
+    produse_in_referate = db.relationship('ProdusInReferat', backref='referat_necesitate', lazy=True, cascade="all, delete-orphan")
     oferte = db.relationship('Oferta', backref='referat_asociat', lazy=True)
 
     def __repr__(self):
@@ -151,7 +151,7 @@ class Lot(db.Model):
     Descriere_Lot = db.Column(db.Text)
 
     # Relații
-    produse_in_loturi = db.relationship('ProdusInLot', backref='lot_parinte', lazy=True)
+    produse_in_loturi = db.relationship('ProdusInLot', backref='lot_parinte', lazy=True, cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Lot {self.Nume_Lot}>"
@@ -165,7 +165,7 @@ class ProdusInReferat(db.Model):
     Cantitate_Solicitata = db.Column(db.Integer, nullable=False)
 
     # Relații
-    produse_in_loturi = db.relationship('ProdusInLot', backref='produs_referat_alloc', lazy=True)
+    produse_in_loturi = db.relationship('ProdusInLot', backref='produs_referat_alloc', lazy=True, cascade="all, delete-orphan")
     articole_oferta = db.relationship('ArticolOferta', backref='produs_referat_ofertat', lazy=True)
     articole_contractate = db.relationship('ArticolContractat', backref='produs_referat_contractat', lazy=True)
 

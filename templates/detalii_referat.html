@@ -1,5 +1,91 @@
 {% extends 'base.html' %}
 
+{% block head %}
+<style>
+    .button-danger-outline {
+        background-color: transparent;
+        border: 1px solid var(--color-danger, #dc3545);
+        color: var(--color-danger, #dc3545);
+        padding: 5px 10px;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+
+    .button-success {
+        background-color: var(--color-success, #28a745);
+        color: white;
+        border-color: var(--color-success, #28a745);
+    }
+
+    .button-success:hover {
+        background-color: #218838;
+    }
+
+    .button-danger-outline:hover,
+    .button-danger-outline:disabled {
+        background-color: var(--color-danger, #dc3545);
+        color: white;
+    }
+
+    .button-danger-outline:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .button-secondary-outline {
+        background-color: transparent;
+        border: 1px solid var(--color-secondary, #6c757d);
+        color: var(--color-secondary, #6c757d);
+        padding: 5px 10px;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+
+    .button-secondary-outline:hover {
+        background-color: var(--color-secondary, #6c757d);
+        color: white;
+    }
+
+    .tooltip {
+        position: relative;
+        display: inline-block;
+    }
+
+    .tooltip .tooltiptext {
+        visibility: hidden;
+        width: 220px;
+        background-color: #555;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px;
+        position: absolute;
+        z-index: 1;
+        bottom: 125%;
+        left: 50%;
+        margin-left: -110px;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    .tooltip .tooltiptext::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: #555 transparent transparent transparent;
+    }
+
+    .tooltip:hover .tooltiptext {
+        visibility: visible;
+        opacity: 1;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <h2>Detalii Referat de Necesitate #{{ referat.ID_Referat }}</h2>
 <p>Număr Referat: <strong>{{ referat.Numar_Referat if referat.Numar_Referat else 'N/A' }}</strong></p>
@@ -16,9 +102,14 @@
 <div style="margin-top: 15px;">
     <h4>Observații Referat</h4>
     <form method="POST" action="{{ url_for('referate.edit_observatii_referat', referat_id=referat.ID_Referat) }}">
-        <textarea name="observatii" rows="5" style="width: 100%;">{{ referat.Observatii or '' }}</textarea>
+        <textarea name="observatii" rows="5" style="width: 100%;" {% if referat.Stare !='Ciorna' %}readonly{% endif
+            %}>{{ referat.Observatii or '' }}</textarea>
         <br><br>
+        {% if referat.Stare == 'Ciorna' %}
         <button type="submit">Salvează Observațiile</button>
+        {% else %}
+        <p><small>Observațiile pot fi editate doar în starea "Ciornă".</small></p>
+        {% endif %}
     </form>
 </div>
 <div class="actions" style="display: flex; gap: 10px; align-items: center;">
@@ -29,9 +120,18 @@
         onsubmit="return confirm('Sunteți sigur că doriți să clonați acest referat? Va fi creată o nouă ciornă.');">
         <button type="submit" class="button-secondary">Clonează Referat</button>
     </form>
+    {% if referat.Stare == 'Ciorna' %}
+    <form method="POST" action="{{ url_for('referate.trimite_spre_aprobare', referat_id=referat.ID_Referat) }}"
+        style="margin: 0; margin-left: auto;"
+        onsubmit="return confirm('Sunteți sigur că doriți să trimiteți referatul spre aprobare? După această acțiune, referatul nu mai poate fi editat.');">
+        <button type="submit" class="button button-success">Trimite spre Aprobare</button>
+    </form>
+    {% endif %}
 </div>
 
 <h3>Produse Solicitate în Acest Referat</h3>
+
+{% if referat.Stare == 'Ciorna' %}
 
 <h4>Adaugă Produs în Referat</h4>
 <form method="POST" action="{{ url_for('referate.adauga_produs_referat', referat_id=referat.ID_Referat) }}">
@@ -53,6 +153,10 @@
 
     <button type="submit">Adaugă Produs</button>
 </form>
+{% else %}
+<p><small>Nu se pot adăuga produse noi. Referatul nu este în starea "Ciornă".</small></p>
+{% endif %}
+
 
 <table>
     <thead>
@@ -62,6 +166,9 @@
             <th>Cantitate Solicitată</th>
             <th>Unitate Măsură</th>
             <th>Specificatii Tehnice</th>
+            {% if referat.Stare == 'Ciorna' %}
+            <th>Acțiuni</th>
+            {% endif %}
         </tr>
     </thead>
     <tbody>
@@ -72,16 +179,27 @@
             <td>{{ pir.Cantitate_Solicitata }}</td>
             <td>{{ prod.Unitate_Masura }}</td>
             <td class="pre-formatted-text">{{ prod.Specificatii_Tehnice }}</td>
+            {% if referat.Stare == 'Ciorna' %}
+            <td>
+                <form method="POST"
+                    action="{{ url_for('referate.sterge_produs_referat', referat_id=referat.ID_Referat, produs_referat_id=pir.ID_Produs_Referat) }}"
+                    onsubmit="return confirm('Sunteți sigur că doriți să ștergeți acest produs din referat? Acesta va fi scos și din orice lot în care a fost alocat.');"
+                    style="display: inline;">
+                    <button type="submit" class="button-danger-outline">Șterge</button>
+                </form>
+            </td>
+            {% endif %}
         </tr>
         {% else %}
         <tr>
-            <td colspan="5">Niciun produs adăugat în acest referat.</td>
+            <td colspan="{{ 6 if referat.Stare == 'Ciorna' else 5 }}">Niciun produs adăugat în acest referat.</td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
 
 <h3>Loturi definite în Referat</h3>
+{% if referat.Stare == 'Ciorna' %}
 <h4>Creează Lot Nou</h4>
 <form method="POST" action="{{ url_for('referate.adauga_lot_referat', referat_id=referat.ID_Referat) }}">
     <label for="nume_lot">Nume Lot:</label><br>
@@ -90,10 +208,31 @@
     <textarea id="descriere_lot" name="descriere_lot" rows="3"></textarea><br><br>
     <button type="submit">Creează Lot</button>
 </form>
+{% else %}
+<p><small>Nu se pot crea loturi noi. Referatul nu este în starea "Ciornă".</small></p>
+{% endif %}
 
 {% for lot in loturi_referat %}
 <div style="border: 1px solid #ccc; padding: 10px; margin-top: 15px;">
-    <h4>Lot #{{ lot.ID_Lot }}: {{ lot.Nume_Lot }}</h4>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h4>Lot #{{ lot.ID_Lot }}: {{ lot.Nume_Lot }}</h4>
+        {% if referat.Stare == 'Ciorna' %}
+        {% if lot.proceduri_asociate.count() > 0 %}
+        <div class="tooltip">
+            <button class="button-danger-outline" disabled>Șterge Lot</button>
+            <span class="tooltiptext">Acest lot nu poate fi șters deoarece este inclus într-o procedură de
+                achiziție.</span>
+        </div>
+        {% else %}
+        <form method="POST"
+            action="{{ url_for('referate.sterge_lot_referat', referat_id=referat.ID_Referat, lot_id=lot.ID_Lot) }}"
+            onsubmit="return confirm('Sunteți sigur că doriți să ștergeți acest lot? Toate produsele alocate lui vor fi dezalocate.');"
+            style="display: inline;">
+            <button type="submit" class="button-danger-outline">Șterge Lot</button>
+        </form>
+        {% endif %}
+        {% endif %}
+    </div>
     {% if lot.Descriere_Lot %}<p>Descriere: <span class="pre-formatted-text">{{ lot.Descriere_Lot }}</span></p>{% endif
     %}
 
@@ -105,6 +244,9 @@
                 <th>Nume Generic Produs</th>
                 <th>Cantitate Solicitată</th>
                 <th>Unitate Măsură</th>
+                {% if referat.Stare == 'Ciorna' %}
+                <th>Acțiuni</th>
+                {% endif %}
             </tr>
         </thead>
         <tbody>
@@ -115,16 +257,26 @@
                 <td>{{ prod.Nume_Generic }}</td>
                 <td>{{ pir.Cantitate_Solicitata }}</td>
                 <td>{{ prod.Unitate_Masura }}</td>
+                {% if referat.Stare == 'Ciorna' %}
+                <td>
+                    <form method="POST"
+                        action="{{ url_for('referate.scoate_produs_din_lot', referat_id=referat.ID_Referat, produs_in_lot_id=pil.ID_Produs_Lot) }}"
+                        style="display: inline;">
+                        <button type="submit" class="button-secondary-outline">Scoate din Lot</button>
+                    </form>
+                </td>
+                {% endif %}
             </tr>
             {% endfor %}
             {% else %}
             <tr>
-                <td colspan="4">Acest lot nu conține produse încă.</td>
+                <td colspan="{{ 5 if referat.Stare == 'Ciorna' else 4 }}">Acest lot nu conține produse încă.</td>
             </tr>
             {% endif %}
         </tbody>
     </table>
 
+    {% if referat.Stare == 'Ciorna' %}
     <h5>Adaugă Produs la Acest Lot</h5>
     {% if produse_nealocate %}
     <form method="POST"
@@ -141,6 +293,7 @@
     </form>
     {% else %}
     <p>Toate produsele din acest referat sunt deja alocate unor loturi.</p>
+    {% endif %}
     {% endif %}
 </div>
 {% else %}

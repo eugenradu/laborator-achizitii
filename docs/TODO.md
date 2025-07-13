@@ -36,6 +36,8 @@ Acest document inventariază sarcinile planificate pentru dezvoltarea aplicație
 
 - [x] **Îmbunătățire Import Produse din JSON** (cu confirmare pentru categorii noi)
 - [x] **Funcționalitate de Clonare a Referatelor**
+- [x] **Editare Referate în Stare "Ciornă"** (ștergere produse/loturi)
+- [x] **Tranziție Stare Referat (Ciornă -> În Aprobare)** cu validări
 - [x] **Implementare Modul Proceduri de Achiziție** (bază)
 - [x] **Adăugare Dinamică de Entități** (Furnizori, Producători din formulare)
 - [x] **Implementare Modul Contracte (Bază)**
