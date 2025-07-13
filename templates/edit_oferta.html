@@ -39,12 +39,13 @@
 
     <fieldset>
         <legend>Asociere (Opțional)</legend>
-        <label for="id_licitatie">Asociază cu o Licitație:</label>
-        <select id="id_licitatie" name="id_licitatie">
-            <option value="">-- Nicio licitație --</option>
-            {% for licitatie in licitatii %}
-            <option value="{{ licitatie.ID_Licitatie }}" {% if licitatie.ID_Licitatie==oferta.ID_Licitatie %}selected{%
-                endif %}>{{ licitatie.Nume_Licitatie }}</option>
+        <label for="id_procedura">Asociază cu o Procedură:</label>
+        <select id="id_procedura" name="id_procedura">
+            <option value="">-- Nicio procedură --</option>
+            {% for procedura in proceduri %}
+            <option value="{{ procedura.ID_Procedura }}" {% if procedura.ID_Procedura==oferta.ID_Procedura %}selected{%
+                endif %}>
+                {{ procedura.Nume_Procedura }} ({{ procedura.Tip_Procedura.value }})</option>
             {% endfor %}
         </select>
 

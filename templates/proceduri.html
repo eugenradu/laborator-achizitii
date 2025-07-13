@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Lista Procedurilor de Achiziție</h2>
+<div class="actions">
+    {# Acest link va funcționa după ce creăm ruta de adăugare #}
+    <a href="{{ url_for('proceduri.adauga_procedura') }}" class="button">Inițiază Procedură Nouă</a>
+</div>
+<table>
+    <thead>
+        <tr>
+            <th>Nume Procedură</th>
+            <th>Tip</th>
+            <th>Stare</th>
+            <th>Data Creare</th>
+            <th>Creat de</th>
+            <th>Acțiuni</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for procedura, creator in proceduri %}
+        <tr>
+            <td>{{ procedura.Nume_Procedura }}</td>
+            <td>{{ procedura.Tip_Procedura.value }}</td>
+            <td>{{ procedura.Stare }}</td>
+            <td>{{ procedura.Data_Creare.strftime('%d-%m-%Y') }}</td>
+            <td>{{ creator.Nume_Utilizator if creator else 'N/A' }}</td>
+            <td>
+                {# Acest link va funcționa după ce creăm ruta de detalii #}
+                <a href="{{ url_for('proceduri.detalii_procedura', procedura_id=procedura.ID_Procedura) }}">Detalii</a>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="6">Nu există nicio procedură de achiziție înregistrată.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

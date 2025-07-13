@@ -41,10 +41,12 @@
             <td>{{ oferta.Data_Oferta }}</td>
             <td>{{ oferta.articole|length }}</td>
             <td>
-                {% if oferta.ID_Licitatie %}
-                Licitație #{{ oferta.ID_Licitatie }}
+                {% if oferta.ID_Procedura %}
+                <a href="{{ url_for('proceduri.detalii_procedura', procedura_id=oferta.ID_Procedura) }}">Procedură #{{
+                    oferta.ID_Procedura }}</a>
                 {% elif oferta.ID_Referat %}
-                Referat #{{ oferta.ID_Referat }}
+                <a href="{{ url_for('referate.detalii_referat', referat_id=oferta.ID_Referat) }}">Referat #{{
+                    oferta.ID_Referat }}</a>
                 {% else %}
                 Generală
                 {% endif %}

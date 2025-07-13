@@ -40,10 +40,11 @@ Acest document descrie funcționarea și interacțiunile modulelor cheie ale apl
   - Adăugarea de `Produs` (generic) într-un referat, specificând cantitatea.
   - Crearea de `Lot`-uri și alocarea produselor din referat în aceste loturi.
   - Editarea observațiilor pe un referat.
+  - Clonarea unui referat existent, inclusiv a produselor solicitate.
 - **Interacțiuni:**
   - **Consumă** date din `produse` (lista de `Produs` și `Categorie`).
   - **Apelează** API-ul `get_produse_by_categorie` pentru a popula dinamic un dropdown.
-  - **Furnizează** `Lot`-uri pentru viitorul modul de `Licitatii`.
+  - **Furnizează** `Lot`-uri pentru modulul `proceduri`.
   - **Este integrat bidirecțional cu `Oferte`**:
     - Afișează o listă de oferte care au fost asociate cu el.
     - Oferă o scurtătură ("Adaugă Ofertă pentru Acest Referat") pentru a crea o nouă ofertă cu referatul curent pre-selectat.
@@ -57,7 +58,7 @@ Acest document descrie funcționarea și interacțiunile modulelor cheie ale apl
 - **Funcționalități Principale:**
   - CRUD complet pentru `Oferta`.
   - Adăugare/ștergere dinamică de `ArticolOferta` în formulare.
-  - Asociere opțională cu un `Referat` sau o `Licitatie`.
+  - Asociere opțională cu un `Referat` sau o `ProceduraAchizitie`.
   - Filtrare dinamică în doi pași pentru selecția produselor.
   - Căutare după nume furnizor sau număr de înregistrare, cu paginare.
 - **Interacțiuni:**
@@ -80,7 +81,24 @@ Acest document descrie funcționarea și interacțiunile modulelor cheie ale apl
 
 ---
 
-## 6. Modulul `api` (`blueprints/api.py`)
+## 6. Modulul `proceduri` (`blueprints/proceduri.py`)
+
+- **Scop:** Gestionează procedurile de achiziție, de la inițiere până la finalizare.
+- **Entități Cheie:** `ProceduraAchizitie`, `TipProcedura`, `Lot`.
+- **Funcționalități Principale:**
+  - Listarea tuturor procedurilor de achiziție.
+  - Inițierea unei noi proceduri, cu posibilitatea de a consolida loturi din mai multe referate.
+  - Vizualizarea detaliilor unei proceduri, inclusiv loturile și ofertele asociate.
+  - Generarea unui document text (.txt) cu specificațiile complete ale procedurii.
+- **Interacțiuni:**
+  - **Consumă** `Lot`-uri disponibile din modulul `referate`.
+  - **Este integrat bidirecțional cu `Oferte`**:
+    - Afișează o listă de oferte care au fost asociate cu el.
+    - Oferă o scurtătură ("Adaugă Ofertă pentru Această Procedură") pentru a crea o nouă ofertă cu procedura curentă pre-selectată.
+
+---
+
+## 7. Modulul `api` (`blueprints/api.py`)
 
 - **Scop:** Centralizează toate endpoint-urile API care returnează date în format JSON.
 - **Entități Cheie:** Citește (`Produs`, `VariantaComercialaProdus`, `Producator`). Creează (`VariantaComercialaProdus`, `Furnizor`, `Producator`).

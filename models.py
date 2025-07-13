@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import date
+import enum
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 
@@ -14,10 +15,10 @@ class Utilizator(db.Model, UserMixin):
     Parola_Hash = db.Column(db.Text, nullable=False)
     Data_Creare = db.Column(db.Date, nullable=False, default=date.today)
     Este_Activ = db.Column(db.Boolean, nullable=False, default=True)
-
+    
     # Relații inverse
     referate_create = db.relationship('ReferatNecesitate', backref='creator_referat', lazy=True)
-    licitatii_create = db.relationship('Licitatie', backref='creator_licitatie', lazy=True)
+    proceduri_create = db.relationship('ProceduraAchizitie', backref='creator_procedura', lazy=True)
     contracte_create = db.relationship('Contract', backref='creator_contract', lazy=True)
     comenzi_create = db.relationship('ComandaGeneral', backref='creator_comanda', lazy=True)
     livrari_inregistrate = db.relationship('LivrareComanda', backref='inregistrator_livrare', lazy=True)
@@ -185,38 +186,48 @@ class ProdusInLot(db.Model):
     def __repr__(self):
         return f"<ProdusInLot {self.ID_Produs_Lot} (Lot: {self.ID_Lot}, ProdRef: {self.ID_Produs_Referat})>"
 
-# Tabela de legătură pentru many-to-many între Licitatii și Loturi
-# O Licitatie poate include mai multe Loturi, iar un Lot poate fi inclus în mai multe Licitatii
-licitatii_loturi_asociere = db.Table(
-    'licitatii_loturi_asociere',
-    db.Column('licitatie_id', db.Integer, db.ForeignKey('Licitatii.ID_Licitatie'), primary_key=True),
+# Tabela de legătură pentru many-to-many între Proceduri și Loturi
+# O Procedură poate include mai multe Loturi, iar un Lot poate fi inclus în mai multe Proceduri
+proceduri_loturi_asociere = db.Table(
+    'proceduri_loturi_asociere',
+    db.Column('procedura_id', db.Integer, db.ForeignKey('Proceduri_Achizitie.ID_Procedura'), primary_key=True),
     db.Column('lot_id', db.Integer, db.ForeignKey('Loturi.ID_Lot'), primary_key=True)
 )
 
-# 11. Model pentru Licitatii
-class Licitatie(db.Model):
-    __tablename__ = 'Licitatii'
-    ID_Licitatie = db.Column(db.Integer, primary_key=True)
+# Enum pentru tipurile de proceduri de achiziție
+class TipProcedura(enum.Enum):
+    LICITATIE_DESCHISA = "Licitatie deschisa"
+    PROCEDURA_SIMPLIFICATA = "Procedura simplificata"
+    ACHIZITIE_DIRECTA = "Achizitie directa"
+    NEGOCIERE_COMPETITIVA = "Negociere competitiva"
+    ALTELE = "Altele"
+
+# 11. Model pentru Proceduri de Achiziție (fostul Licitatii)
+class ProceduraAchizitie(db.Model):
+    __tablename__ = 'Proceduri_Achizitie'
+    ID_Procedura = db.Column(db.Integer, primary_key=True)
+    Nume_Procedura = db.Column(db.Text, nullable=False)
+    Tip_Procedura = db.Column(db.Enum(TipProcedura), nullable=False)
     Data_Creare = db.Column(db.Date, nullable=False, default=date.today)
-    Nume_Licitatie = db.Column(db.Text, nullable=False)
     Stare = db.Column(db.Text, nullable=False, default='In Desfasurare')
     Numar_Inregistrare_Caiet_Sarcini = db.Column(db.Text)
     Data_Inregistrare_Caiet_Sarcini = db.Column(db.Date)
     Link_Scan_Caiet_Sarcini_PDF = db.Column(db.Text)
     ID_Utilizator_Creare = db.Column(db.Integer, db.ForeignKey('Utilizatori.ID_Utilizator'))
 
-    # Relații Many-to-Many cu Loturi
+    # Relație Many-to-Many cu Loturi
     loturi_incluse = db.relationship(
         'Lot',
-        secondary=licitatii_loturi_asociere,
-        backref=db.backref('licitatii_asociate', lazy='dynamic'), # backref='licitatii_asociate' in Lot model
+        secondary=proceduri_loturi_asociere,
+        backref=db.backref('proceduri_asociate', lazy='dynamic'),
         lazy='dynamic'
     )
-    oferte = db.relationship('Oferta', backref='licitatie_parinte', lazy=True)
-    contracte_rel = db.relationship('Contract', backref='licitatie_contract', lazy=True)
+    # Relații inverse
+    oferte = db.relationship('Oferta', backref='procedura_parinte', lazy=True)
+    contracte_rel = db.relationship('Contract', backref='procedura_contract', lazy=True)
 
     def __repr__(self):
-        return f"<Licitatie {self.Nume_Licitatie}>"
+        return f"<ProceduraAchizitie {self.Nume_Procedura}>"
 
 # 12. Model nou pentru Oferte (Antet)
 class Oferta(db.Model):
@@ -229,7 +240,7 @@ class Oferta(db.Model):
     Moneda = db.Column(db.Text, nullable=False, default='RON')
     
     # Legături opționale către alte module
-    ID_Licitatie = db.Column(db.Integer, db.ForeignKey('Licitatii.ID_Licitatie'), nullable=True)
+    ID_Procedura = db.Column(db.Integer, db.ForeignKey('Proceduri_Achizitie.ID_Procedura'), nullable=True)
     ID_Referat = db.Column(db.Integer, db.ForeignKey('Referate_Necesitate.ID_Referat'), nullable=True)
     
     # Relație către articolele din ofertă
@@ -256,7 +267,7 @@ class ArticolOferta(db.Model):
 class Contract(db.Model):
     __tablename__ = 'Contracte'
     ID_Contract = db.Column(db.Integer, primary_key=True)
-    ID_Licitatie = db.Column(db.Integer, db.ForeignKey('Licitatii.ID_Licitatie'), nullable=False)
+    ID_Procedura = db.Column(db.Integer, db.ForeignKey('Proceduri_Achizitie.ID_Procedura'), nullable=False)
     ID_Lot = db.Column(db.Integer, db.ForeignKey('Loturi.ID_Lot'), nullable=False)
     ID_Furnizor = db.Column(db.Integer, db.ForeignKey('Furnizori.ID_Furnizor'), nullable=False)
     Pret_Total_Contract = db.Column(db.Float, nullable=False)

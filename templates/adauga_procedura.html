@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Inițiază Procedură de Achiziție Nouă</h2>
+
+<form method="POST" action="{{ url_for('proceduri.adauga_procedura') }}">
+    <fieldset>
+        <legend>Detalii Procedură</legend>
+        <label for="nume_procedura">Nume Procedură (Obligatoriu):</label>
+        <input type="text" id="nume_procedura" name="nume_procedura" required>
+
+        <label for="tip_procedura">Tipul Procedurii (Obligatoriu):</label>
+        <select id="tip_procedura" name="tip_procedura" required>
+            <option value="">-- Selectează un tip --</option>
+            {% for tip in tipuri_procedura %}
+            <option value="{{ tip.name }}">{{ tip.value }}</option>
+            {% endfor %}
+        </select>
+    </fieldset>
+
+    <fieldset>
+        <legend>Selectează Loturi (Obligatoriu)</legend>
+        <p>Selectează loturile disponibile din referatele de necesitate pentru a le include în această procedură.</p>
+
+        {% for referat, loturi in referate_cu_loturi.items() %}
+        <details class="referat-group" open>
+            <summary>
+                <strong>Referat #{{ referat.ID_Referat }}</strong> (Creat la: {{
+                referat.Data_Creare.strftime('%d-%m-%Y') }})
+            </summary>
+            <div class="lot-list">
+                {% for lot in loturi %}
+                <label class="checkbox-label">
+                    <input type="checkbox" name="loturi_incluse" value="{{ lot.ID_Lot }}">
+                    Lot #{{ lot.ID_Lot }}: {{ lot.Nume_Lot }}
+                </label>
+                {% endfor %}
+            </div>
+        </details>
+        {% else %}
+        <p>Nu există niciun lot disponibil care să nu fie deja inclus într-o altă procedură.</p>
+        {% endfor %}
+    </fieldset>
+
+    <br>
+    <button type="submit">Creează Procedura</button>
+    <a href="{{ url_for('proceduri.list_proceduri') }}" class="button-secondary" style="margin-left: 10px;">Anulează</a>
+</form>
+
+<style>
+    .referat-group {
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        padding: 10px;
+    }
+
+    .referat-group summary {
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .lot-list {
+        padding-top: 10px;
+        padding-left: 20px;
+    }
+
+    .checkbox-label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: normal;
+    }
+
+    .checkbox-label input {
+        margin-right: 10px;
+    }
+</style>
+{% endblock %}

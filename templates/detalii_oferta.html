@@ -13,9 +13,10 @@
     {% if oferta.Numar_Inregistrare %}
     <p><strong>Înregistrare:</strong> Nr. {{ oferta.Numar_Inregistrare }} / {{ oferta.Data_Inregistrare }}</p>
     {% endif %}
-    {% if oferta.licitatie_parinte %}
-    <p><strong>Asociată cu Licitația:</strong> <a href="#">{{ oferta.licitatie_parinte.Nume_Licitatie }}</a></p> {#
-    TODO: Link to licitatie details #}
+    {% if oferta.procedura_parinte %}
+    <p><strong>Asociată cu Procedura:</strong> <a
+            href="{{ url_for('proceduri.detalii_procedura', procedura_id=oferta.procedura_parinte.ID_Procedura) }}">{{
+            oferta.procedura_parinte.Nume_Procedura }}</a></p>
     {% elif oferta.referat_asociat %}
     <p><strong>Asociată cu Referatul:</strong> <a
             href="{{ url_for('referate.detalii_referat', referat_id=oferta.referat_asociat.ID_Referat) }}">Referat #{{

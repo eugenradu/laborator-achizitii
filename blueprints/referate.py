@@ -216,3 +216,33 @@ def edit_observatii_referat(referat_id):
     
     flash('Observațiile au fost actualizate cu succes!', 'success')
     return redirect(url_for('referate.detalii_referat', referat_id=referat.ID_Referat))
+
+@referate_bp.route('/referate/<int:referat_id>/clone', methods=['POST'])
+@login_required
+def clone_referat(referat_id):
+    """Creează o clonă a unui referat de necesitate existent."""
+    original_referat = ReferatNecesitate.query.get_or_404(referat_id)
+
+    # Creează un nou referat, copiind câmpurile relevante
+    cloned_referat = ReferatNecesitate(
+        Stare='Ciorna',
+        Data_Creare=date.today(),
+        Numar_Referat=f"Copie - {original_referat.Numar_Referat}" if original_referat.Numar_Referat else "Copie",
+        ID_Utilizator_Creare=current_user.ID_Utilizator,
+        Observatii=original_referat.Observatii
+    )
+    db.session.add(cloned_referat)
+    db.session.flush() # Obține ID-ul noului referat înainte de a adăuga produsele
+
+    # Clonează produsele din referatul original
+    for original_pir in original_referat.produse_in_referate:
+        cloned_pir = ProdusInReferat(
+            ID_Referat=cloned_referat.ID_Referat,
+            ID_Produs_Generic=original_pir.ID_Produs_Generic,
+            Cantitate_Solicitata=original_pir.Cantitate_Solicitata
+        )
+        db.session.add(cloned_pir)
+
+    db.session.commit()
+    flash(f'Referatul #{original_referat.ID_Referat} a fost clonat cu succes. Acum editați noua versiune (Referat #{cloned_referat.ID_Referat}).', 'success')
+    return redirect(url_for('referate.detalii_referat', referat_id=cloned_referat.ID_Referat))

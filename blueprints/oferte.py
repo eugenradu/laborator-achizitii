@@ -3,8 +3,8 @@ from flask_login import login_required, current_user
 from datetime import date
 from sqlalchemy.orm import joinedload
 from sqlalchemy import or_
-from models import (db, Oferta, ArticolOferta, VariantaComercialaProdus, Produs,
-                    Producator, Licitatie, ReferatNecesitate, Furnizor)
+from models import (db, Oferta, ArticolOferta, VariantaComercialaProdus, Produs, Producator, 
+                    ProceduraAchizitie, ReferatNecesitate, Furnizor)
 
 oferte_bp = Blueprint('oferte', __name__, url_prefix='/oferte')
 
@@ -46,7 +46,7 @@ def adauga_oferta():
         numar_inregistrare = request.form.get('numar_inregistrare')
         data_inregistrare_str = request.form.get('data_inregistrare')
         moneda = request.form.get('moneda', 'RON')
-        id_licitatie = request.form.get('id_licitatie')
+        id_procedura = request.form.get('id_procedura')
         id_referat = request.form.get('id_referat')
 
         if not id_furnizor or not data_oferta_str:
@@ -60,7 +60,7 @@ def adauga_oferta():
             Numar_Inregistrare=numar_inregistrare,
             Data_Inregistrare=date.fromisoformat(data_inregistrare_str) if data_inregistrare_str else None,
             Moneda=moneda,
-            ID_Licitatie=int(id_licitatie) if id_licitatie else None,
+            ID_Procedura=int(id_procedura) if id_procedura else None,
             ID_Referat=int(id_referat) if id_referat else None,
         )
         db.session.add(new_oferta)
@@ -87,22 +87,24 @@ def adauga_oferta():
 
     # --- GET: Pregătire date pentru formular ---
     variante_comerciale = VariantaComercialaProdus.query.join(Produs).join(Producator).order_by(Producator.Nume_Producator, Produs.Nume_Generic).all()
-    licitatii = Licitatie.query.order_by(Licitatie.Nume_Licitatie.desc()).all()
+    proceduri = ProceduraAchizitie.query.order_by(ProceduraAchizitie.Nume_Procedura.desc()).all()
     referate = ReferatNecesitate.query.order_by(ReferatNecesitate.ID_Referat.desc()).all()
     furnizori = Furnizor.query.order_by(Furnizor.Nume_Furnizor).all()
     producatori = Producator.query.order_by(Producator.Nume_Producator).all()
     produse_generice = Produs.query.order_by(Produs.Nume_Generic).all()
     referat_id_preselectat = request.args.get('referat_id', type=int)
+    procedura_id_preselectat = request.args.get('procedura_id', type=int)
     
     return render_template('adauga_oferta.html', 
                            variante_comerciale=variante_comerciale,
-                           licitatii=licitatii,
+                           proceduri=proceduri,
                            referate=referate,
                            furnizori=furnizori,
                            producatori=producatori,
                            produse_generice=produse_generice,
                            today=date.today().isoformat(),
-                           referat_id_preselectat=referat_id_preselectat)
+                           referat_id_preselectat=referat_id_preselectat,
+                           procedura_id_preselectat=procedura_id_preselectat)
 
 # Ruta pentru a edita o ofertă existentă
 @oferte_bp.route('/<int:oferta_id>/edit', methods=['GET', 'POST'])
@@ -119,8 +121,8 @@ def edit_oferta(oferta_id):
         data_inregistrare_str = request.form.get('data_inregistrare')
         oferta.Data_Inregistrare = date.fromisoformat(data_inregistrare_str) if data_inregistrare_str else None
         oferta.Moneda = request.form.get('moneda', 'RON')
-        id_licitatie = request.form.get('id_licitatie')
-        oferta.ID_Licitatie = int(id_licitatie) if id_licitatie else None
+        id_procedura = request.form.get('id_procedura')
+        oferta.ID_Procedura = int(id_procedura) if id_procedura else None
         id_referat = request.form.get('id_referat')
         oferta.ID_Referat = int(id_referat) if id_referat else None
 
@@ -151,7 +153,7 @@ def edit_oferta(oferta_id):
 
     # --- GET: Pregătire date pentru formularul de editare ---
     variante_comerciale = VariantaComercialaProdus.query.join(Produs).join(Producator).order_by(Producator.Nume_Producator, Produs.Nume_Generic).all()
-    licitatii = Licitatie.query.order_by(Licitatie.Nume_Licitatie.desc()).all()
+    proceduri = ProceduraAchizitie.query.order_by(ProceduraAchizitie.Nume_Procedura.desc()).all()
     referate = ReferatNecesitate.query.order_by(ReferatNecesitate.ID_Referat.desc()).all()
     furnizori = Furnizor.query.order_by(Furnizor.Nume_Furnizor).all()
     producatori = Producator.query.order_by(Producator.Nume_Producator).all()
@@ -159,7 +161,7 @@ def edit_oferta(oferta_id):
 
     return render_template('edit_oferta.html', oferta=oferta, 
                            variante_comerciale=variante_comerciale, 
-                           licitatii=licitatii, referate=referate,
+                           proceduri=proceduri, referate=referate,
                            furnizori=furnizori,
                            producatori=producatori, produse_generice=produse_generice)
 
@@ -182,7 +184,7 @@ def detalii_oferta(oferta_id):
         joinedload(Oferta.furnizor),
         joinedload(Oferta.articole).joinedload(ArticolOferta.varianta_comerciala_ofertata).joinedload(VariantaComercialaProdus.produs_generic),
         joinedload(Oferta.articole).joinedload(ArticolOferta.varianta_comerciala_ofertata).joinedload(VariantaComercialaProdus.producator),
-        joinedload(Oferta.licitatie_parinte),
+        joinedload(Oferta.procedura_parinte),
         joinedload(Oferta.referat_asociat)
     ).get_or_404(oferta_id)
     

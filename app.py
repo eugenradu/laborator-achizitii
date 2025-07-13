@@ -12,8 +12,8 @@ from blueprints.produse import produse_bp
 from blueprints.referate import referate_bp
 from blueprints.oferte import oferte_bp
 # Următoarele vor fi create și importate în pașii viitori
+from blueprints.proceduri import proceduri_bp
 from blueprints.furnizori import furnizori_bp
-# from blueprints.licitatii import licitatii_bp
 # from blueprints.contracte import contracte_bp
 from blueprints.api import api_bp
 
@@ -36,7 +36,7 @@ app.register_blueprint(produse_bp)
 app.register_blueprint(referate_bp)
 app.register_blueprint(oferte_bp)
 app.register_blueprint(furnizori_bp)
-# app.register_blueprint(licitatii_bp)
+app.register_blueprint(proceduri_bp)
 # app.register_blueprint(contracte_bp)
 app.register_blueprint(api_bp)
 

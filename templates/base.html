@@ -22,7 +22,7 @@
                 <li><a href="{{ url_for('furnizori.list_furnizori') }}">Furnizori</a></li>
                 <li><a href="{{ url_for('referate.referate') }}">Referate Necesitate</a></li>
                 <li><a href="{{ url_for('oferte.list_oferte') }}">Oferte</a></li>
-                <li><a href="#" class="disabled-link">Licitatii</a></li>
+                <li><a href="{{ url_for('proceduri.list_proceduri') }}">Proceduri Achiziție</a></li>
                 <li><a href="#" class="disabled-link">Contracte</a></li>
                 <li><a href="#" class="disabled-link">Comenzi</a></li>
                 <li><a href="{{ url_for('auth.logout') }}">Deconectare ({{ current_user.Nume_Utilizator }})</a></li>
