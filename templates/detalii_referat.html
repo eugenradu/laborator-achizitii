@@ -2,6 +2,16 @@
 
 {% block head %}
 <style>
+    .button-danger {
+        background-color: var(--color-danger, #dc3545);
+        color: white;
+        border-color: var(--color-danger, #dc3545);
+    }
+
+    .button-danger:hover {
+        background-color: #c82333;
+    }
+
     .button-danger-outline {
         background-color: transparent;
         border: 1px solid var(--color-danger, #dc3545);
@@ -83,6 +93,20 @@
         visibility: visible;
         opacity: 1;
     }
+
+    .alert-info {
+        padding: 15px;
+        margin-bottom: 20px;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        color: #31708f;
+        background-color: #d9edf7;
+        border-color: #bce8f1;
+    }
+
+    .alert-info h4 {
+        margin-top: 0;
+    }
 </style>
 {% endblock %}
 
@@ -90,7 +114,7 @@
 <h2>Detalii Referat de Necesitate #{{ referat.ID_Referat }}</h2>
 <p>Număr Referat: <strong>{{ referat.Numar_Referat if referat.Numar_Referat else 'N/A' }}</strong></p>
 <p>Data Creare: <strong>{{ referat.Data_Creare }}</strong></p>
-<p>Stare: <strong>{{ referat.Stare }}</strong></p>
+<p>Stare: <strong>{{ referat.Stare.value }}</strong></p>
 <p>Creat de: <strong>{{ referat.creator_referat.Nume_Utilizator if referat.creator_referat else 'N/A' }}</strong></p>
 {% if referat.Numar_Inregistrare_Document %}
 <p>Nr. Înregistrare Doc.: <strong>{{ referat.Numar_Inregistrare_Document }}</strong></p>
@@ -99,13 +123,21 @@
 {% if referat.Link_Scan_PDF %}
 <p>Scan Document: <a href="{{ referat.Link_Scan_PDF }}" target="_blank">Vezi PDF</a></p>
 {% endif %}
+
+{% if referat.Stare.value == 'Ciornă' and referat.Observatii_Aprobare %}
+<div class="alert-info">
+    <h4>Motivul Respingerii / Observații Aprobator:</h4>
+    <p class="pre-formatted-text">{{ referat.Observatii_Aprobare }}</p>
+</div>
+{% endif %}
+
 <div style="margin-top: 15px;">
     <h4>Observații Referat</h4>
     <form method="POST" action="{{ url_for('referate.edit_observatii_referat', referat_id=referat.ID_Referat) }}">
-        <textarea name="observatii" rows="5" style="width: 100%;" {% if referat.Stare !='Ciorna' %}readonly{% endif
-            %}>{{ referat.Observatii or '' }}</textarea>
+        <textarea name="observatii" rows="5" style="width: 100%;" {% if referat.Stare.value !='Ciornă' %}readonly{%
+            endif %}>{{ referat.Observatii or '' }}</textarea>
         <br><br>
-        {% if referat.Stare == 'Ciorna' %}
+        {% if referat.Stare.value == 'Ciornă' %}
         <button type="submit">Salvează Observațiile</button>
         {% else %}
         <p><small>Observațiile pot fi editate doar în starea "Ciornă".</small></p>
@@ -120,7 +152,7 @@
         onsubmit="return confirm('Sunteți sigur că doriți să clonați acest referat? Va fi creată o nouă ciornă.');">
         <button type="submit" class="button-secondary">Clonează Referat</button>
     </form>
-    {% if referat.Stare == 'Ciorna' %}
+    {% if referat.Stare.value == 'Ciornă' %}
     <form method="POST" action="{{ url_for('referate.trimite_spre_aprobare', referat_id=referat.ID_Referat) }}"
         style="margin: 0; margin-left: auto;"
         onsubmit="return confirm('Sunteți sigur că doriți să trimiteți referatul spre aprobare? După această acțiune, referatul nu mai poate fi editat.');">
@@ -129,9 +161,25 @@
     {% endif %}
 </div>
 
+{% if referat.Stare.value == 'În Aprobare' %}
+<fieldset style="margin-top: 20px; border: 1px solid #ccc; padding: 15px;">
+    <legend>Procesare Aprobare</legend>
+    <form method="POST" action="{{ url_for('referate.proceseaza_aprobare', referat_id=referat.ID_Referat) }}">
+        <label for="observatii_aprobare">Observații (obligatoriu la respingere):</label><br>
+        <textarea name="observatii_aprobare" id="observatii_aprobare" rows="4" style="width: 100%;"></textarea><br><br>
+        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+            <button type="submit" name="actiune" value="respinge" class="button button-danger"
+                onclick="return confirm('Sunteți sigur că doriți să respingeți acest referat? Va fi returnat în starea Ciornă.');">Respinge</button>
+            <button type="submit" name="actiune" value="aproba" class="button button-success"
+                onclick="return confirm('Sunteți sigur că doriți să aprobați acest referat?');">Aprobă</button>
+        </div>
+    </form>
+</fieldset>
+{% endif %}
+
 <h3>Produse Solicitate în Acest Referat</h3>
 
-{% if referat.Stare == 'Ciorna' %}
+{% if referat.Stare.value == 'Ciornă' %}
 
 <h4>Adaugă Produs în Referat</h4>
 <form method="POST" action="{{ url_for('referate.adauga_produs_referat', referat_id=referat.ID_Referat) }}">
@@ -166,7 +214,7 @@
             <th>Cantitate Solicitată</th>
             <th>Unitate Măsură</th>
             <th>Specificatii Tehnice</th>
-            {% if referat.Stare == 'Ciorna' %}
+            {% if referat.Stare.value == 'Ciornă' %}
             <th>Acțiuni</th>
             {% endif %}
         </tr>
@@ -179,7 +227,7 @@
             <td>{{ pir.Cantitate_Solicitata }}</td>
             <td>{{ prod.Unitate_Masura }}</td>
             <td class="pre-formatted-text">{{ prod.Specificatii_Tehnice }}</td>
-            {% if referat.Stare == 'Ciorna' %}
+            {% if referat.Stare.value == 'Ciornă' %}
             <td>
                 <form method="POST"
                     action="{{ url_for('referate.sterge_produs_referat', referat_id=referat.ID_Referat, produs_referat_id=pir.ID_Produs_Referat) }}"
@@ -192,14 +240,14 @@
         </tr>
         {% else %}
         <tr>
-            <td colspan="{{ 6 if referat.Stare == 'Ciorna' else 5 }}">Niciun produs adăugat în acest referat.</td>
+            <td colspan="{{ 6 if referat.Stare.value == 'Ciornă' else 5 }}">Niciun produs adăugat în acest referat.</td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
 
 <h3>Loturi definite în Referat</h3>
-{% if referat.Stare == 'Ciorna' %}
+{% if referat.Stare.value == 'Ciornă' %}
 <h4>Creează Lot Nou</h4>
 <form method="POST" action="{{ url_for('referate.adauga_lot_referat', referat_id=referat.ID_Referat) }}">
     <label for="nume_lot">Nume Lot:</label><br>
@@ -216,7 +264,7 @@
 <div style="border: 1px solid #ccc; padding: 10px; margin-top: 15px;">
     <div style="display: flex; justify-content: space-between; align-items: center;">
         <h4>Lot #{{ lot.ID_Lot }}: {{ lot.Nume_Lot }}</h4>
-        {% if referat.Stare == 'Ciorna' %}
+        {% if referat.Stare.value == 'Ciornă' %}
         {% if lot.proceduri_asociate.count() > 0 %}
         <div class="tooltip">
             <button class="button-danger-outline" disabled>Șterge Lot</button>
@@ -244,7 +292,7 @@
                 <th>Nume Generic Produs</th>
                 <th>Cantitate Solicitată</th>
                 <th>Unitate Măsură</th>
-                {% if referat.Stare == 'Ciorna' %}
+                {% if referat.Stare.value == 'Ciornă' %}
                 <th>Acțiuni</th>
                 {% endif %}
             </tr>
@@ -257,7 +305,7 @@
                 <td>{{ prod.Nume_Generic }}</td>
                 <td>{{ pir.Cantitate_Solicitata }}</td>
                 <td>{{ prod.Unitate_Masura }}</td>
-                {% if referat.Stare == 'Ciorna' %}
+                {% if referat.Stare.value == 'Ciornă' %}
                 <td>
                     <form method="POST"
                         action="{{ url_for('referate.scoate_produs_din_lot', referat_id=referat.ID_Referat, produs_in_lot_id=pil.ID_Produs_Lot) }}"
@@ -270,13 +318,13 @@
             {% endfor %}
             {% else %}
             <tr>
-                <td colspan="{{ 5 if referat.Stare == 'Ciorna' else 4 }}">Acest lot nu conține produse încă.</td>
+                <td colspan="{{ 5 if referat.Stare.value == 'Ciornă' else 4 }}">Acest lot nu conține produse încă.</td>
             </tr>
             {% endif %}
         </tbody>
     </table>
 
-    {% if referat.Stare == 'Ciorna' %}
+    {% if referat.Stare.value == 'Ciornă' %}
     <h5>Adaugă Produs la Acest Lot</h5>
     {% if produse_nealocate %}
     <form method="POST"

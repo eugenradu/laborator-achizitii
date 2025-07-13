@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 from datetime import date
 from models import (
     db, Utilizator, Categorie, Producator, Produs, VariantaComercialaProdus, ReferatNecesitate,
-    Lot, ProdusInReferat, ProdusInLot, Oferta
+    Lot, ProdusInReferat, ProdusInLot, Oferta, StareReferat
 )
 
 referate_bp = Blueprint('referate', __name__)
@@ -25,7 +25,6 @@ def adauga_referat():
     if request.method == 'POST':
         numar_referat = request.form['numar_referat']
         data_creare = request.form['data_creare']
-        stare = request.form['stare']
         numar_inregistrare_doc = request.form.get('numar_inregistrare_doc')
         data_inregistrare_doc = request.form.get('data_inregistrare_doc')
         link_scan_pdf = request.form.get('link_scan_pdf')
@@ -33,8 +32,7 @@ def adauga_referat():
 
         new_referat = ReferatNecesitate(
             Numar_Referat=numar_referat,
-            Data_Creare=date.fromisoformat(data_creare),
-            Stare=stare,
+            Data_Creare=date.fromisoformat(data_creare), # Starea va fi 'Ciorna' by default from model
             Numar_Inregistrare_Document=numar_inregistrare_doc,
             Data_Inregistrare_Document=date.fromisoformat(data_inregistrare_doc) if data_inregistrare_doc else None,
             Link_Scan_PDF=link_scan_pdf,
@@ -152,7 +150,7 @@ def aloca_produs_lot(referat_id, lot_id):
 @login_required
 def sterge_produs_referat(referat_id, produs_referat_id):
     referat = ReferatNecesitate.query.get_or_404(referat_id)
-    if referat.Stare != 'Ciorna':
+    if referat.Stare != StareReferat.CIORNA:
         flash('Produsele pot fi șterse doar dacă referatul este în starea "Ciornă".', 'danger')
         return redirect(url_for('referate.detalii_referat', referat_id=referat_id))
 
@@ -178,7 +176,7 @@ def sterge_produs_referat(referat_id, produs_referat_id):
 @login_required
 def sterge_lot_referat(referat_id, lot_id):
     referat = ReferatNecesitate.query.get_or_404(referat_id)
-    if referat.Stare != 'Ciorna':
+    if referat.Stare != StareReferat.CIORNA:
         flash('Loturile pot fi șterse doar dacă referatul este în starea "Ciornă".', 'danger')
         return redirect(url_for('referate.detalii_referat', referat_id=referat_id))
 
@@ -209,7 +207,7 @@ def sterge_lot_referat(referat_id, lot_id):
 @login_required
 def scoate_produs_din_lot(referat_id, produs_in_lot_id):
     referat = ReferatNecesitate.query.get_or_404(referat_id)
-    if referat.Stare != 'Ciorna':
+    if referat.Stare != StareReferat.CIORNA:
         flash('Produsele pot fi scoase din loturi doar dacă referatul este în starea "Ciornă".', 'danger')
         return redirect(url_for('referate.detalii_referat', referat_id=referat_id))
 
@@ -236,7 +234,7 @@ def trimite_spre_aprobare(referat_id):
     referat = ReferatNecesitate.query.get_or_404(referat_id)
 
     # 1. Verifică starea curentă
-    if referat.Stare != 'Ciorna':
+    if referat.Stare != StareReferat.CIORNA:
         flash('Acest referat nu mai este în starea "Ciornă" și nu poate fi trimis spre aprobare.', 'warning')
         return redirect(url_for('referate.detalii_referat', referat_id=referat_id))
 
@@ -258,9 +256,40 @@ def trimite_spre_aprobare(referat_id):
         return redirect(url_for('referate.detalii_referat', referat_id=referat_id))
 
     # 4. Toate validările au trecut, se schimbă starea
-    referat.Stare = 'În Aprobare'
+    referat.Stare = StareReferat.IN_APROBARE
     db.session.commit()
     flash('Referatul a fost trimis spre aprobare cu succes. Acesta nu mai poate fi editat.', 'success')
+    return redirect(url_for('referate.detalii_referat', referat_id=referat_id))
+
+@referate_bp.route('/referate/<int:referat_id>/proceseaza_aprobare', methods=['POST'])
+@login_required
+def proceseaza_aprobare(referat_id):
+    referat = ReferatNecesitate.query.get_or_404(referat_id)
+    
+    if referat.Stare != StareReferat.IN_APROBARE:
+        flash('Acest referat nu este în starea "În Aprobare".', 'warning')
+        return redirect(url_for('referate.detalii_referat', referat_id=referat_id))
+
+    actiune = request.form.get('actiune')
+    observatii = request.form.get('observatii_aprobare', '').strip()
+
+    if actiune == 'aproba':
+        referat.Stare = StareReferat.APROBAT
+        referat.Observatii_Aprobare = observatii # Optional for approval
+        db.session.commit()
+        flash('Referatul a fost aprobat cu succes.', 'success')
+    elif actiune == 'respinge':
+        if not observatii:
+            flash('Motivul respingerii este obligatoriu.', 'danger')
+            return redirect(url_for('referate.detalii_referat', referat_id=referat_id))
+        
+        referat.Stare = StareReferat.CIORNA
+        referat.Observatii_Aprobare = observatii # Mandatory for rejection
+        db.session.commit()
+        flash('Referatul a fost respins și returnat în starea "Ciornă" pentru modificări.', 'info')
+    else:
+        flash('Acțiune invalidă.', 'danger')
+
     return redirect(url_for('referate.detalii_referat', referat_id=referat_id))
 
 @referate_bp.route('/referate/<int:referat_id>/genereaza_referat')
@@ -274,7 +303,7 @@ def genereaza_referat_doc(referat_id):
     referat_text += f"{'='*40}\n"
     referat_text += f"Număr: {referat.Numar_Referat or 'N/A'}\n"
     referat_text += f"Data: {referat.Data_Creare.strftime('%d-%m-%Y')}\n"
-    referat_text += f"Stare: {referat.Stare}\n"
+    referat_text += f"Stare: {referat.Stare.value}\n"
     if referat.creator_referat:
         referat_text += f"Creat de: {referat.creator_referat.Nume_Utilizator}\n"
     referat_text += f"{'='*40}\n"
@@ -340,7 +369,7 @@ def clone_referat(referat_id):
 
     # Creează un nou referat, copiind câmpurile relevante
     cloned_referat = ReferatNecesitate(
-        Stare='Ciorna',
+        Stare=StareReferat.CIORNA,
         Data_Creare=date.today(),
         Numar_Referat=f"Copie - {original_referat.Numar_Referat}" if original_referat.Numar_Referat else "Copie",
         ID_Utilizator_Creare=current_user.ID_Utilizator,

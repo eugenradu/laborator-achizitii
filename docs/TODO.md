@@ -38,6 +38,7 @@ Acest document inventariază sarcinile planificate pentru dezvoltarea aplicație
 - [x] **Funcționalitate de Clonare a Referatelor**
 - [x] **Editare Referate în Stare "Ciornă"** (ștergere produse/loturi)
 - [x] **Tranziție Stare Referat (Ciornă -> În Aprobare)** cu validări
+- [x] **Flux de Aprobare/Respingere Referate** (cu motiv de respingere)
 - [x] **Implementare Modul Proceduri de Achiziție** (bază)
 - [x] **Adăugare Dinamică de Entități** (Furnizori, Producători din formulare)
 - [x] **Implementare Modul Contracte (Bază)**

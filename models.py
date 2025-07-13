@@ -6,6 +6,11 @@ from flask_login import UserMixin
 
 db = SQLAlchemy()
 
+class StareReferat(enum.Enum):
+    CIORNA = "Ciornă"
+    IN_APROBARE = "În Aprobare"
+    APROBAT = "Aprobat"
+
 # 1. Model pentru Utilizatori
 class Utilizator(db.Model, UserMixin):
     __tablename__ = 'Utilizatori'
@@ -126,13 +131,14 @@ class ReferatNecesitate(db.Model):
     __tablename__ = 'Referate_Necesitate'
     ID_Referat = db.Column(db.Integer, primary_key=True)
     Data_Creare = db.Column(db.Date, nullable=False, default=date.today)
-    Stare = db.Column(db.Text, nullable=False, default='Ciorna')
+    Stare = db.Column(db.Enum(StareReferat), nullable=False, default=StareReferat.CIORNA)
     Numar_Referat = db.Column(db.Text)
     Numar_Inregistrare_Document = db.Column(db.Text)
     Data_Inregistrare_Document = db.Column(db.Date)
     Link_Scan_PDF = db.Column(db.Text)
     ID_Utilizator_Creare = db.Column(db.Integer, db.ForeignKey('Utilizatori.ID_Utilizator')) # NULLABLE as per DATA_MODEL.md
     Observatii = db.Column(db.Text)
+    Observatii_Aprobare = db.Column(db.Text, nullable=True)
 
     # Relații
     loturi = db.relationship('Lot', backref='referat_parinte', lazy=True, cascade="all, delete-orphan")

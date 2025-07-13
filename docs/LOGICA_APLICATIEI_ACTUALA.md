@@ -42,6 +42,7 @@ Acest document descrie funcționarea și interacțiunile modulelor cheie ale apl
   - Editarea observațiilor pe un referat.
   - **Editarea unui referat în starea "Ciornă"**: Permite ștergerea produselor din referat, ștergerea loturilor (dacă nu sunt în proceduri) și scoaterea produselor din loturi.
   - **Tranziția stării din "Ciornă" în "În Aprobare"**: Permite trimiterea unui referat pentru revizuire, blocându-l pentru editări ulterioare. Acțiunea este condiționată de validări (referatul trebuie să conțină produse și toate produsele trebuie să fie alocate în loturi).
+  - **Flux de Aprobare/Respingere**: Un utilizator poate aproba un referat (stare -> `Aprobat`) sau îl poate respinge (stare -> `Ciornă`). Respingerea necesită un motiv, care este salvat și afișat creatorului pentru corecții.
   - Clonarea unui referat existent, inclusiv a produselor solicitate.
 - **Interacțiuni:**
   - **Consumă** date din `produse` (lista de `Produs` și `Categorie`).
