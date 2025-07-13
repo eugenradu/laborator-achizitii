@@ -1,5 +1,93 @@
 {% extends 'base.html' %}
 
+{% block head %}
+<style>
+    .grid-container {
+        display: grid;
+        grid-template-columns: 1fr 1.5fr;
+        gap: 30px;
+        align-items: start;
+    }
+
+    .lot-management,
+    .product-allocation {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .card {
+        background: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 20px;
+    }
+
+    .super-lot-card {
+        border: 1px solid #ccc;
+        padding: 15px;
+        margin-top: 15px;
+        border-radius: 8px;
+    }
+
+    .super-lot-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .super-lot-header h4 {
+        margin: 0;
+    }
+
+    .product-list-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+
+    .product-list-table th,
+    .product-list-table td {
+        text-align: left;
+        padding: 8px;
+        border-bottom: 1px solid #ddd;
+        font-size: 0.9em;
+    }
+
+    .product-list-table th:first-child,
+    .product-list-table td:first-child {
+        width: 25px;
+    }
+
+    .allocation-form-header {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .allocation-form-header select {
+        flex-grow: 1;
+    }
+
+    .button-danger-outline {
+        background-color: transparent;
+        border: 1px solid var(--color-danger, #dc3545);
+        color: var(--color-danger, #dc3545);
+        padding: 3px 8px;
+        cursor: pointer;
+        border-radius: 4px;
+        font-size: 0.8em;
+    }
+
+    .button-danger-outline:hover {
+        background-color: var(--color-danger, #dc3545);
+        color: white;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <h2>Detalii Procedură: {{ procedura.Nume_Procedura }}</h2>
 <p>ID Procedură: <strong>#{{ procedura.ID_Procedura }}</strong></p>
@@ -7,102 +95,147 @@
 <p>Stare: <strong>{{ procedura.Stare }}</strong></p>
 <p>Data Creare: <strong>{{ procedura.Data_Creare.strftime('%d-%m-%Y') }}</strong></p>
 <p>Creat de: <strong>{{ procedura.creator_procedura.Nume_Utilizator if procedura.creator_procedura else 'N/A'
-        }}</strong></p>
+        }}</strong>
+</p>
 
 <div class="actions">
     <a href="{{ url_for('proceduri.genereaza_documentatie', procedura_id=procedura.ID_Procedura) }}"
         class="button-secondary">Generează Documentație (.txt)</a>
 </div>
 
-<h3>Loturi Incluse în Procedură</h3>
+<div class="grid-container">
+    <div class="lot-management">
+        <div class="card">
+            <h3>Creează Lot Nou (Super-Lot)</h3>
+            <form method="POST"
+                action="{{ url_for('proceduri.adauga_super_lot', procedura_id=procedura.ID_Procedura) }}">
+                <label for="nume_lot">Nume Lot:</label>
+                <input type="text" id="nume_lot" name="nume_lot" required>
+                <label for="descriere_lot">Descriere (opțional):</label>
+                <textarea id="descriere_lot" name="descriere_lot" rows="3"></textarea>
+                <button type="submit">Creează Lot</button>
+            </form>
+        </div>
 
-{% for lot_id, data in loturi_cu_oferte.items() %}
-<div class="lot-container">
-    <h4>Lot #{{ data.lot_obj.ID_Lot }}: {{ data.lot_obj.Nume_Lot }}</h4>
-    <p>
-        <small>
-            (Provenit din
-            <a href="{{ url_for('referate.detalii_referat', referat_id=data.lot_obj.referat_parinte.ID_Referat) }}">
-                Referat #{{ data.lot_obj.referat_parinte.ID_Referat }}
-            </a>)
-        </small>
-    </p>
-    {% if data.lot_obj.Descriere_Lot %}<p>Descriere: <span class="pre-formatted-text">{{
-            data.lot_obj.Descriere_Lot }}</span></p>{% endif %}
+        <h3>Loturi în Procedură</h3>
+        {% for lot in procedura.loturi_procedura %}
+        <div class="super-lot-card">
+            <div class="super-lot-header">
+                <h4>{{ lot.Nume_Lot }}</h4>
+                <!-- Aici se poate adăuga un buton de ștergere a lotului -->
+            </div>
+            {% if lot.Descriere_Lot %}<p><small>{{ lot.Descriere_Lot }}</small></p>{% endif %}
+            <table class="product-list-table">
+                <tbody>
+                    {% for articol in lot.articole_incluse %}
+                    <tr>
+                        <td>{{ articol.produs_generic_req.Nume_Generic }}</td>
+                        <td>{{ articol.Cantitate_Solicitata }} {{ articol.produs_generic_req.Unitate_Masura }}</td>
+                        <td>
+                            <form method="POST"
+                                action="{{ url_for('proceduri.sterge_articol_super_lot', lot_procedura_id=lot.ID_Lot_Procedura, produs_referat_id=articol.ID_Produs_Referat) }}"
+                                style="display: inline;">
+                                <button type="submit" class="button-danger-outline" title="Scoate din lot">X</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="3">Acest lot este gol.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p>Nu a fost creat niciun lot pentru această procedură.</p>
+        {% endfor %}
+    </div>
 
-    <h5>Produse în Acest Lot</h5>
-    <table>
-        <thead>
-            <tr>
-                <th>Nume Generic Produs</th>
-                <th>Cantitate Solicitată (U.M.)</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for prod, pir in data.produse %}
-            <tr>
-                <td>{{ prod.Nume_Generic }}</td>
-                <td>{{ pir.Cantitate_Solicitata }} {{ prod.Unitate_Masura }}</td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="2">Acest lot nu conține produse.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="product-allocation">
+        <div class="card">
+            <h3>Produse Disponibile pentru Alocare</h3>
+            <p>Selectează produsele din referatele aprobate și adaugă-le într-unul din loturile create.</p>
 
-    <h5 style="margin-top: 20px;">Analiză Oferte pentru Acest Lot</h5>
-    {% if data.oferte_comparative %}
-    <table>
-        <thead>
-            <tr>
-                <th>Furnizor</th>
-                <th>Valoare Ofertată (Lot)</th>
-                <th>Nr. Articole Ofertate</th>
-                <th>Acțiuni</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for oferta, valoare, nr_articole in data.oferte_comparative %}
-            <tr>
-                <td>
-                    <a href="{{ url_for('oferte.detalii_oferta', oferta_id=oferta.ID_Oferta) }}">
-                        {{ oferta.furnizor.Nume_Furnizor }} (Oferta #{{ oferta.ID_Oferta }})
-                    </a>
-                </td>
-                <td><strong>{{ "%.2f"|format(valoare) }} {{ oferta.Moneda }}</strong></td>
-                <td>{{ nr_articole }} / {{ data.produse|length }}</td>
-                <td>
-                    <a href="{{ url_for('contracte.adauga_contract', oferta_id=oferta.ID_Oferta, lot_id=data.lot_obj.ID_Lot) }}"
-                        class="button">Generează Contract</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% else %}
-    <p>Nu au fost primite oferte care să acopere produsele din acest lot.</p>
-    {% endif %}
+            <form id="allocationForm" method="POST">
+                <div class="allocation-form-header">
+                    <select id="targetLotSelect" name="target_lot" required>
+                        <option value="">-- Selectează lotul destinație --</option>
+                        {% for lot in procedura.loturi_procedura %}
+                        <option value="{{ lot.ID_Lot_Procedura }}">{{ lot.Nume_Lot }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit">Adaugă Produsele Selectate</button>
+                </div>
+
+                <table class="product-list-table">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" id="selectAllCheckbox"></th>
+                            <th>Produs</th>
+                            <th>Cant.</th>
+                            <th>Referat Sursă</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pir, prod, ref in produse_disponibile %}
+                        <tr>
+                            <td><input type="checkbox" name="articole_selectate" value="{{ pir.ID_Produs_Referat }}"
+                                    class="product-checkbox"></td>
+                            <td>{{ prod.Nume_Generic }}</td>
+                            <td>{{ pir.Cantitate_Solicitata }} {{ prod.Unitate_Masura }}</td>
+                            <td><a href="{{ url_for('referate.detalii_referat', referat_id=ref.ID_Referat) }}"
+                                    target="_blank">#{{ ref.ID_Referat }}</a></td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="4">Toate produsele din referatele aprobate au fost deja alocate.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </form>
+        </div>
+    </div>
 </div>
-{% else %}
-<p>Această procedură nu are loturi asociate.</p>
-{% endfor %}
 
-<hr style="margin-top: 30px; margin-bottom: 30px;">
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+        const productCheckboxes = document.querySelectorAll('.product-checkbox');
+        const allocationForm = document.getElementById('allocationForm');
+        const targetLotSelect = document.getElementById('targetLotSelect');
 
-<h3>Management Oferte</h3>
-<div class="actions" style="margin-bottom: 15px;">
-    <a href="{{ url_for('oferte.adauga_oferta', procedura_id=procedura.ID_Procedura) }}" class="button">Adaugă Ofertă
-        pentru Această Procedură</a>
-</div>
+        // Funcționalitate "Select All"
+        if (selectAllCheckbox) {
+            selectAllCheckbox.addEventListener('change', function () {
+                productCheckboxes.forEach(checkbox => {
+                    checkbox.checked = this.checked;
+                });
+            });
+        }
 
-<style>
-    .lot-container {
-        border: 1px solid #ccc;
-        padding: 15px;
-        margin-top: 20px;
-        border-radius: 8px;
-    }
-</style>
+        // Actualizare dinamică a acțiunii formularului
+        if (allocationForm && targetLotSelect) {
+            targetLotSelect.addEventListener('change', function () {
+                const selectedLotId = this.value;
+                if (selectedLotId) {
+                    // Construim URL-ul dinamic folosind un template generat de url_for
+                    const urlTemplate = "{{ url_for('proceduri.adauga_articole_super_lot', lot_procedura_id=999999) }}";
+                    allocationForm.action = urlTemplate.replace('999999', selectedLotId);
+                } else {
+                    allocationForm.action = ''; // Dezactivăm acțiunea dacă nu e selectat niciun lot
+                }
+            });
+
+            // Prevenim submit dacă nu e selectat un lot
+            allocationForm.addEventListener('submit', function (event) {
+                if (!targetLotSelect.value) {
+                    event.preventDefault();
+                    alert('Vă rugăm să selectați un lot destinație înainte de a adăuga produse.');
+                }
+            });
+        }
+    });
+</script>
 {% endblock %}

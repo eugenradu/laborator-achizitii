@@ -15,10 +15,6 @@ Acest document inventariază sarcinile planificate pentru dezvoltarea aplicație
 
 ### Îmbunătățiri și Refactorizări Planificate
 
-- [ ] **Refactorizare Creare Procedură (Super-Loturi):**
-  - [ ] Modificarea modelului de date pentru a permite crearea de loturi specifice unei proceduri (`LotProcedura`).
-  - [ ] Implementarea unei interfețe de editare a procedurii care permite crearea de "super-loturi".
-  - [ ] Utilizatorul va putea aloca produse din loturile originale (din referate) în noile "super-loturi", având opțiunea de a exclude anumite produse.
 - [ ] **Îmbunătățiri Generale de Utilizabilitate și Performanță:**
   - *Toate listele principale (Referate, Proceduri, Contracte) au acum funcționalități de căutare și paginare.*
 - [ ] **Refactorizare Entități:**
@@ -39,6 +35,7 @@ Acest document inventariază sarcinile planificate pentru dezvoltarea aplicație
 - [x] **Tranziție Stare Referat (Ciornă -> În Aprobare)** cu validări
 - [x] **Flux de Aprobare/Respingere Referate** (cu motiv de respingere)
 - [x] **Căutare și Paginare în Lista de Referate**
+- [x] **Refactorizare Creare Procedură (Super-Loturi)**
 - [x] **Căutare și Paginare în Lista de Proceduri și Contracte**
 - [x] **Implementare Modul Proceduri de Achiziție** (bază)
 - [x] **Adăugare Dinamică de Entități** (Furnizori, Producători din formulare)

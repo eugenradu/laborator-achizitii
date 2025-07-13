@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, make_response
 from flask_login import login_required, current_user 
-from models import (db, ProceduraAchizitie, TipProcedura, Lot, Utilizator, ReferatNecesitate,
-                    ProdusInLot, ProdusInReferat, Produs, Oferta, ArticolOferta)
+from models import (db, ProceduraAchizitie, TipProcedura, Lot, Utilizator, ReferatNecesitate, StareReferat,
+                    ProdusInLot, ProdusInReferat, Produs, Oferta, ArticolOferta, LotProcedura)
 from datetime import date
 from sqlalchemy.orm import joinedload
 from sqlalchemy import or_
@@ -37,101 +37,110 @@ def list_proceduri():
 @proceduri_bp.route('/adauga', methods=['GET', 'POST'])
 @login_required
 def adauga_procedura():
-    """Gestionează crearea unei noi proceduri de achiziție."""
+    """Gestionează crearea antetului unei noi proceduri de achiziție."""
     if request.method == 'POST':
         nume_procedura = request.form.get('nume_procedura')
         tip_procedura_str = request.form.get('tip_procedura')
-        lot_ids = request.form.getlist('loturi_incluse')
 
-        if not all([nume_procedura, tip_procedura_str, lot_ids]):
-            flash('Numele, tipul procedurii și selectarea a cel puțin unui lot sunt obligatorii.', 'danger')
+        if not all([nume_procedura, tip_procedura_str]):
+            flash('Numele și tipul procedurii sunt obligatorii.', 'danger')
             return redirect(url_for('proceduri.adauga_procedura'))
 
-        # Creează noua procedură
         new_procedura = ProceduraAchizitie(
             Nume_Procedura=nume_procedura,
             Tip_Procedura=TipProcedura[tip_procedura_str],
             Stare='In Desfasurare',
             ID_Utilizator_Creare=current_user.ID_Utilizator
         )
-
-        # Asociază loturile selectate
-        loturi_selectate = Lot.query.filter(Lot.ID_Lot.in_(lot_ids)).all()
-        new_procedura.loturi_incluse.extend(loturi_selectate)
-
         db.session.add(new_procedura)
         db.session.commit()
-        flash(f'Procedura "{nume_procedura}" a fost creată cu succes!', 'success')
-        return redirect(url_for('proceduri.list_proceduri'))
+        flash(f'Procedura "{nume_procedura}" a fost inițiată. Acum puteți adăuga loturi și produse.', 'success')
+        return redirect(url_for('proceduri.detalii_procedura', procedura_id=new_procedura.ID_Procedura))
 
-    # GET: Pregătește datele pentru formular
-    # Preluăm loturile disponibile și le grupăm după referatul părinte
-    loturi_disponibile = Lot.query.options(joinedload(Lot.referat_parinte))\
-                                  .filter(~Lot.proceduri_asociate.any())\
-                                  .order_by(Lot.ID_Referat, Lot.Nume_Lot).all()
-
-    referate_cu_loturi = defaultdict(list)
-    for lot in loturi_disponibile:
-        # Cheia este obiectul ReferatNecesitate, valoarea este o listă de obiecte Lot
-        referate_cu_loturi[lot.referat_parinte].append(lot)
-
-    return render_template('adauga_procedura.html', tipuri_procedura=TipProcedura, referate_cu_loturi=referate_cu_loturi)
+    return render_template('adauga_procedura.html', tipuri_procedura=TipProcedura)
 
 @proceduri_bp.route('/<int:procedura_id>/detalii')
 @login_required
 def detalii_procedura(procedura_id):
-    """Afișează detaliile complete ale unei proceduri, inclusiv ofertele comparative pe lot."""
+    """Afișează panoul de control pentru o procedură, permițând managementul Super-Loturilor."""
     procedura = ProceduraAchizitie.query.options(
-        joinedload(ProceduraAchizitie.creator_procedura)
+        joinedload(ProceduraAchizitie.creator_procedura),
+        joinedload(ProceduraAchizitie.loturi_procedura).joinedload(LotProcedura.articole_incluse).joinedload(ProdusInReferat.produs_generic_req),
+        joinedload(ProceduraAchizitie.loturi_procedura).joinedload(LotProcedura.articole_incluse).joinedload(ProdusInReferat.referat_necesitate)
     ).get_or_404(procedura_id)
 
-    # Preluăm loturile incluse în procedură
-    loturi_incluse = procedura.loturi_incluse.order_by(Lot.Nume_Lot).all()
+    # Găsim toate produsele din referate aprobate
+    produse_aprobate_query = db.session.query(ProdusInReferat, Produs, ReferatNecesitate)\
+        .join(Produs, ProdusInReferat.ID_Produs_Generic == Produs.ID_Produs)\
+        .join(ReferatNecesitate, ProdusInReferat.ID_Referat == ReferatNecesitate.ID_Referat)\
+        .filter(ReferatNecesitate.Stare == StareReferat.APROBAT)
 
-    # Structură pentru a stoca toate datele necesare în template
-    # Cheie: ID_Lot, Valoare: dicționar cu detalii lot și oferte
-    loturi_cu_oferte = {}
+    # Găsim ID-urile produselor deja alocate în această procedură
+    produse_alocate_ids = {
+        articol.ID_Produs_Referat
+        for lot_proc in procedura.loturi_procedura
+        for articol in lot_proc.articole_incluse
+    }
 
-    for lot in loturi_incluse:
-        # Pas 1: Găsim toate produsele solicitate în acest lot
-        produse_in_lot = db.session.query(Produs, ProdusInReferat)\
-            .join(ProdusInReferat, Produs.ID_Produs == ProdusInReferat.ID_Produs_Generic)\
-            .join(ProdusInLot, ProdusInReferat.ID_Produs_Referat == ProdusInLot.ID_Produs_Referat)\
-            .filter(ProdusInLot.ID_Lot == lot.ID_Lot)\
-            .order_by(Produs.Nume_Generic).all()
+    # Filtrăm pentru a obține doar produsele nealocate
+    produse_disponibile = [
+        (pir, prod, ref) for pir, prod, ref in produse_aprobate_query.all()
+        if pir.ID_Produs_Referat not in produse_alocate_ids
+    ]
 
-        # Pas 2: Găsim ofertele relevante pentru acest lot și calculăm valoarea totală
-        # Subquery pentru a obține ID-urile ProdusInReferat pentru lotul curent
-        produse_in_lot_sq = db.session.query(ProdusInReferat.ID_Produs_Referat)\
-            .join(ProdusInLot)\
-            .filter(ProdusInLot.ID_Lot == lot.ID_Lot).subquery()
+    return render_template('detalii_procedura.html', procedura=procedura, produse_disponibile=produse_disponibile)
 
-        # Interogare principală pentru a obține ofertele și valorile lor pentru acest lot
-        oferte_si_valori = db.session.query(
-            Oferta,
-            db.func.sum(ArticolOferta.Pret_Unitar_Pachet * ProdusInReferat.Cantitate_Solicitata).label('valoare_lot'),
-            db.func.count(ArticolOferta.ID_Articol_Oferta).label('numar_articole_ofertate')
-        ).join(ArticolOferta, Oferta.ID_Oferta == ArticolOferta.ID_Oferta)\
-         .join(ProdusInReferat, ArticolOferta.ID_Produs_Referat == ProdusInReferat.ID_Produs_Referat)\
-         .filter(Oferta.ID_Procedura == procedura_id)\
-         .filter(ArticolOferta.ID_Produs_Referat.in_(produse_in_lot_sq))\
-         .group_by(Oferta)\
-         .order_by('valoare_lot')\
-         .all()
+@proceduri_bp.route('/<int:procedura_id>/adauga_super_lot', methods=['POST'])
+@login_required
+def adauga_super_lot(procedura_id):
+    procedura = ProceduraAchizitie.query.get_or_404(procedura_id)
+    nume_lot = request.form.get('nume_lot')
+    descriere_lot = request.form.get('descriere_lot')
 
-        loturi_cu_oferte[lot.ID_Lot] = {
-            'lot_obj': lot,
-            'produse': produse_in_lot,
-            'oferte_comparative': oferte_si_valori
-        }
+    if not nume_lot:
+        flash('Numele lotului este obligatoriu.', 'danger')
+    else:
+        new_lot = LotProcedura(
+            ID_Procedura=procedura.ID_Procedura,
+            Nume_Lot=nume_lot,
+            Descriere_Lot=descriere_lot
+        )
+        db.session.add(new_lot)
+        db.session.commit()
+        flash(f'Lotul "{nume_lot}" a fost adăugat în procedură.', 'success')
+    
+    return redirect(url_for('proceduri.detalii_procedura', procedura_id=procedura_id))
 
-    # Preluăm ofertele asociate cu această procedură
-    oferte_asociate = Oferta.query.options(joinedload(Oferta.furnizor)).filter_by(ID_Procedura=procedura_id).order_by(Oferta.Data_Oferta.desc()).all()
+@proceduri_bp.route('/super_lot/<int:lot_procedura_id>/adauga_articole', methods=['POST'])
+@login_required
+def adauga_articole_super_lot(lot_procedura_id):
+    lot_procedura = LotProcedura.query.get_or_404(lot_procedura_id)
+    articole_ids = request.form.getlist('articole_selectate')
 
-    return render_template('detalii_procedura.html', 
-                           procedura=procedura, 
-                           loturi_cu_oferte=loturi_cu_oferte,
-                           oferte_asociate=oferte_asociate) # Păstrăm și lista generală pentru referință
+    if not articole_ids:
+        flash('Nu ați selectat niciun articol de adăugat.', 'warning')
+    else:
+        articole_de_adaugat = ProdusInReferat.query.filter(ProdusInReferat.ID_Produs_Referat.in_(articole_ids)).all()
+        lot_procedura.articole_incluse.extend(articole_de_adaugat)
+        db.session.commit()
+        flash(f'{len(articole_de_adaugat)} articol(e) au fost adăugate în lotul "{lot_procedura.Nume_Lot}".', 'success')
+
+    return redirect(url_for('proceduri.detalii_procedura', procedura_id=lot_procedura.ID_Procedura))
+
+@proceduri_bp.route('/super_lot/<int:lot_procedura_id>/sterge_articol/<int:produs_referat_id>', methods=['POST'])
+@login_required
+def sterge_articol_super_lot(lot_procedura_id, produs_referat_id):
+    lot_procedura = LotProcedura.query.get_or_404(lot_procedura_id)
+    articol_de_sters = ProdusInReferat.query.get_or_404(produs_referat_id)
+
+    if articol_de_sters in lot_procedura.articole_incluse:
+        lot_procedura.articole_incluse.remove(articol_de_sters)
+        db.session.commit()
+        flash('Articolul a fost scos din lot.', 'success')
+    else:
+        flash('Eroare: Articolul nu se află în acest lot.', 'danger')
+
+    return redirect(url_for('proceduri.detalii_procedura', procedura_id=lot_procedura.ID_Procedura))
 
 @proceduri_bp.route('/<int:procedura_id>/genereaza_documentatie')
 @login_required
@@ -151,21 +160,17 @@ def genereaza_documentatie(procedura_id):
     doc_text += f"{'-'*40}\n"
 
     # Preluăm loturile și produsele pentru fiecare lot
-    loturi_incluse = procedura.loturi_incluse.order_by(Lot.Nume_Lot).all()
+    for lot_proc in procedura.loturi_procedura:
+        doc_text += f"\nLOT #{lot_proc.ID_Lot_Procedura}: {lot_proc.Nume_Lot.upper()}\n"
+        if lot_proc.Descriere_Lot:
+            doc_text += f"Descriere Lot: {lot_proc.Descriere_Lot}\n"
+        doc_text += "\n"
 
-    for lot in loturi_incluse:
-        doc_text += f"\nLOT #{lot.ID_Lot}: {lot.Nume_Lot.upper()}\n"
-        if lot.Descriere_Lot:
-            doc_text += f"Descriere Lot: {lot.Descriere_Lot}\n"
-        doc_text += f"(Provenit din Referat #{lot.ID_Referat})\n\n"
+        articole_in_lot = lot_proc.articole_incluse.join(Produs).order_by(Produs.Nume_Generic).all()
 
-        produse_in_lot = db.session.query(Produs, ProdusInReferat)\
-            .join(ProdusInReferat, Produs.ID_Produs == ProdusInReferat.ID_Produs_Generic)\
-            .join(ProdusInLot, ProdusInReferat.ID_Produs_Referat == ProdusInLot.ID_Produs_Referat)\
-            .filter(ProdusInLot.ID_Lot == lot.ID_Lot).order_by(Produs.Nume_Generic).all()
-
-        for i, (produs, pir) in enumerate(produse_in_lot):
-            doc_text += f"  {i+1}. {produs.Nume_Generic}\n"
+        for i, pir in enumerate(articole_in_lot):
+            produs = pir.produs_generic_req
+            doc_text += f"  {i+1}. {produs.Nume_Generic} (din Ref. #{pir.ID_Referat})\n"
             doc_text += f"     - Cantitate solicitată: {pir.Cantitate_Solicitata} {produs.Unitate_Masura}\n"
             doc_text += f"     - Specificații tehnice minime obligatorii:\n       {produs.Specificatii_Tehnice or 'N/A'}\n\n"
 

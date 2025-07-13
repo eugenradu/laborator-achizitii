@@ -89,14 +89,17 @@ Acest document descrie funcționarea și interacțiunile modulelor cheie ale apl
 ## 6. Modulul `proceduri` (`blueprints/proceduri.py`)
 
 - **Scop:** Gestionează procedurile de achiziție, de la inițiere până la finalizare.
-- **Entități Cheie:** `ProceduraAchizitie`, `TipProcedura`, `Lot`.
+- **Entități Cheie:** `ProceduraAchizitie`, `TipProcedura`, `LotProcedura` (Super-Lot), `ProdusInReferat`.
 - **Funcționalități Principale:**
-  - Listarea tuturor procedurilor de achiziție.
-  - Inițierea unei noi proceduri, cu posibilitatea de a consolida loturi din mai multe referate.
-  - Vizualizarea detaliilor unei proceduri, inclusiv loturile și ofertele asociate.
-  - Generarea unui document text (.txt) cu specificațiile complete ale procedurii.
+  - Listarea tuturor procedurilor de achiziție, cu căutare și paginare.
+  - Inițierea unui "antet" de procedură (doar nume și tip).
+  - **Managementul Super-Loturilor**: Pe pagina de detalii, utilizatorul poate:
+    - Crea loturi noi, specifice procedurii (`LotProcedura`).
+    - Vizualiza un "bazin" de produse disponibile din toate referatele aprobate.
+    - Aloca interactiv produse individuale din acest bazin în Super-Loturile create.
+  - Generarea unui document text (.txt) cu specificațiile complete ale procedurii, structurat pe noile Super-Loturi.
 - **Interacțiuni:**
-  - **Consumă** `Lot`-uri disponibile din modulul `referate`.
+  - **Consumă** `ProdusInReferat` din referate cu starea `APROBAT` pentru a popula lista de produse disponibile.
   - **Este integrat bidirecțional cu `Oferte`**:
     - Afișează o listă de oferte care au fost asociate cu el.
     - Oferă o scurtătură ("Adaugă Ofertă pentru Această Procedură") pentru a crea o nouă ofertă cu procedura curentă pre-selectată.

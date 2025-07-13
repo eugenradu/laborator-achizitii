@@ -193,16 +193,6 @@ class ProdusInLot(db.Model):
 
 # --- Tabele de Asociere (Many-to-Many) ---
 
-# Tabela de legătură pentru Proceduri <-> Loturi
-# O Procedură poate include mai multe Loturi.
-# Un Lot (teoretic) ar putea fi în mai multe proceduri, deși în logica actuală nu permitem asta.
-# Păstrăm M-M pentru flexibilitate viitoare.
-proceduri_loturi_asociere = db.Table(
-    'proceduri_loturi_asociere',
-    db.Column('procedura_id', db.Integer, db.ForeignKey('Proceduri_Achizitie.ID_Procedura'), primary_key=True),
-    db.Column('lot_id', db.Integer, db.ForeignKey('Loturi.ID_Lot'), primary_key=True)
-)
-
 # Enum pentru tipurile de proceduri de achiziție
 class TipProcedura(enum.Enum):
     LICITATIE_DESCHISA = "Licitatie deschisa"
@@ -223,6 +213,29 @@ contracte_loturi_asociere = db.Table(
     db.Column('contract_id', db.Integer, db.ForeignKey('Contracte.ID_Contract'), primary_key=True),
     db.Column('lot_id', db.Integer, db.ForeignKey('Loturi.ID_Lot'), primary_key=True)
 )
+
+# Tabelă nouă de asociere pentru LotProcedura <-> ProdusInReferat
+lot_procedura_articole_asociere = db.Table(
+    'lot_procedura_articole_asociere',
+    db.Column('lot_procedura_id', db.Integer, db.ForeignKey('Loturi_Procedura.ID_Lot_Procedura'), primary_key=True),
+    db.Column('produs_referat_id', db.Integer, db.ForeignKey('Produse_In_Referate.ID_Produs_Referat'), primary_key=True)
+)
+
+# Model nou pentru "Super-Loturi"
+class LotProcedura(db.Model):
+    __tablename__ = 'Loturi_Procedura'
+    ID_Lot_Procedura = db.Column(db.Integer, primary_key=True)
+    ID_Procedura = db.Column(db.Integer, db.ForeignKey('Proceduri_Achizitie.ID_Procedura'), nullable=False)
+    Nume_Lot = db.Column(db.Text, nullable=False)
+    Descriere_Lot = db.Column(db.Text)
+
+    # Relație Many-to-Many cu articolele din referate
+    articole_incluse = db.relationship(
+        'ProdusInReferat',
+        secondary=lot_procedura_articole_asociere,
+        backref=db.backref('loturi_procedura_asociate', lazy='dynamic'),
+        lazy='dynamic'
+    )
 # 11. Model pentru Proceduri de Achiziție (fostul Licitatii)
 class ProceduraAchizitie(db.Model):
     __tablename__ = 'Proceduri_Achizitie'
@@ -236,14 +249,8 @@ class ProceduraAchizitie(db.Model):
     Link_Scan_Caiet_Sarcini_PDF = db.Column(db.Text)
     ID_Utilizator_Creare = db.Column(db.Integer, db.ForeignKey('Utilizatori.ID_Utilizator'))
 
-    # Relație Many-to-Many cu Loturi
-    loturi_incluse = db.relationship(
-        'Lot',
-        secondary=proceduri_loturi_asociere,
-        backref=db.backref('proceduri_asociate', lazy='dynamic'),
-        lazy='dynamic'
-    )
-    # Relații inverse
+    # Relație nouă One-to-Many către noile loturi de procedură
+    loturi_procedura = db.relationship('LotProcedura', backref='procedura_parinte', lazy=True, cascade="all, delete-orphan")
     oferte = db.relationship('Oferta', backref='procedura_parinte', lazy=True)
     contracte_rel = db.relationship('Contract', backref='procedura_contract', lazy=True)
 

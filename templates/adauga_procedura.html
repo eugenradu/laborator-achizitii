@@ -18,61 +18,9 @@
         </select>
     </fieldset>
 
-    <fieldset>
-        <legend>Selectează Loturi (Obligatoriu)</legend>
-        <p>Selectează loturile disponibile din referatele de necesitate pentru a le include în această procedură.</p>
-
-        {% for referat, loturi in referate_cu_loturi.items() %}
-        <details class="referat-group" open>
-            <summary>
-                <strong>Referat #{{ referat.ID_Referat }}</strong> (Creat la: {{
-                referat.Data_Creare.strftime('%d-%m-%Y') }})
-            </summary>
-            <div class="lot-list">
-                {% for lot in loturi %}
-                <label class="checkbox-label">
-                    <input type="checkbox" name="loturi_incluse" value="{{ lot.ID_Lot }}">
-                    Lot #{{ lot.ID_Lot }}: {{ lot.Nume_Lot }}
-                </label>
-                {% endfor %}
-            </div>
-        </details>
-        {% else %}
-        <p>Nu există niciun lot disponibil care să nu fie deja inclus într-o altă procedură.</p>
-        {% endfor %}
-    </fieldset>
-
     <br>
-    <button type="submit">Creează Procedura</button>
+    <button type="submit">Inițiază Procedura</button>
     <a href="{{ url_for('proceduri.list_proceduri') }}" class="button-secondary" style="margin-left: 10px;">Anulează</a>
 </form>
 
-<style>
-    .referat-group {
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        margin-bottom: 10px;
-        padding: 10px;
-    }
-
-    .referat-group summary {
-        cursor: pointer;
-        font-weight: bold;
-    }
-
-    .lot-list {
-        padding-top: 10px;
-        padding-left: 20px;
-    }
-
-    .checkbox-label {
-        display: block;
-        margin-bottom: 5px;
-        font-weight: normal;
-    }
-
-    .checkbox-label input {
-        margin-right: 10px;
-    }
-</style>
 {% endblock %}
