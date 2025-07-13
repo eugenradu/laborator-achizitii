@@ -85,6 +85,15 @@
         background-color: var(--color-danger, #dc3545);
         color: white;
     }
+
+    .offer-analysis-table {
+        margin-top: 20px;
+    }
+
+    .offer-analysis-table td,
+    .offer-analysis-table th {
+        font-size: 0.9em;
+    }
 </style>
 {% endblock %}
 
@@ -118,7 +127,8 @@
         </div>
 
         <h3>Loturi în Procedură</h3>
-        {% for lot in procedura.loturi_procedura %}
+        {% for lot_id, data in super_loturi_cu_oferte.items() %}
+        {% set lot = data.lot_obj %}
         <div class="super-lot-card">
             <div class="super-lot-header">
                 <h4>{{ lot.Nume_Lot }}</h4>
@@ -146,6 +156,39 @@
                     {% endfor %}
                 </tbody>
             </table>
+
+            <h5 style="margin-top: 20px;">Analiză Oferte pentru Acest Lot</h5>
+            {% if data.oferte_comparative %}
+            <table class="product-list-table offer-analysis-table">
+                <thead>
+                    <tr>
+                        <th>Furnizor</th>
+                        <th>Valoare Ofertată</th>
+                        <th>Acoperire</th>
+                        <th>Acțiuni</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for oferta, valoare, nr_articole in data.oferte_comparative %}
+                    <tr>
+                        <td>
+                            <a href="{{ url_for('oferte.detalii_oferta', oferta_id=oferta.ID_Oferta) }}">
+                                {{ oferta.furnizor.Nume_Furnizor }}
+                            </a>
+                        </td>
+                        <td><strong>{{ "%.2f"|format(valoare) }} {{ oferta.Moneda }}</strong></td>
+                        <td>{{ nr_articole }} / {{ data.numar_articole_total }}</td>
+                        <td>
+                            <a href="{{ url_for('contracte.adauga_contract', oferta_id=oferta.ID_Oferta, lot_procedura_id=lot.ID_Lot_Procedura) }}"
+                                class="button">Generează Contract</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p><small>Nu au fost primite oferte care să acopere produsele din acest lot.</small></p>
+            {% endif %}
         </div>
         {% else %}
         <p>Nu a fost creat niciun lot pentru această procedură.</p>
@@ -198,6 +241,42 @@
         </div>
     </div>
 </div>
+
+<hr style="margin-top: 30px; margin-bottom: 30px;">
+
+<h3>Management Oferte Generale</h3>
+<div class="actions" style="margin-bottom: 15px;">
+    <a href="{{ url_for('oferte.adauga_oferta', procedura_id=procedura.ID_Procedura) }}" class="button">Adaugă Ofertă
+        pentru Această Procedură</a>
+</div>
+<table>
+    <thead>
+        <tr>
+            <th>ID Ofertă</th>
+            <th>Furnizor</th>
+            <th>Data Ofertei</th>
+            <th>Nr. Articole</th>
+            <th>Acțiuni</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for oferta in oferte_asociate %}
+        <tr>
+            <td>#{{ oferta.ID_Oferta }}</td>
+            <td>{{ oferta.furnizor.Nume_Furnizor }}</td>
+            <td>{{ oferta.Data_Oferta }}</td>
+            <td>{{ oferta.articole|length }}</td>
+            <td>
+                <a href="{{ url_for('oferte.detalii_oferta', oferta_id=oferta.ID_Oferta) }}">Vezi Detalii Ofertă</a>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="5">Nicio ofertă nu a fost asociată cu această procedură încă.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {

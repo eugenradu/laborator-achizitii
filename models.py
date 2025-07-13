@@ -24,10 +24,6 @@ class Utilizator(db.Model, UserMixin):
     # Relații inverse
     referate_create = db.relationship('ReferatNecesitate', backref='creator_referat', lazy=True)
     proceduri_create = db.relationship('ProceduraAchizitie', backref='creator_procedura', lazy=True)
-    contracte_create = db.relationship('Contract', backref='creator_contract', lazy=True)
-    comenzi_create = db.relationship('ComandaGeneral', backref='creator_comanda', lazy=True)
-    livrari_inregistrate = db.relationship('LivrareComanda', backref='inregistrator_livrare', lazy=True)
-    consumuri_inregistrate = db.relationship('ConsumStoc', backref='inregistrator_consum', lazy=True)
     
     def set_password(self, password):
         self.Parola_Hash = generate_password_hash(password)
@@ -120,7 +116,6 @@ class VariantaComercialaProdus(db.Model):
     # Relații
     articole_oferta = db.relationship('ArticolOferta', backref='varianta_comerciala_ofertata', lazy=True)
     articole_contractate = db.relationship('ArticolContractat', backref='varianta_comerciala_contractata', lazy=True)
-    loturi_stoc = db.relationship('LotStoc', backref='varianta_comerciala_stoc', lazy=True)
 
     def __repr__(self):
         return f"<VariantaComercialaProdus {self.Cod_Catalog}>"
@@ -207,18 +202,18 @@ class TipContract(enum.Enum):
     ACORD_CADRU = "Acord-cadru (comenzi subsecvente)"
 
 # Tabela de legătură pentru Contracte <-> Loturi
-# Un Contract poate acoperi mai multe Loturi.
-contracte_loturi_asociere = db.Table(
-    'contracte_loturi_asociere',
-    db.Column('contract_id', db.Integer, db.ForeignKey('Contracte.ID_Contract'), primary_key=True),
-    db.Column('lot_id', db.Integer, db.ForeignKey('Loturi.ID_Lot'), primary_key=True)
-)
-
 # Tabelă nouă de asociere pentru LotProcedura <-> ProdusInReferat
 lot_procedura_articole_asociere = db.Table(
     'lot_procedura_articole_asociere',
     db.Column('lot_procedura_id', db.Integer, db.ForeignKey('Loturi_Procedura.ID_Lot_Procedura'), primary_key=True),
     db.Column('produs_referat_id', db.Integer, db.ForeignKey('Produse_In_Referate.ID_Produs_Referat'), primary_key=True)
+)
+
+# Tabelă nouă de asociere pentru Contracte <-> LoturiProcedura
+contracte_loturi_procedura_asociere = db.Table(
+    'contracte_loturi_procedura_asociere',
+    db.Column('contract_id', db.Integer, db.ForeignKey('Contracte.ID_Contract'), primary_key=True),
+    db.Column('lot_procedura_id', db.Integer, db.ForeignKey('Loturi_Procedura.ID_Lot_Procedura'), primary_key=True)
 )
 
 # Model nou pentru "Super-Loturi"
@@ -300,22 +295,21 @@ class Contract(db.Model):
     ID_Furnizor = db.Column(db.Integer, db.ForeignKey('Furnizori.ID_Furnizor'), nullable=False)
     Pret_Total_Contract = db.Column(db.Float, nullable=False)
     Moneda = db.Column(db.Text, nullable=False, default='RON')
+    ID_Utilizator_Creare = db.Column(db.Integer, db.ForeignKey('Utilizatori.ID_Utilizator'))
     Data_Semnare = db.Column(db.Date, nullable=False, default=date.today)
     Numar_Contract = db.Column(db.Text, nullable=False)
     Numar_Inregistrare_Document = db.Column(db.Text)
     Data_Inregistrare_Document = db.Column(db.Date)
     Link_Scan_PDF = db.Column(db.Text)
     ID_Utilizator_Creare = db.Column(db.Integer, db.ForeignKey('Utilizatori.ID_Utilizator'))
-
-    # Relație Many-to-Many cu Loturi
-    loturi_contractate = db.relationship(
-        'Lot',
-        secondary=contracte_loturi_asociere,
+    # Relație Many-to-Many cu Loturile de Procedură
+    loturi_procedura_contractate = db.relationship(
+        'LotProcedura',
+        secondary=contracte_loturi_procedura_asociere,
         backref=db.backref('contracte_asociate', lazy='dynamic'),
         lazy='dynamic'
     )
     articole_contractate = db.relationship('ArticolContractat', backref='contract_parinte', lazy=True, cascade="all, delete-orphan")
-    comenzi_rel = db.relationship('ComandaGeneral', backref='contract_comanda', lazy=True)
 
     def __repr__(self):
         return f"<Contract {self.Numar_Contract}>"
@@ -332,100 +326,3 @@ class ArticolContractat(db.Model):
 
     def __repr__(self):
         return f"<ArticolContractat {self.ID_Articol_Contractat}>"
-
-# 15. Model pentru Comanda_General
-class ComandaGeneral(db.Model):
-    __tablename__ = 'Comanda_General'
-    ID_Comanda_General = db.Column(db.Integer, primary_key=True)
-    ID_Contract = db.Column(db.Integer, db.ForeignKey('Contracte.ID_Contract'), nullable=False)
-    Data_Comanda = db.Column(db.Date, nullable=False, default=date.today)
-    Numar_Comanda = db.Column(db.Text)
-    Stare_Comanda = db.Column(db.Text, nullable=False, default='Emisa')
-    Numar_Inregistrare_Document = db.Column(db.Text)
-    Data_Inregistrare_Document = db.Column(db.Date)
-    Link_Scan_PDF = db.Column(db.Text)
-    ID_Utilizator_Creare = db.Column(db.Integer, db.ForeignKey('Utilizatori.ID_Utilizator'))
-
-    # Relații
-    detalii_produse_comanda_rel = db.relationship('DetaliiComandaProdus', backref='comanda_parinte', lazy=True)
-
-    def __repr__(self):
-        return f"<ComandaGeneral {self.Numar_Comanda or self.ID_Comanda_General}>"
-
-# 16. Model pentru Detalii_Comanda_Produs
-class DetaliiComandaProdus(db.Model):
-    __tablename__ = 'Detalii_Comanda_Produs'
-    ID_Detalii_Comanda_Produs = db.Column(db.Integer, primary_key=True)
-    ID_Comanda_General = db.Column(db.Integer, db.ForeignKey('Comanda_General.ID_Comanda_General'), nullable=False)
-    ID_Articol_Contractat = db.Column(db.Integer, db.ForeignKey('Articole_Contractate.ID_Articol_Contractat'), nullable=False)
-    Cantitate_Comandata_Pachete = db.Column(db.Integer, nullable=False)
-
-    def __repr__(self):
-        return f"<DetaliiComandaProdus {self.ID_Detalii_Comanda_Produs}>"
-
-# 17. Model pentru Livrare_Comenzi
-class LivrareComanda(db.Model):
-    __tablename__ = 'Livrare_Comenzi'
-    ID_Livrare = db.Column(db.Integer, primary_key=True)
-    ID_Detalii_Comanda_Produs = db.Column(db.Integer, db.ForeignKey('Detalii_Comanda_Produs.ID_Detalii_Comanda_Produs'), nullable=False)
-    Cantitate_Livrata_Pachete = db.Column(db.Integer, nullable=False)
-    Data_Livrare = db.Column(db.Date, nullable=False, default=date.today)
-    Numar_Factura = db.Column(db.Text)
-    Link_Scan_Factura_PDF = db.Column(db.Text)
-    Numar_Aviz_Livrare = db.Column(db.Text)
-    Link_Scan_Aviz_Livrare_PDF = db.Column(db.Text)
-    ID_Utilizator_Inregistrare = db.Column(db.Integer, db.ForeignKey('Utilizatori.ID_Utilizator'))
-
-    # Relații
-    loturi_stoc_rel = db.relationship('LotStoc', backref='livrare_sursa', lazy=True)
-
-    def __repr__(self):
-        return f"<LivrareComanda {self.ID_Livrare}>"
-
-# 18. Model pentru Locatii_Depozitare
-class LocatieDepozitare(db.Model):
-    __tablename__ = 'Locatii_Depozitare'
-    ID_Locatie = db.Column(db.Integer, primary_key=True)
-    Nume_Locatie = db.Column(db.Text, unique=True, nullable=False)
-    Tip_Locatie = db.Column(db.Text, nullable=False)
-    Descriere = db.Column(db.Text)
-
-    # Relații
-    loturi_stoc_rel = db.relationship('LotStoc', backref='locatie_stoc', lazy=True)
-
-    def __repr__(self):
-        return f"<LocatieDepozitare {self.Nume_Locatie}>"
-
-# 19. Model pentru Loturi_Stoc
-class LotStoc(db.Model):
-    __tablename__ = 'Loturi_Stoc'
-    ID_Lot_Stoc = db.Column(db.Integer, primary_key=True)
-    ID_Varianta_Comerciala = db.Column(db.Integer, db.ForeignKey('Variante_Comerciale_Produs.ID_Varianta_Comerciala'), nullable=False)
-    ID_Livrare = db.Column(db.Integer, db.ForeignKey('Livrare_Comenzi.ID_Livrare'))
-    Cantitate_Initiala_Stoc_Pachete = db.Column(db.Integer, nullable=False)
-    Cantitate_Curenta_Stoc_Pachete = db.Column(db.Integer, nullable=False)
-    Data_Intrare_Stoc = db.Column(db.Date, nullable=False, default=date.today)
-    Data_Expirare = db.Column(db.Date)
-    ID_Locatie_Depozitare = db.Column(db.Integer, db.ForeignKey('Locatii_Depozitare.ID_Locatie'), nullable=False)
-    Detalii_Ambalare_Intrare = db.Column(db.Text)
-    Numar_Lot_Producator = db.Column(db.Text)
-    Nivel_Alerta_Stoc = db.Column(db.Integer)
-
-    # Relații
-    consumuri_rel = db.relationship('ConsumStoc', backref='lot_stoc_consum', lazy=True)
-
-    def __repr__(self):
-        return f"<LotStoc {self.ID_Lot_Stoc}>"
-
-# 20. Model pentru Consum_Stoc
-class ConsumStoc(db.Model):
-    __tablename__ = 'Consum_Stoc'
-    ID_Consum = db.Column(db.Integer, primary_key=True)
-    ID_Lot_Stoc = db.Column(db.Integer, db.ForeignKey('Loturi_Stoc.ID_Lot_Stoc'), nullable=False)
-    Cantitate_Consumata_Pachete = db.Column(db.Integer, nullable=False)
-    Data_Consum = db.Column(db.Date, nullable=False, default=date.today)
-    Utilizator_Consum = db.Column(db.Integer, db.ForeignKey('Utilizatori.ID_Utilizator'))
-    Scop_Consum = db.Column(db.Text)
-
-    def __repr__(self):
-        return f"<ConsumStoc {self.ID_Consum}>"

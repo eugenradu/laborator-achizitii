@@ -13,7 +13,7 @@
         din data de {{ oferta.Data_Oferta.strftime('%d-%m-%Y') }}</p>
 </div>
 
-<form method="POST" id="contractForm">
+<form method="POST" id="contractForm" action="{{ url_for('contracte.adauga_contract') }}">
     <input type="hidden" name="id_procedura" value="{{ procedura.ID_Procedura }}">
     <input type="hidden" name="id_furnizor" value="{{ oferta.furnizor.ID_Furnizor }}">
     <input type="hidden" name="moneda" value="{{ oferta.Moneda }}">
@@ -47,18 +47,17 @@
         <legend>Loturi Incluse în Contract</legend>
         <p>Următorul lot este inclus automat:</p>
         <ul>
-            <li><strong>{{ lot_initial.Nume_Lot }}</strong> (Lot #{{ lot_initial.ID_Lot }})</li>
+            <li><strong>{{ lot_initial.Nume_Lot }}</strong> (Super-Lot #{{ lot_initial.ID_Lot_Procedura }})</li>
         </ul>
-        <input type="hidden" name="loturi_incluse" value="{{ lot_initial.ID_Lot }}">
+        <input type="hidden" name="loturi_procedura_incluse" value="{{ lot_initial.ID_Lot_Procedura }}">
 
         {% if loturi_suplimentare_eligibile %}
-        <p>Selectați loturile suplimentare pe care doriți să le includeți în acest contract (de la același furnizor, din
-            aceeași procedură):</p>
+        <p>Selectați loturile suplimentare pe care doriți să le includeți în acest contract:</p>
         <div class="lot-list">
             {% for lot in loturi_suplimentare_eligibile %}
             <label class="checkbox-label">
-                <input type="checkbox" name="loturi_incluse" value="{{ lot.ID_Lot }}">
-                Lot #{{ lot.ID_Lot }}: {{ lot.Nume_Lot }}
+                <input type="checkbox" name="loturi_procedura_incluse" value="{{ lot.ID_Lot_Procedura }}">
+                {{ lot.Nume_Lot }} (Super-Lot #{{ lot.ID_Lot_Procedura }})
             </label>
             {% endfor %}
         </div>

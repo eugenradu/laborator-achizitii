@@ -35,9 +35,10 @@ Acest document inventariază sarcinile planificate pentru dezvoltarea aplicație
 - [x] **Tranziție Stare Referat (Ciornă -> În Aprobare)** cu validări
 - [x] **Flux de Aprobare/Respingere Referate** (cu motiv de respingere)
 - [x] **Căutare și Paginare în Lista de Referate**
+- [x] **Decizie de a separa Modulul de Stocuri**
 - [x] **Refactorizare Creare Procedură (Super-Loturi)**
+- [x] **Repararea fluxului de creare a contractelor (aliniere cu Super-Loturi)**
 - [x] **Căutare și Paginare în Lista de Proceduri și Contracte**
 - [x] **Implementare Modul Proceduri de Achiziție** (bază)
 - [x] **Adăugare Dinamică de Entități** (Furnizori, Producători din formulare)
 - [x] **Implementare Modul Contracte (Bază)**
-- [x] **Implementare Modul Comenzi (Bază)**

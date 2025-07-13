@@ -114,29 +114,11 @@ Acest document descrie funcționarea și interacțiunile modulelor cheie ale apl
   - Distincție între `CONTRACT_FERM` (cu livrare integrală) și `ACORD_CADRU` (cu comenzi subsecvente).
   - Listarea tuturor contractelor.
   - Vizualizarea detaliilor unui contract, inclusiv loturile și articolele contractate.
-  - Generarea unui nou contract pe baza unei oferte câștigătoare pentru un lot dintr-o procedură.
+  - Generarea unui nou contract pe baza unei oferte câștigătoare pentru un "Super-Lot" (`LotProcedura`) dintr-o procedură.
   - Căutare după număr, furnizor sau creator, cu paginare în lista de contracte.
-  - Consolidarea mai multor loturi câștigate de același furnizor (în aceeași procedură) într-un singur contract.
 - **Interacțiuni:**
-  - **Este inițiat** din modulul `proceduri`, prin interfața de adjudecare a ofertelor pe lot.
-  - **Consumă** date din `oferte` (furnizor, prețuri, articole) și `proceduri` (loturi, produse) pentru a pre-popula formularul de creare.
-  - **Interacționează strâns cu modulul `comenzi`**:
-    - Generează automat o comandă la crearea unui `CONTRACT_FERM`.
-    - Servește ca bază pentru crearea manuală de comenzi subsecvente în cazul unui `ACORD_CADRU`.
-
----
-
-## 8. Modulul `comenzi` (`blueprints/comenzi.py`)
-
-- **Scop:** Gestionează comenzile plasate către furnizori, fie automat (pentru contracte ferme), fie manual (pentru acorduri-cadru).
-- **Entități Cheie:** `ComandaGeneral`, `DetaliiComandaProdus`.
-- **Funcționalități Principale:**
-  - Listarea și vizualizarea detaliată a tuturor comenzilor.
-  - Crearea de comenzi subsecvente în baza unui acord-cadru, cu validarea cantităților disponibile.
-  - Vizualizarea comenzilor (atât cele automate, cât și cele manuale) în pagina de detalii a contractului părinte.
-- **Interacțiuni:**
-  - **Este inițiat** din modulul `contracte`.
-  - **Va furniza** date pentru viitorul modul de `Stocuri` (recepția mărfii).
+  - **Este inițiat** din modulul `proceduri`, prin interfața de analiză a ofertelor pe `LotProcedura`.
+  - **Consumă** date din `oferte` (furnizor, prețuri, articole) și `proceduri` (`LotProcedura`, produse) pentru a pre-popula formularul de creare.
 
 ---
 

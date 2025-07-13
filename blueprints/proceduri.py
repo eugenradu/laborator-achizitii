@@ -62,7 +62,7 @@ def adauga_procedura():
 @proceduri_bp.route('/<int:procedura_id>/detalii')
 @login_required
 def detalii_procedura(procedura_id):
-    """Afișează panoul de control pentru o procedură, permițând managementul Super-Loturilor."""
+    """Afișează panoul de control pentru o procedură, permițând managementul Super-Loturilor și analiza ofertelor."""
     procedura = ProceduraAchizitie.query.options(
         joinedload(ProceduraAchizitie.creator_procedura),
         joinedload(ProceduraAchizitie.loturi_procedura).joinedload(LotProcedura.articole_incluse).joinedload(ProdusInReferat.produs_generic_req),
@@ -88,7 +88,40 @@ def detalii_procedura(procedura_id):
         if pir.ID_Produs_Referat not in produse_alocate_ids
     ]
 
-    return render_template('detalii_procedura.html', procedura=procedura, produse_disponibile=produse_disponibile)
+    # --- NOU: Analiza ofertelor pe fiecare Super-Lot ---
+    super_loturi_cu_oferte = {}
+    for lot_proc in procedura.loturi_procedura:
+        produse_in_lot_proc_ids = {articol.ID_Produs_Referat for articol in lot_proc.articole_incluse}
+
+        if not produse_in_lot_proc_ids:
+            oferte_si_valori = []
+        else:
+            # Interogare pentru a obține ofertele și valorile lor pentru acest Super-Lot
+            oferte_si_valori = db.session.query(
+                Oferta,
+                db.func.sum(ArticolOferta.Pret_Unitar_Pachet * ProdusInReferat.Cantitate_Solicitata).label('valoare_lot'),
+                db.func.count(ArticolOferta.ID_Articol_Oferta).label('numar_articole_ofertate')
+            ).join(ArticolOferta, Oferta.ID_Oferta == ArticolOferta.ID_Oferta)\
+             .join(ProdusInReferat, ArticolOferta.ID_Produs_Referat == ProdusInReferat.ID_Produs_Referat)\
+             .filter(Oferta.ID_Procedura == procedura_id)\
+             .filter(ArticolOferta.ID_Produs_Referat.in_(produse_in_lot_proc_ids))\
+             .group_by(Oferta)\
+             .order_by('valoare_lot')\
+             .all()
+
+        super_loturi_cu_oferte[lot_proc.ID_Lot_Procedura] = {
+            'lot_obj': lot_proc,
+            'numar_articole_total': len(produse_in_lot_proc_ids),
+            'oferte_comparative': oferte_si_valori
+        }
+
+    oferte_asociate = Oferta.query.options(joinedload(Oferta.furnizor))\
+        .filter_by(ID_Procedura=procedura_id)\
+        .order_by(Oferta.Data_Oferta.desc()).all()
+
+    return render_template('detalii_procedura.html', procedura=procedura, produse_disponibile=produse_disponibile,
+                           super_loturi_cu_oferte=super_loturi_cu_oferte,
+                           oferte_asociate=oferte_asociate)
 
 @proceduri_bp.route('/<int:procedura_id>/adauga_super_lot', methods=['POST'])
 @login_required
