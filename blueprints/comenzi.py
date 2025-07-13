@@ -2,19 +2,37 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from datetime import date
 from sqlalchemy.orm import joinedload
-from models import (db, Contract, ArticolContractat, ComandaGeneral, DetaliiComandaProdus, TipContract, VariantaComercialaProdus)
+from sqlalchemy import or_
+from models import (db, Contract, ArticolContractat, ComandaGeneral, DetaliiComandaProdus, 
+                    TipContract, VariantaComercialaProdus, Furnizor, Utilizator)
 
 comenzi_bp = Blueprint('comenzi', __name__, url_prefix='/comenzi')
 
 @comenzi_bp.route('/')
 @login_required
 def list_comenzi():
-    """Afișează lista tuturor comenzilor."""
-    comenzi_list = ComandaGeneral.query.options(
-        joinedload(ComandaGeneral.contract_comanda).joinedload(Contract.furnizor)
-    ).order_by(ComandaGeneral.Data_Comanda.desc()).all()
+    """Afișează lista tuturor comenzilor, cu căutare și paginare."""
+    search_term = request.args.get('search', '').strip()
+    page = request.args.get('page', 1, type=int)
+    PER_PAGE = 15
+
+    # Interogare de bază
+    query = db.session.query(ComandaGeneral, Contract, Furnizor)\
+        .join(Contract, ComandaGeneral.ID_Contract == Contract.ID_Contract)\
+        .join(Furnizor, Contract.ID_Furnizor == Furnizor.ID_Furnizor)
+
+    if search_term:
+        search_filter = or_(
+            ComandaGeneral.Numar_Comanda.ilike(f'%{search_term}%'),
+            ComandaGeneral.Stare_Comanda.ilike(f'%{search_term}%'),
+            Contract.Numar_Contract.ilike(f'%{search_term}%'),
+            Furnizor.Nume_Furnizor.ilike(f'%{search_term}%')
+        )
+        query = query.filter(search_filter)
+
+    pagination = query.order_by(ComandaGeneral.Data_Comanda.desc()).paginate(page=page, per_page=PER_PAGE, error_out=False)
     
-    return render_template('comenzi.html', comenzi=comenzi_list)
+    return render_template('comenzi.html', pagination=pagination, search_term=search_term)
 
 @comenzi_bp.route('/<int:comanda_id>/detalii')
 @login_required

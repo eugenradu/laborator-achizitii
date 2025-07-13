@@ -2,14 +2,16 @@
 
 Acest document inventariază sarcinile planificate pentru dezvoltarea aplicației, organizate pe priorități.
 
+**Decizie Arhitecturală (2024-05-21):** Modulul de Gestiune a Stocurilor va fi dezvoltat ca o aplicație separată. Integrarea se va face printr-un API, unde aplicația de achiziții va notifica aplicația de stocuri la recepția unei livrări.
+
 ---
 
 ### Următorul Obiectiv Major
 
-- [ ] **Implementare Modul Gestiune Stocuri:**
-  - [ ] Crearea blueprint-ului `stocuri.py`.
-  - [ ] Implementarea logicii de recepție a mărfii (creare `LotStoc` din `LivrareComanda`).
-  - [ ] Implementarea logicii de consum de stoc.
+- [ ] **Implementare Dashboard Principal:**
+  - [ ] Crearea unei rute noi în `main.py` pentru dashboard.
+  - [ ] Implementarea de interogări pentru a extrage statistici cheie (ex: nr. referate în aprobare, valoare contracte pe lună, etc.).
+  - [ ] Crearea unui template `dashboard.html` cu widget-uri vizuale pentru afișarea statisticilor.
 
 ---
 
@@ -37,6 +39,7 @@ Acest document inventariază sarcinile planificate pentru dezvoltarea aplicație
 - [x] **Căutare și Paginare în Lista de Referate**
 - [x] **Decizie de a separa Modulul de Stocuri**
 - [x] **Refactorizare Creare Procedură (Super-Loturi)**
+- [x] **Implementare Modul de Livrări** (inclusiv API)
 - [x] **Repararea fluxului de creare a contractelor (aliniere cu Super-Loturi)**
 - [x] **Căutare și Paginare în Lista de Proceduri și Contracte**
 - [x] **Implementare Modul Proceduri de Achiziție** (bază)

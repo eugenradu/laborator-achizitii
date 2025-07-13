@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Înregistrează Livrare pentru Comanda #{{ comanda.ID_Comanda_General }}</h2>
+
+<div class="card">
+    <p><strong>Număr Comandă:</strong> {{ comanda.Numar_Comanda }}</p>
+    <p><strong>Contract Părinte:</strong> <a
+            href="{{ url_for('contracte.detalii_contract', contract_id=comanda.contract_comanda.ID_Contract) }}">{{
+            comanda.contract_comanda.Numar_Contract }}</a></p>
+    <p><strong>Furnizor:</strong> {{ comanda.contract_comanda.furnizor.Nume_Furnizor }}</p>
+</div>
+
+<form method="POST" action="{{ url_for('livrari.adauga_livrare', comanda_id=comanda.ID_Comanda_General) }}">
+    <fieldset>
+        <legend>Articole Livrate</legend>
+        <p>Introduceți cantitățile livrate pentru fiecare articol. Lăsați câmpul gol sau cu 0 dacă un articol nu a fost
+            livrat de data aceasta.</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Produs</th>
+                    <th>Cantitate Rămasă</th>
+                    <th>Cantitate Livrată Acum</th>
+                    <th>Lot Producător</th>
+                    <th>Data Expirare</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for articol in articole_de_livrat %}
+                {% set detaliu = articol.detaliu_comanda %}
+                {% set varianta = detaliu.articol_contractat_rel.varianta_comerciala_contractata %}
+                {% set produs = varianta.produs_generic %}
+                <tr>
+                    <td>
+                        <strong>{{ produs.Nume_Generic }}</strong><br>
+                        <small>{{ varianta.producator.Nume_Producator }} - {{ varianta.Cod_Catalog }}</small>
+                    </td>
+                    <td style="font-weight: bold;">{{ articol.cantitate_ramasa }}</td>
+                    <td>
+                        <input type="number" name="cantitate_{{ detaliu.ID_Detalii_Comanda_Produs }}" value="0" min="0"
+                            max="{{ articol.cantitate_ramasa }}" style="width: 100px;">
+                    </td>
+                    <td>
+                        <input type="text" name="lot_producator_{{ detaliu.ID_Detalii_Comanda_Produs }}"
+                            placeholder="Lot furnizor...">
+                    </td>
+                    <td>
+                        <input type="date" name="data_expirare_{{ detaliu.ID_Detalii_Comanda_Produs }}">
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </fieldset>
+
+    <fieldset>
+        <legend>Documente Asociate Livrării</legend>
+        <p>Adăugați documentele primite odată cu această livrare (factură, aviz, etc.).</p>
+        <div id="documente-container">
+            <!-- Rândurile de documente vor fi adăugate aici de JavaScript -->
+        </div>
+        <button type="button" id="add-document-btn" class="button-secondary">Adaugă Document</button>
+    </fieldset>
+
+    <br>
+    <button type="submit">Salvează Livrarea</button>
+    <a href="{{ url_for('comenzi.detalii_comanda', comanda_id=comanda.ID_Comanda_General) }}" class="button-secondary"
+        style="margin-left: 10px;">Anulează</a>
+</form>
+
+<!-- Template pentru un rând de document, ascuns inițial -->
+<template id="document-row-template">
+    <div class="document-row">
+        <select name="tip_document" required>
+            <option value="">-- Tip Document --</option>
+            {% for tip in tipuri_document %}
+            <option value="{{ tip.name }}">{{ tip.value }}</option>
+            {% endfor %}
+        </select>
+        <input type="text" name="numar_document" placeholder="Număr Document" required>
+        <input type="date" name="data_document">
+        <input type="url" name="link_scan_pdf" placeholder="Link Scan PDF (opțional)">
+        <button type="button" class="remove-document-btn button-danger">Șterge</button>
+    </div>
+</template>
+
+<style>
+    .card {
+        background: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 1px 20px;
+        margin-bottom: 20px;
+    }
+
+    table td,
+    table th {
+        vertical-align: middle;
+    }
+
+    table input {
+        padding: 5px;
+        font-size: 1em;
+    }
+
+    .document-row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin-bottom: 10px;
+        padding: 10px;
+        border: 1px dashed #ccc;
+        border-radius: 4px;
+    }
+
+    .document-row input[type="text"],
+    .document-row input[type="url"] {
+        flex-grow: 1;
+    }
+
+    .button-danger {
+        background-color: var(--color-danger, #dc3545);
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const addBtn = document.getElementById('add-document-btn');
+        const container = document.getElementById('documente-container');
+        const template = document.getElementById('document-row-template');
+
+        addBtn.addEventListener('click', function () {
+            const clone = template.content.cloneNode(true);
+            container.appendChild(clone);
+        });
+
+        container.addEventListener('click', function (event) {
+            if (event.target.classList.contains('remove-document-btn')) {
+                event.target.closest('.document-row').remove();
+            }
+        });
+
+        // Adaugă un rând de document la încărcarea paginii pentru conveniență
+        addBtn.click();
+    });
+</script>
+
+{% endblock %}

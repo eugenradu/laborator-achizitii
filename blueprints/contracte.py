@@ -3,8 +3,8 @@ from flask_login import login_required, current_user
 from datetime import date
 from sqlalchemy.orm import joinedload
 from sqlalchemy import or_
-from models import (db, Contract, ArticolContractat, Oferta, LotProcedura, ProceduraAchizitie,
-                    ArticolOferta, ProdusInReferat, Produs, VariantaComercialaProdus, TipContract, Utilizator, Furnizor)
+from models import (db, Contract, ArticolContractat, Oferta, LotProcedura, ProceduraAchizitie, ArticolOferta, 
+                    ProdusInReferat, Produs, VariantaComercialaProdus, TipContract, Utilizator, Furnizor, ComandaGeneral, DetaliiComandaProdus)
 
 contracte_bp = Blueprint('contracte', __name__, url_prefix='/contracte')
 
@@ -42,7 +42,8 @@ def detalii_contract(contract_id):
         joinedload(Contract.procedura_contract),
         joinedload(Contract.loturi_procedura_contractate),
         joinedload(Contract.articole_contractate).joinedload(ArticolContractat.varianta_comerciala_contractata).joinedload(VariantaComercialaProdus.produs_generic),
-        joinedload(Contract.articole_contractate).joinedload(ArticolContractat.varianta_comerciala_contractata).joinedload(VariantaComercialaProdus.producator)
+        joinedload(Contract.articole_contractate).joinedload(ArticolContractat.varianta_comerciala_contractata).joinedload(VariantaComercialaProdus.producator),
+        joinedload(Contract.comenzi_rel)
     ).get_or_404(contract_id)
     
     return render_template('detalii_contract.html', contract=contract)
@@ -107,6 +108,23 @@ def adauga_contract():
                         )
                         new_contract.articole_contractate.append(new_articol_contractat)
             
+            db.session.add(new_contract)
+            db.session.flush() # Obținem ID-urile pentru contract și articolele sale
+
+            # 5. Generare automată comandă pentru Contract Ferm
+            if new_contract.Tip_Contract == TipContract.CONTRACT_FERM:
+                new_comanda = ComandaGeneral(
+                    ID_Contract=new_contract.ID_Contract,
+                    Numar_Comanda=f"CMD-AUT-{new_contract.Numar_Contract}",
+                    Stare_Comanda="Generata Automat",
+                    ID_Utilizator_Creare=current_user.ID_Utilizator
+                )
+                # Adăugăm articolele în comandă, copiind cantitățile din contract
+                for articol_contractat in new_contract.articole_contractate:
+                    detaliu_comanda = DetaliiComandaProdus(ID_Articol_Contractat=articol_contractat.ID_Articol_Contractat, Cantitate_Comandata_Pachete=articol_contractat.Cantitate_Contractata_Pachete)
+                    new_comanda.detalii_produse_comanda_rel.append(detaliu_comanda)
+                db.session.add(new_comanda)
+
             db.session.add(new_contract)
             db.session.commit()
             flash(f'Contractul #{new_contract.ID_Contract} a fost generat cu succes!', 'success')

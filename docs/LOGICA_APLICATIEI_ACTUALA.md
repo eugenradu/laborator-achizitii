@@ -122,15 +122,47 @@ Acest document descrie funcționarea și interacțiunile modulelor cheie ale apl
 
 ---
 
-## 9. Modulul `api` (`blueprints/api.py`)
+## 8. Modulul `comenzi` (`blueprints/comenzi.py`)
+
+- **Scop:** Gestionează comenzile plasate către furnizori, fie automat (pentru contracte ferme), fie manual (pentru acorduri-cadru).
+- **Entități Cheie:** `ComandaGeneral`, `DetaliiComandaProdus`.
+- **Funcționalități Principale:**
+  - Listarea tuturor comenzilor, cu căutare și paginare.
+  - Crearea automată a unei comenzi la finalizarea unui `CONTRACT_FERM`.
+  - Crearea manuală de comenzi subsecvente pentru un `ACORD_CADRU`, cu validarea cantităților disponibile.
+  - Vizualizarea detaliată a unei comenzi, inclusiv stadiul livrărilor (calculat).
+- **Interacțiuni:**
+  - **Este inițiat** din modulul `contracte`.
+  - **Va furniza** date pentru viitorul modul de `Livrari` (pentru a înregistra recepția mărfii).
+
+---
+
+## 9. Modulul `livrari` (`blueprints/livrari.py`)
+
+- **Scop:** Gestionează înregistrarea recepției fizice a mărfurilor și a documentelor asociate (facturi, avize). Finalizează ciclul de achiziție.
+- **Entități Cheie:** `LivrareComanda`, `DocumentLivrare`, `TipDocument`.
+- **Funcționalități Principale:**
+  - Înregistrarea unei livrări pentru o comandă, cu suport pentru livrări parțiale.
+  - Înregistrarea datelor cheie pentru viitoarea aplicație de stocuri: `Numar_Lot_Producator` și `Data_Expirare`.
+  - Adăugarea dinamică a mai multor documente (facturi, avize, etc.) la o singură livrare.
+  - Actualizarea automată a stării comenzii părinte (`Livrata Partial` / `Livrata Complet`).
+- **Interacțiuni:**
+  - **Este inițiat** din modulul `comenzi`, de pe pagina de detalii a unei comenzi.
+  - **Va furniza** date, printr-un viitor endpoint API, către aplicația de gestiune a stocurilor.
+
+---
+
+## 10. Modulul `api` (`blueprints/api.py`)
 
 - **Scop:** Centralizează toate endpoint-urile API care returnează date în format JSON.
-- **Entități Cheie:** Citește (`Produs`, `VariantaComercialaProdus`, `Producator`). Creează (`VariantaComercialaProdus`, `Furnizor`, `Producator`).
+- **Entități Cheie:** Citește (`Produs`, `VariantaComercialaProdus`, `Producator`, `LivrareComanda`). Creează (`VariantaComercialaProdus`, `Furnizor`, `Producator`).
 - **Funcționalități Principale (Endpoint-uri):**
   - `/produse_by_categorie/<id>`: Returnează produsele dintr-o categorie.
   - `/variante_by_produs/<id>`: Returnează variantele comerciale ale unui produs generic.
   - `/variante_comerciale/adauga`: Creează o nouă variantă comercială în baza de date.
-- `/furnizori/adauga`: Creează un nou furnizor în baza de date.
-- `/producatori/adauga`: Creează un nou producător în baza de date.
+  - `/furnizori/adauga`: Creează un nou furnizor în baza de date.
+  - `/producatori/adauga`: Creează un nou producător în baza de date.
+  - `/livrari/<id>`: Returnează detaliile complete ale unei livrări, pregătite pentru integrarea cu aplicația de stocuri.
 - **Interacțiuni:**
   - Este **apelat** prin JavaScript (Fetch API) din template-urile modulelor `Referate` și `Oferte` pentru a oferi interactivitate formularelor.
+  - **Va fi apelat** de viitoarea aplicație de stocuri pentru a prelua datele despre livrările finalizate.

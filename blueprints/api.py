@@ -1,7 +1,9 @@
 from flask import Blueprint, jsonify, request
 from flask_login import login_required
-from models import db, Produs, VariantaComercialaProdus, Producator, Furnizor
+from models import (db, Produs, VariantaComercialaProdus, Producator, Furnizor,
+                    LivrareComanda, DocumentLivrare, DetaliiComandaProdus, ArticolContractat)
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import joinedload
 
 api_bp = Blueprint('api', __name__, url_prefix='/api')
 
@@ -124,3 +126,55 @@ def get_variante_by_produs(produs_id):
         variante_list.append({'id': varianta.ID_Varianta_Comerciala, 'text': text_option})
     
     return jsonify(variante_list)
+
+@api_bp.route('/livrari/<int:livrare_id>')
+@login_required
+def get_livrare_details(livrare_id):
+    """Returnează detaliile complete ale unei livrări în format JSON."""
+    livrare = LivrareComanda.query.options(
+        joinedload(LivrareComanda.detalii_comanda_rel)
+            .joinedload(DetaliiComandaProdus.articol_contractat_rel)
+            .joinedload(ArticolContractat.varianta_comerciala_contractata)
+            .joinedload(VariantaComercialaProdus.produs_generic),
+        joinedload(LivrareComanda.detalii_comanda_rel)
+            .joinedload(DetaliiComandaProdus.articol_contractat_rel)
+            .joinedload(ArticolContractat.varianta_comerciala_contractata)
+            .joinedload(VariantaComercialaProdus.producator),
+        joinedload(LivrareComanda.documente_asociate)
+    ).get_or_404(livrare_id)
+
+    # Extragem datele necesare
+    detaliu_comanda = livrare.detalii_comanda_rel
+    articol_contractat = detaliu_comanda.articol_contractat_rel
+    varianta_comerciala = articol_contractat.varianta_comerciala_contractata
+    produs_generic = varianta_comerciala.produs_generic
+
+    # Construim lista de documente
+    documente_list = [
+        {
+            'tip_document': doc.Tip_Document.value,
+            'numar_document': doc.Numar_Document,
+            'data_document': doc.Data_Document.isoformat() if doc.Data_Document else None,
+            'link_scan_pdf': doc.Link_Scan_PDF
+        } for doc in livrare.documente_asociate
+    ]
+
+    # Construim răspunsul JSON
+    response_data = {
+        'id_livrare': livrare.ID_Livrare,
+        'data_livrare': livrare.Data_Livrare.isoformat(),
+        'cantitate_livrata': livrare.Cantitate_Livrata_Pachete,
+        'lot_producator': livrare.Numar_Lot_Producator,
+        'data_expirare': livrare.Data_Expirare.isoformat() if livrare.Data_Expirare else None,
+        'sursa_intrare': f"Livrare #{livrare.ID_Livrare} / Comanda #{detaliu_comanda.ID_Comanda_General}",
+        'produs': {
+            'id_varianta_comerciala': varianta_comerciala.ID_Varianta_Comerciala,
+            'cod_catalog': varianta_comerciala.Cod_Catalog,
+            'nume_produs_generic': produs_generic.Nume_Generic,
+            'descriere_ambalare': varianta_comerciala.Descriere_Ambalare,
+            'producator': varianta_comerciala.producator.Nume_Producator
+        },
+        'documente': documente_list
+    }
+
+    return jsonify(response_data)

@@ -1,18 +1,18 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Creează Comandă Nouă (Subsecventă)</h2>
+<h2>Adaugă Comandă Subsecventă</h2>
 
 <div class="card">
-    <p><strong>Acord-Cadru:</strong> <a
+    <p><strong>Contract Părinte (Acord-Cadru):</strong> <a
             href="{{ url_for('contracte.detalii_contract', contract_id=contract.ID_Contract) }}">{{
             contract.Numar_Contract }}</a></p>
     <p><strong>Furnizor:</strong> {{ contract.furnizor.Nume_Furnizor }}</p>
 </div>
 
-<form method="POST">
+<form method="POST" action="{{ url_for('comenzi.adauga_comanda', contract_id=contract.ID_Contract) }}">
     <fieldset>
-        <legend>Detalii Comandă</legend>
+        <legend>Detalii Comandă Nouă</legend>
         <label for="numar_comanda">Număr Comandă (Obligatoriu):</label>
         <input type="text" id="numar_comanda" name="numar_comanda" required>
 
@@ -21,13 +21,13 @@
     </fieldset>
 
     <fieldset>
-        <legend>Articole de Comandat</legend>
-        <p>Introduceți cantitățile dorite pentru fiecare articol. Puteți comanda orice cantitate până la "Cantitatea
-            Rămasă".</p>
+        <legend>Articole Disponibile în Contract</legend>
+        <p>Introduceți cantitățile dorite pentru această comandă. Nu puteți comanda mai mult decât cantitatea rămasă
+            disponibilă în contract.</p>
         <table>
             <thead>
                 <tr>
-                    <th>Articol Contractat</th>
+                    <th>Produs</th>
                     <th>Cantitate Contractată</th>
                     <th>Cantitate Deja Comandată</th>
                     <th>Cantitate Rămasă</th>
@@ -36,20 +36,25 @@
             </thead>
             <tbody>
                 {% for articol_info in articole_disponibile %}
+                {% set articol = articol_info.articol_obj %}
+                {% set varianta = articol.varianta_comerciala_contractata %}
+                {% set produs = varianta.produs_generic %}
                 <tr>
                     <td>
-                        <strong>{{ articol_info.articol_obj.varianta_comerciala_contractata.produs_generic.Nume_Generic
-                            }}</strong><br>
-                        <small>{{ articol_info.articol_obj.varianta_comerciala_contractata.producator.Nume_Producator }}
-                            - Cod: {{ articol_info.articol_obj.varianta_comerciala_contractata.Cod_Catalog }}</small>
+                        <strong>{{ produs.Nume_Generic }}</strong><br>
+                        <small>{{ varianta.producator.Nume_Producator }} - {{ varianta.Cod_Catalog }}</small>
                     </td>
                     <td>{{ articol_info.cantitate_contractata }}</td>
                     <td>{{ articol_info.cantitate_comandata }}</td>
                     <td style="font-weight: bold;">{{ articol_info.cantitate_ramasa }}</td>
                     <td>
-                        <input type="number" name="cantitate_{{ articol_info.articol_obj.ID_Articol_Contractat }}"
-                            min="0" max="{{ articol_info.cantitate_ramasa }}" placeholder="0" style="width: 120px;">
+                        <input type="number" name="cantitate_{{ articol.ID_Articol_Contractat }}" value="0" min="0"
+                            max="{{ articol_info.cantitate_ramasa }}" style="width: 100px;">
                     </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5">Toate cantitățile din acest acord-cadru au fost deja comandate.</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -57,7 +62,7 @@
     </fieldset>
 
     <br>
-    <button type="submit">Plasează Comanda</button>
+    <button type="submit">Creează Comanda</button>
     <a href="{{ url_for('contracte.detalii_contract', contract_id=contract.ID_Contract) }}" class="button-secondary"
         style="margin-left: 10px;">Anulează</a>
 </form>
@@ -70,5 +75,16 @@
         padding: 1px 20px;
         margin-bottom: 20px;
     }
+
+    table td,
+    table th {
+        vertical-align: middle;
+    }
+
+    table input[type="number"] {
+        padding: 5px;
+        font-size: 1em;
+    }
 </style>
+
 {% endblock %}

@@ -1,68 +1,6 @@
 {% extends 'base.html' %}
 
-{% block content %}
-<h2>Detalii Comandă: {{ comanda.Numar_Comanda }}</h2>
-
-<div class="card">
-    <p><strong>Număr Comandă:</strong> {{ comanda.Numar_Comanda }}</p>
-    <p><strong>Data Comandă:</strong> {{ comanda.Data_Comanda.strftime('%d-%m-%Y') }}</p>
-    <p><strong>Stare:</strong> {{ comanda.Stare_Comanda }}</p>
-    <p><strong>Contract Asociat:</strong> <a
-            href="{{ url_for('contracte.detalii_contract', contract_id=comanda.ID_Contract) }}">{{
-            comanda.contract_comanda.Numar_Contract }}</a></p>
-    <p><strong>Furnizor:</strong> {{ comanda.contract_comanda.furnizor.Nume_Furnizor }}</p>
-</div>
-
-<h3>Articole Comandate</h3>
-<table>
-    <thead>
-        <tr>
-            <th>Produs Generic</th>
-            <th>Varianta Comercială</th>
-            <th>Cantitate Comandată (Pachete)</th>
-            <th>Preț Unitar Contractat</th>
-            <th>Valoare Linie</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% set total_comanda = namespace(valoare=0) %}
-        {% for detaliu in comanda.detalii_produse_comanda_rel %}
-        {% set articol = detaliu.articol_contractat_rel %}
-        {% set varianta = articol.varianta_comerciala_contractata %}
-        {% set valoare_linie = detaliu.Cantitate_Comandata_Pachete * articol.Pret_Unitar_Pachet_Contract %}
-        {% set total_comanda.valoare = total_comanda.valoare + valoare_linie %}
-        <tr>
-            <td>{{ varianta.produs_generic.Nume_Generic }}</td>
-            <td>
-                <strong>{{ varianta.producator.Nume_Producator }}</strong><br>
-                {{ varianta.Descriere_Ambalare }}<br>
-                <small>Cod: {{ varianta.Cod_Catalog }}</small>
-            </td>
-            <td>{{ detaliu.Cantitate_Comandata_Pachete }}</td>
-            <td>{{ "%.2f"|format(articol.Pret_Unitar_Pachet_Contract) }} {{ comanda.contract_comanda.Moneda }}</td>
-            <td><strong>{{ "%.2f"|format(valoare_linie) }} {{ comanda.contract_comanda.Moneda }}</strong></td>
-        </tr>
-        {% else %}
-        <tr>
-            <td colspan="5">Această comandă nu conține articole.</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-    <tfoot>
-        <tr>
-            <td colspan="4" style="text-align: right; font-weight: bold;">Valoare Totală Comandă:</td>
-            <td style="font-weight: bold;">{{ "%.2f"|format(total_comanda.valoare) }} {{ comanda.contract_comanda.Moneda
-                }}</td>
-        </tr>
-    </tfoot>
-</table>
-
-<div class="actions" style="margin-top: 20px;">
-    <a href="#" class="button">Înregistrează Livrare</a> {# TODO: Link către înregistrare livrare #}
-    <a href="{{ url_for('comenzi.list_comenzi') }}" class="button-secondary" style="margin-left: 10px;">Înapoi la
-        Listă</a>
-</div>
-
+{% block head %}
 <style>
     .card {
         background: #f9f9f9;
@@ -71,5 +9,151 @@
         padding: 1px 20px;
         margin-bottom: 20px;
     }
+
+    .status-badge {
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-size: 0.8em;
+        font-weight: bold;
+        color: white;
+    }
+
+    .status-emisa {
+        background-color: #ffc107;
+        color: black;
+    }
+
+    .status-generata_automat {
+        background-color: #17a2b8;
+    }
+
+    .status-livrata_partial {
+        background-color: #007bff;
+    }
+
+    .status-livrata_complet {
+        background-color: #28a745;
+    }
+
+    .status-anulata {
+        background-color: #dc3545;
+    }
+
+    progress {
+        width: 100%;
+        height: 18px;
+        border-radius: 4px;
+    }
+
+    progress::-webkit-progress-bar {
+        background-color: #e0e0e0;
+        border-radius: 4px;
+    }
+
+    progress::-webkit-progress-value {
+        background-color: #28a745;
+        border-radius: 4px;
+        transition: width 0.5s ease-in-out;
+    }
 </style>
+{% endblock %}
+
+{% block content %}
+<h2>Detalii Comandă #{{ comanda.ID_Comanda_General }}</h2>
+
+<div class="card">
+    <p><strong>Număr Comandă:</strong> {{ comanda.Numar_Comanda }}</p>
+    <p><strong>Data Comenzii:</strong> {{ comanda.Data_Comanda.strftime('%d-%m-%Y') }}</p>
+    <p><strong>Stare:</strong> <span
+            class="status-badge status-{{ comanda.Stare_Comanda | lower | replace(' ', '_') }}">{{
+            comanda.Stare_Comanda }}</span></p>
+    <p><strong>Contract Părinte:</strong> <a
+            href="{{ url_for('contracte.detalii_contract', contract_id=comanda.contract_comanda.ID_Contract) }}">{{
+            comanda.contract_comanda.Numar_Contract }}</a></p>
+    <p><strong>Furnizor:</strong> {{ comanda.contract_comanda.furnizor.Nume_Furnizor }}</p>
+</div>
+
+<div class="actions">
+    <a href="{{ url_for('livrari.adauga_livrare', comanda_id=comanda.ID_Comanda_General) }}"
+        class="button">Înregistrează
+        Livrare Nouă</a>
+</div>
+
+<h3>Articole Comandate</h3>
+<table>
+    <thead>
+        <tr>
+            <th>Produs Generic</th>
+            <th>Varianta Comercială</th>
+            <th>Cantitate Comandată</th>
+            <th>Stadiu Livrare</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for detaliu in comanda.detalii_produse_comanda_rel %}
+        {% set articol = detaliu.articol_contractat_rel %}
+        {% set varianta = articol.varianta_comerciala_contractata %}
+        {% set produs = varianta.produs_generic %}
+        {# Calculăm totalul livrat pentru această linie de comandă #}
+        {% set cantitate_livrata = detaliu.livrari_rel | sum(attribute='Cantitate_Livrata_Pachete') %}
+        <tr>
+            <td>{{ produs.Nume_Generic }}</td>
+            <td>
+                <strong>{{ varianta.producator.Nume_Producator }}</strong><br>
+                {{ varianta.Descriere_Ambalare }}<br>
+                <small>Cod: {{ varianta.Cod_Catalog }}</small>
+            </td>
+            <td>{{ detaliu.Cantitate_Comandata_Pachete }}</td>
+            <td style="width: 20%;">
+                Livrat: {{ cantitate_livrata }} din {{ detaliu.Cantitate_Comandata_Pachete }}
+                <progress value="{{ cantitate_livrata }}" max="{{ detaliu.Cantitate_Comandata_Pachete }}"></progress>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h3 style="margin-top: 30px;">Istoric Livrări pentru Această Comandă</h3>
+<table>
+    <thead>
+        <tr>
+            <th>ID Livrare</th>
+            <th>Data</th>
+            <th>Produs Livrat</th>
+            <th>Cantitate Livrată</th>
+            <th>Lot Producător</th>
+            <th>Data Expirare</th>
+            <th>Documente Asociate</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% set livrari_gasite = [] %}
+        {% for detaliu in comanda.detalii_produse_comanda_rel %}
+        {% for livrare in detaliu.livrari_rel %}
+        {% if livrari_gasite.append(1) %}{% endif %}
+        <tr>
+            <td>#{{ livrare.ID_Livrare }}</td>
+            <td>{{ livrare.Data_Livrare.strftime('%d-%m-%Y') }}</td>
+            <td>{{ detaliu.articol_contractat_rel.varianta_comerciala_contractata.produs_generic.Nume_Generic }}</td>
+            <td>{{ livrare.Cantitate_Livrata_Pachete }}</td>
+            <td>{{ livrare.Numar_Lot_Producator or 'N/A' }}</td>
+            <td>{{ livrare.Data_Expirare.strftime('%d-%m-%Y') if livrare.Data_Expirare else 'N/A' }}</td>
+            <td>
+                {% for doc in livrare.documente_asociate %}
+                <a href="{{ doc.Link_Scan_PDF or '#' }}" target="_blank">{{ doc.Tip_Document.value }}: {{
+                    doc.Numar_Document }}</a><br>
+                {% else %}
+                Niciun document
+                {% endfor %}
+            </td>
+        </tr>
+        {% endfor %}
+        {% endfor %}
+        {% if not livrari_gasite %}
+        <tr>
+            <td colspan="7">Nicio livrare nu a fost înregistrată pentru această comandă.</td>
+        </tr>
+        {% endif %}
+    </tbody>
+</table>
 {% endblock %}

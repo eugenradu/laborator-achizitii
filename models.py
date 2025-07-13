@@ -24,6 +24,8 @@ class Utilizator(db.Model, UserMixin):
     # Relații inverse
     referate_create = db.relationship('ReferatNecesitate', backref='creator_referat', lazy=True)
     proceduri_create = db.relationship('ProceduraAchizitie', backref='creator_procedura', lazy=True)
+    comenzi_create = db.relationship('ComandaGeneral', backref='creator_comanda', lazy=True)
+    livrari_inregistrate = db.relationship('LivrareComanda', backref='inregistrator_livrare', lazy=True)
     
     def set_password(self, password):
         self.Parola_Hash = generate_password_hash(password)
@@ -202,6 +204,13 @@ class TipContract(enum.Enum):
     ACORD_CADRU = "Acord-cadru (comenzi subsecvente)"
 
 # Tabela de legătură pentru Contracte <-> Loturi
+# Enum pentru tipurile de documente de livrare
+class TipDocument(enum.Enum):
+    FACTURA = "Factură"
+    AVIZ_EXPEDITIE = "Aviz de expediție"
+    CERTIFICAT_CALITATE = "Certificat de calitate"
+    ALTUL = "Alt document"
+
 # Tabelă nouă de asociere pentru LotProcedura <-> ProdusInReferat
 lot_procedura_articole_asociere = db.Table(
     'lot_procedura_articole_asociere',
@@ -310,7 +319,7 @@ class Contract(db.Model):
         lazy='dynamic'
     )
     articole_contractate = db.relationship('ArticolContractat', backref='contract_parinte', lazy=True, cascade="all, delete-orphan")
-
+    comenzi_rel = db.relationship('ComandaGeneral', backref='contract_comanda', lazy=True)
     def __repr__(self):
         return f"<Contract {self.Numar_Contract}>"
 
@@ -326,3 +335,67 @@ class ArticolContractat(db.Model):
 
     def __repr__(self):
         return f"<ArticolContractat {self.ID_Articol_Contractat}>"
+
+# 15. Model pentru Comanda_General
+class ComandaGeneral(db.Model):
+    __tablename__ = 'Comanda_General'
+    ID_Comanda_General = db.Column(db.Integer, primary_key=True)
+    ID_Contract = db.Column(db.Integer, db.ForeignKey('Contracte.ID_Contract'), nullable=False)
+    Data_Comanda = db.Column(db.Date, nullable=False, default=date.today)
+    Numar_Comanda = db.Column(db.Text)
+    Stare_Comanda = db.Column(db.Text, nullable=False, default='Emisa') # Ex: Emisa, Livrata Partial, Livrata Complet, Anulata
+    Numar_Inregistrare_Document = db.Column(db.Text)
+    Data_Inregistrare_Document = db.Column(db.Date)
+    Link_Scan_PDF = db.Column(db.Text)
+    ID_Utilizator_Creare = db.Column(db.Integer, db.ForeignKey('Utilizatori.ID_Utilizator'))
+
+    # Relații
+    detalii_produse_comanda_rel = db.relationship('DetaliiComandaProdus', backref='comanda_parinte', lazy=True, cascade="all, delete-orphan")
+
+    def __repr__(self):
+        return f"<ComandaGeneral {self.Numar_Comanda or self.ID_Comanda_General}>"
+
+# 16. Model pentru Detalii_Comanda_Produs
+class DetaliiComandaProdus(db.Model):
+    __tablename__ = 'Detalii_Comanda_Produs'
+    ID_Detalii_Comanda_Produs = db.Column(db.Integer, primary_key=True)
+    ID_Comanda_General = db.Column(db.Integer, db.ForeignKey('Comanda_General.ID_Comanda_General'), nullable=False)
+    ID_Articol_Contractat = db.Column(db.Integer, db.ForeignKey('Articole_Contractate.ID_Articol_Contractat'), nullable=False)
+    Cantitate_Comandata_Pachete = db.Column(db.Integer, nullable=False)
+
+    # Relații
+    livrari_rel = db.relationship('LivrareComanda', backref='detalii_comanda_rel', lazy=True, cascade="all, delete-orphan")
+    articol_contractat_rel = db.relationship('ArticolContractat', backref='comenzi_asociate', lazy=True)
+
+    def __repr__(self):
+        return f"<DetaliiComandaProdus {self.ID_Detalii_Comanda_Produs}>"
+
+# 17. Model pentru Livrare_Comenzi
+class LivrareComanda(db.Model):
+    __tablename__ = 'Livrare_Comenzi'
+    ID_Livrare = db.Column(db.Integer, primary_key=True)
+    ID_Detalii_Comanda_Produs = db.Column(db.Integer, db.ForeignKey('Detalii_Comanda_Produs.ID_Detalii_Comanda_Produs'), nullable=False)
+    Cantitate_Livrata_Pachete = db.Column(db.Integer, nullable=False)
+    Data_Livrare = db.Column(db.Date, nullable=False, default=date.today)
+    Numar_Lot_Producator = db.Column(db.Text, nullable=True) # Cheie pentru stocuri
+    Data_Expirare = db.Column(db.Date, nullable=True) # Cheie pentru stocuri
+    ID_Utilizator_Inregistrare = db.Column(db.Integer, db.ForeignKey('Utilizatori.ID_Utilizator'))
+
+    # Relații
+    documente_asociate = db.relationship('DocumentLivrare', backref='livrare_parinte', lazy=True, cascade="all, delete-orphan")
+
+    def __repr__(self):
+        return f"<LivrareComanda {self.ID_Livrare}>"
+
+# 18. Model pentru Documente Livrare
+class DocumentLivrare(db.Model):
+    __tablename__ = 'Documente_Livrare'
+    ID_Document = db.Column(db.Integer, primary_key=True)
+    ID_Livrare = db.Column(db.Integer, db.ForeignKey('Livrare_Comenzi.ID_Livrare'), nullable=False)
+    Tip_Document = db.Column(db.Enum(TipDocument), nullable=False)
+    Numar_Document = db.Column(db.Text, nullable=False)
+    Data_Document = db.Column(db.Date, nullable=True)
+    Link_Scan_PDF = db.Column(db.Text)
+
+    def __repr__(self):
+        return f"<DocumentLivrare {self.Tip_Document.value} {self.Numar_Document}>"
