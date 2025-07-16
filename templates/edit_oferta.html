@@ -47,23 +47,22 @@
         border-bottom: none;
     }
 
-    .item-row label,
-    .item-row-simple label {
+    .item-row label {
         margin-bottom: 0;
         font-size: 0.9em;
         font-weight: 500;
     }
 
     .item-row input,
-    .item-row select,
-    .item-row-simple input,
-    .item-row-simple select {
+    .item-row select {
         margin-bottom: 0;
     }
 
-    .item-row-simple {
-        padding: 10px 0;
-        border-bottom: 1px solid #eee;
+    .info-box {
+        padding: 10px;
+        margin-top: 15px;
+        background-color: #e7f3fe;
+        border-left: 6px solid #2196F3;
     }
 </style>
 {% endblock %}
@@ -71,12 +70,13 @@
 {% block content %}
 <div class="offer-form-container">
 
-    {#-- Titlu dinamic --#}
     <h2>Editează Oferta #{{ oferta.ID_Oferta }}
         {% if oferta.procedura_parinte %}
         pentru Procedura: "{{ oferta.procedura_parinte.Nume_Procedura }}"
         {% elif oferta.referat_asociat %}
         pentru Referatul: "{{ oferta.referat_asociat.Numar_Referat }}"
+        {% else %}
+        (Ofertă Spontană)
         {% endif %}
     </h2>
 
@@ -90,9 +90,9 @@
                     <label for="id_furnizor">Furnizor (*)</label>
                     <select id="id_furnizor" name="id_furnizor" required>
                         <option value="">-- Selectează un furnizor --</option>
-                        {% for furnizor in furnizori %}
-                        <option value="{{ furnizor.ID_Furnizor }}" {% if furnizor.ID_Furnizor==oferta.ID_Furnizor
-                            %}selected{% endif %}>{{ furnizor.Nume_Furnizor }}</option>
+                        {% for f in furnizori %}
+                        <option value="{{ f.ID_Furnizor }}" {% if f.ID_Furnizor==oferta.ID_Furnizor %}selected{% endif
+                            %}>{{ f.Nume_Furnizor }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -114,78 +114,64 @@
         </div>
 
         <h3>Articole Ofertate</h3>
-        {#-- Context 1: Procedură cu Super-Loturi --#}
-        {% if oferta.procedura_parinte and oferta.procedura_parinte.loturi_procedura %}
-        {% for lot in oferta.procedura_parinte.loturi_procedura %}
+
+        {#-- Context 1: Procedură --#}
+        {% if procedura %}
+        {% for lot in procedura.loturi_procedura %}
         <fieldset class="lot-fieldset">
             <legend>Lot: {{ lot.Nume_Lot }}</legend>
             {% for articol_solicitat in lot.articole_incluse %}
-            {% set articol_ofertat = articole_oferite_map.get(articol_solicitat.ID_Produs_Referat) %}
+            {% set articol_oferit = articole_oferite_map.get(articol_solicitat.ID_Produs_Referat) %}
             <div class="item-row">
                 <label for="varianta_{{ articol_solicitat.ID_Produs_Referat }}">{{
                     articol_solicitat.produs_generic_req.Nume_Generic }} ({{ articol_solicitat.Cantitate_Solicitata }}
                     buc.)</label>
                 <select id="varianta_{{ articol_solicitat.ID_Produs_Referat }}" name="id_varianta_comerciala[]">
-                    <option value="">-- Selectează varianta ofertată --</option>
+                    <option value="">-- Alegeți o variantă --</option>
                     {% for varianta in articol_solicitat.produs_generic_req.variante_comerciale %}
-                    <option value="{{ varianta.ID_Varianta_Comerciala }}" {% if articol_ofertat and
-                        articol_ofertat.ID_Varianta_Comerciala==varianta.ID_Varianta_Comerciala %}selected{% endif %}>{{
+                    <option value="{{ varianta.ID_Varianta_Comerciala }}" {% if articol_oferit and
+                        articol_oferit.ID_Varianta_Comerciala==varianta.ID_Varianta_Comerciala %}selected{% endif %}>{{
                         varianta.producator.Nume_Producator }} - {{ varianta.Descriere_Ambalare }}</option>
                     {% endfor %}
                 </select>
-                <input type="number" name="pret_unitar_pachet[]" placeholder="Preț Unitar" step="0.01"
-                    value="{{ articol_ofertat.Pret_Unitar_Pachet if articol_ofertat }}">
+                <input type="number" name="pret_unitar_pachet[]" placeholder="Preț" step="0.01"
+                    value="{{ articol_oferit.Pret_Unitar_Pachet if articol_oferit else '' }}">
                 <input type="text" name="observatii[]" placeholder="Observații"
-                    value="{{ articol_ofertat.Observatii if articol_ofertat }}">
+                    value="{{ articol_oferit.Observatii if articol_oferit else '' }}">
                 <input type="hidden" name="id_produs_referat[]" value="{{ articol_solicitat.ID_Produs_Referat }}">
             </div>
             {% endfor %}
         </fieldset>
         {% endfor %}
-
-        {#-- Context 2: Referat de Necesitate --#}
-        {% elif oferta.referat_asociat %}
+        {#-- Context 2: Referat --#}
+        {% elif referat %}
         <fieldset class="lot-fieldset">
             <legend>Produse din Referat</legend>
-            {% for pir in oferta.referat_asociat.produse_in_referate %}
-            {% set articol_ofertat = articole_oferite_map.get(pir.ID_Produs_Referat) %}
+            {% for pir in referat.produse_in_referate %}
+            {% set articol_oferit = articole_oferite_map.get(pir.ID_Produs_Referat) %}
             <div class="item-row">
                 <label for="varianta_{{ pir.ID_Produs_Referat }}">{{ pir.produs_generic_req.Nume_Generic }} ({{
                     pir.Cantitate_Solicitata }} buc.)</label>
                 <select id="varianta_{{ pir.ID_Produs_Referat }}" name="id_varianta_comerciala[]">
-                    <option value="">-- Selectează varianta ofertată --</option>
+                    <option value="">-- Alegeți o variantă --</option>
                     {% for varianta in pir.produs_generic_req.variante_comerciale %}
-                    <option value="{{ varianta.ID_Varianta_Comerciala }}" {% if articol_ofertat and
-                        articol_ofertat.ID_Varianta_Comerciala==varianta.ID_Varianta_Comerciala %}selected{% endif %}>{{
+                    <option value="{{ varianta.ID_Varianta_Comerciala }}" {% if articol_oferit and
+                        articol_oferit.ID_Varianta_Comerciala==varianta.ID_Varianta_Comerciala %}selected{% endif %}>{{
                         varianta.producator.Nume_Producator }} - {{ varianta.Descriere_Ambalare }}</option>
                     {% endfor %}
                 </select>
-                <input type="number" name="pret_unitar_pachet[]" placeholder="Preț Unitar" step="0.01"
-                    value="{{ articol_ofertat.Pret_Unitar_Pachet if articol_ofertat }}">
+                <input type="number" name="pret_unitar_pachet[]" placeholder="Preț" step="0.01"
+                    value="{{ articol_oferit.Pret_Unitar_Pachet if articol_oferit else '' }}">
                 <input type="text" name="observatii[]" placeholder="Observații"
-                    value="{{ articol_ofertat.Observatii if articol_ofertat }}">
+                    value="{{ articol_oferit.Observatii if articol_oferit else '' }}">
                 <input type="hidden" name="id_produs_referat[]" value="{{ pir.ID_Produs_Referat }}">
             </div>
             {% endfor %}
         </fieldset>
-
-        {% else %}
-        <p>Această ofertă nu este asociată cu o procedură sau un referat. Editează articolele direct.</p>
-        {# TODO: Afișare articole "goale" pentru oferte spontane (dacă e cazul) #}
         {% endif %}
 
         <div class="actions" style="margin-top: 20px;">
             <button type="submit">Salvează Modificările</button>
-            {% if oferta.procedura_parinte %}
-            <a href="{{ url_for('proceduri.detalii_procedura', procedura_id=oferta.procedura_parinte.ID_Procedura) }}"
-                class="button-secondary">Anulează</a>
-            {% elif oferta.referat_asociat %}
-            <a href="{{ url_for('referate.detalii_referat', referat_id=oferta.referat_asociat.ID_Referat) }}"
-                class="button-secondary">Anulează</a>
-            {% else %}
-            <a href="{{ url_for('oferte.detalii_oferta', oferta_id=oferta.ID_Oferta) }}"
-                class="button-secondary">Anulează</a>
-            {% endif %}
         </div>
     </form>
 </div>

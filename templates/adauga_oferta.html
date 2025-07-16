@@ -124,12 +124,14 @@
                     <div class="item-row">
                         <label for="varianta_{{ articol_solicitat.ID_Produs_Referat }}">{{
                             articol_solicitat.produs_generic_req.Nume_Generic }} ({{
-                            articol_solicitat.Cantitate_Solicitata }} buc.)</label>
+                            articol_solicitat.Cantitate_Solicitata }}
+                            buc.)</label>
                         <select id="varianta_{{ articol_solicitat.ID_Produs_Referat }}" name="id_varianta_comerciala[]">
                             <option value="">-- Selectează varianta ofertată --</option>
                             {% for varianta in articol_solicitat.produs_generic_req.variante_comerciale %}
                             <option value="{{ varianta.ID_Varianta_Comerciala }}">{{ varianta.producator.Nume_Producator
-                                }} - {{ varianta.Descriere_Ambalare }}</option>
+                                }} - {{
+                                varianta.Descriere_Ambalare }}</option>
                             {% endfor %}
                         </select>
                         <input type="number" name="pret_unitar_pachet[]" placeholder="Preț" step="0.01">

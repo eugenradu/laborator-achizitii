@@ -1,4 +1,3 @@
-import random
 from datetime import date, timedelta
 from faker import Faker
 from models import (db, Utilizator, Categorie, Producator, Furnizor, Produs,
@@ -8,6 +7,7 @@ from models import (db, Utilizator, Categorie, Producator, Furnizor, Produs,
                     LivrareComanda, DocumentLivrare, TipDocument)
 
 fake = Faker('ro_RO') # Folosim date specifice României unde e posibil
+import random
 
 def seed_data():
     """Populează baza de date cu date de test complete."""
@@ -222,4 +222,4 @@ def seed_data():
     db.session.commit()
     print("-> Creat livrări.")
 
-    print("\nSeeding finalizat cu succes!")
+    print("Seeding finalizat cu succes!")

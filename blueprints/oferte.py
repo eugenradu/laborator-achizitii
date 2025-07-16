@@ -31,7 +31,7 @@ def list_oferte():
 @login_required
 def adauga_oferta(context=None, context_id=None):
     """Gestionează adăugarea unei oferte, flexibil: procedură, referat sau spontană."""
-    
+
     # --- Validare context
     if context and context not in ['procedura', 'referat']:
         flash('Context invalid pentru adăugarea ofertei.', 'danger')
@@ -63,7 +63,7 @@ def adauga_oferta(context=None, context_id=None):
             new_oferta.ID_Referat = context_id
 
         db.session.add(new_oferta)
-        db.session.flush()
+        db.session.commit()
 
         # Articole
         produse_ids = request.form.getlist('id_produs_referat[]')
@@ -72,7 +72,7 @@ def adauga_oferta(context=None, context_id=None):
         observatii_list = request.form.getlist('observatii[]')
 
         for i in range(len(produse_ids)):
-            if variante_ids[i] and preturi[i]:
+            if  produse_ids[i] and variante_ids[i] and preturi[i]:
                 new_articol = ArticolOferta(
                     ID_Oferta=new_oferta.ID_Oferta,
                     ID_Produs_Referat=int(produse_ids[i]),
@@ -94,13 +94,13 @@ def adauga_oferta(context=None, context_id=None):
     # --- Logica GET ---
     furnizori = Furnizor.query.order_by(Furnizor.Nume_Furnizor).all()
     variante_comerciale = VariantaComercialaProdus.query.options(joinedload(VariantaComercialaProdus.produs_generic), joinedload(VariantaComercialaProdus.producator)).all()
-    
+
     if context == 'procedura':
         procedura = ProceduraAchizitie.query.options(selectinload(ProceduraAchizitie.loturi_procedura)
                                                     .selectinload(LotProcedura.articole_incluse)
                                                     .joinedload(ProdusInReferat.produs_generic_req)
                                                     .selectinload(Produs.variante_comerciale)).get_or_404(context_id)
-        return render_template('adauga_oferta.html', furnizori=furnizori, procedura=procedura, today=date.today().isoformat(), variante_comerciale=variante_comerciale)
+        return render_template('adauga_oferta.html', furnizori=furnizori, today=date.today().isoformat(), variante_comerciale=variante_comerciale, procedura=procedura)
 
     elif context == 'referat':
         referat = ReferatNecesitate.query.options(selectinload(ReferatNecesitate.produse_in_referate)
