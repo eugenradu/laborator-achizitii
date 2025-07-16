@@ -225,6 +225,8 @@ contracte_loturi_procedura_asociere = db.Table(
     db.Column('lot_procedura_id', db.Integer, db.ForeignKey('Loturi_Procedura.ID_Lot_Procedura'), primary_key=True)
 )
 
+
+
 # Model nou pentru "Super-Loturi"
 class LotProcedura(db.Model):
     __tablename__ = 'Loturi_Procedura'
@@ -237,9 +239,9 @@ class LotProcedura(db.Model):
     articole_incluse = db.relationship(
         'ProdusInReferat',
         secondary=lot_procedura_articole_asociere,
-        backref=db.backref('loturi_procedura_asociate', lazy='dynamic'),
-        lazy='dynamic'
+        backref='loturi_procedura_asociate'
     )
+# Modelul LotProcedura are acum o relație One-to-Many cu ProceduraAchizitie (vezi procedura_parinte in ProceduraAchizitie)
 # 11. Model pentru Proceduri de Achiziție (fostul Licitatii)
 class ProceduraAchizitie(db.Model):
     __tablename__ = 'Proceduri_Achizitie'
@@ -289,6 +291,7 @@ class ArticolOferta(db.Model):
     ID_Varianta_Comerciala = db.Column(db.Integer, db.ForeignKey('Variante_Comerciale_Produs.ID_Varianta_Comerciala'), nullable=False)
     ID_Produs_Referat = db.Column(db.Integer, db.ForeignKey('Produse_In_Referate.ID_Produs_Referat'), nullable=True)
     Pret_Unitar_Pachet = db.Column(db.Float, nullable=False)
+    ID_Lot_Procedura = db.Column(db.Integer, db.ForeignKey('Loturi_Procedura.ID_Lot_Procedura'), nullable=True) # Adăugat
     Observatii = db.Column(db.Text)
 
     def __repr__(self):
@@ -315,8 +318,7 @@ class Contract(db.Model):
     loturi_procedura_contractate = db.relationship(
         'LotProcedura',
         secondary=contracte_loturi_procedura_asociere,
-        backref=db.backref('contracte_asociate', lazy='dynamic'),
-        lazy='dynamic'
+        backref='contracte_asociate'
     )
     articole_contractate = db.relationship('ArticolContractat', backref='contract_parinte', lazy=True, cascade="all, delete-orphan")
     comenzi_rel = db.relationship('ComandaGeneral', backref='contract_comanda', lazy=True)

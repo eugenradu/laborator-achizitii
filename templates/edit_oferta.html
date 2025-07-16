@@ -1,491 +1,192 @@
 {% extends 'base.html' %}
 
+{% block head %}
+<style>
+    .offer-form-container {
+        max-width: 900px;
+        margin: auto;
+    }
+
+    .form-section {
+        background: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 25px;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .lot-fieldset {
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 15px;
+        margin-top: 20px;
+    }
+
+    .lot-fieldset legend {
+        padding: 0 10px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .item-row {
+        display: grid;
+        grid-template-columns: 3fr 3fr 1fr 2fr;
+        gap: 15px;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .item-row:last-child {
+        border-bottom: none;
+    }
+
+    .item-row label,
+    .item-row-simple label {
+        margin-bottom: 0;
+        font-size: 0.9em;
+        font-weight: 500;
+    }
+
+    .item-row input,
+    .item-row select,
+    .item-row-simple input,
+    .item-row-simple select {
+        margin-bottom: 0;
+    }
+
+    .item-row-simple {
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<h2>Editează Oferta #{{ oferta.ID_Oferta }}</h2>
+<div class="offer-form-container">
 
-<form method="POST" action="{{ url_for('oferte.edit_oferta', oferta_id=oferta.ID_Oferta) }}">
-    <fieldset>
-        <legend>Informații Generale Ofertă</legend>
-
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <div style="flex-grow: 1;">
-                <label for="id_furnizor">Furnizor:</label>
-                <select id="id_furnizor" name="id_furnizor" required>
-                    <option value="">-- Selectează un furnizor --</option>
-                    {% for furnizor in furnizori %}
-                    <option value="{{ furnizor.ID_Furnizor }}" {% if furnizor.ID_Furnizor==oferta.ID_Furnizor
-                        %}selected{% endif %}>{{ furnizor.Nume_Furnizor }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <button type="button" id="add-furnizor-btn" class="add-variant-btn" style="margin-top: 15px;"
-                title="Adaugă un furnizor nou, care nu există în listă.">+</button>
-        </div>
-
-        <label for="data_oferta">Data Ofertei:</label>
-        <input type="date" id="data_oferta" name="data_oferta" value="{{ oferta.Data_Oferta.isoformat() }}" required>
-
-        <label for="numar_inregistrare">Număr Înregistrare (Opțional):</label>
-        <input type="text" id="numar_inregistrare" name="numar_inregistrare"
-            value="{{ oferta.Numar_Inregistrare or '' }}">
-
-        <label for="data_inregistrare">Data Înregistrare (Opțional):</label>
-        <input type="date" id="data_inregistrare" name="data_inregistrare"
-            value="{{ oferta.Data_Inregistrare.isoformat() if oferta.Data_Inregistrare else '' }}">
-
-        <label for="moneda">Monedă:</label>
-        <input type="text" id="moneda" name="moneda" value="{{ oferta.Moneda }}" required>
-    </fieldset>
-
-    <fieldset>
-        <legend>Asociere (Opțional)</legend>
-        <label for="id_procedura">Asociază cu o Procedură:</label>
-        <select id="id_procedura" name="id_procedura">
-            <option value="">-- Nicio procedură --</option>
-            {% for procedura in proceduri %}
-            <option value="{{ procedura.ID_Procedura }}" {% if procedura.ID_Procedura==oferta.ID_Procedura %}selected{%
-                endif %}>
-                {{ procedura.Nume_Procedura }} ({{ procedura.Tip_Procedura.value }})</option>
-            {% endfor %}
-        </select>
-
-        <label for="id_referat">Asociază cu un Referat de Necesitate:</label>
-        <select id="id_referat" name="id_referat">
-            <option value="">-- Niciun referat --</option>
-            {% for referat in referate %}
-            <option value="{{ referat.ID_Referat }}" {% if referat.ID_Referat==oferta.ID_Referat %}selected{% endif %}>
-                Referat #{{ referat.ID_Referat }} ({{ referat.Data_Creare }})</option>
-            {% endfor %}
-        </select>
-    </fieldset>
-
-    <fieldset>
-        <legend>Articole Ofertate</legend>
-        {% if oferta.ID_Referat or oferta.ID_Procedura %}
-        <p class="info-box">Notă: Lista de produse generice este filtrată pentru a afișa doar articolele solicitate în
-            <strong>{% if oferta.ID_Referat %}Referatul #{{ oferta.ID_Referat }}{% else %}Procedura #{{
-                oferta.ID_Procedura }}{% endif %}</strong>.
-        </p>
+    {#-- Titlu dinamic --#}
+    <h2>Editează Oferta #{{ oferta.ID_Oferta }}
+        {% if oferta.procedura_parinte %}
+        pentru Procedura: "{{ oferta.procedura_parinte.Nume_Procedura }}"
+        {% elif oferta.referat_asociat %}
+        pentru Referatul: "{{ oferta.referat_asociat.Numar_Referat }}"
         {% endif %}
+    </h2>
 
-        <table id="articole-tabel">
-            <thead>
-                <tr>
-                    <th>Produs Generic</th>
-                    <th>Varianta Comercială</th>
-                    <th>Preț Unitar Pachet</th>
-                    <th>Observații</th>
-                    <th>Acțiuni</th>
-                </tr>
-            </thead>
-            <tbody id="articole-container">
-                {% for articol in oferta.articole %}
-                <tr>
-                    <td>
-                        <select name="id_produs_generic[]" class="produs-generic-select" required>
-                            <option value="">-- Alege produsul --</option>
-                            {% for produs in produse_generice %}
-                            <option value="{{ produs.ID_Produs }}" {% if
-                                produs.ID_Produs==articol.varianta_comerciala_ofertata.ID_Produs_Generic %}selected{%
-                                endif %}>
-                                {{ produs.Nume_Generic }}
-                            </option>
-                            {% endfor %}
-                        </select>
-                    </td>
-                    <td>
-                        <select name="id_varianta_comerciala[]" class="varianta-comerciala-select"
-                            data-initial-variant-id="{{ articol.ID_Varianta_Comerciala }}" required>
-                            <option value="">-- Se încarcă... --</option>
-                        </select>
-                        <button type="button" class="add-variant-btn"
-                            title="Adaugă o variantă comercială nouă, care nu există în listă.">
-                            +
-                        </button>
-                    </td>
-                    <td>
-                        <input type="number" name="pret_unitar_pachet[]" step="0.01" min="0"
-                            value="{{ articol.Pret_Unitar_Pachet }}" required>
-                    </td>
-                    <td>
-                        <input type="text" name="observatii[]" value="{{ articol.Observatii or '' }}"
-                            placeholder="ex: Livrare 60 zile, produs echivalent">
-                    </td>
-                    <td>
-                        <button type="button" class="remove-articol-btn">Șterge</button>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% if produse_generice %}
-        <button type="button" id="add-articol-btn" class="button-secondary">Adaugă Articol</button>
-        {% else %}
-        <p>Nu se pot adăuga articole noi deoarece nu există produse disponibile în contextul selectat
-            (referat/procedură).</p>
-        {% endif %}
-    </fieldset>
+    <form method="POST" action="{{ url_for('oferte.edit_oferta', oferta_id=oferta.ID_Oferta) }}">
 
-    <br>
-    <button type="submit">Actualizează Oferta</button>
-    <a href="{{ url_for('oferte.detalii_oferta', oferta_id=oferta.ID_Oferta) }}" class="button-secondary"
-        style="margin-left: 10px;">Anulează</a>
-</form>
-
-<!-- Template pentru un rând nou de articol, ascuns inițial -->
-<template id="articol-template">
-    <tr>
-        <td>
-            <select name="id_produs_generic[]" class="produs-generic-select" required>
-                <option value="">-- Alege produsul --</option>
-                {% for produs in produse_generice %}
-                <option value="{{ produs.ID_Produs }}">{{ produs.Nume_Generic }}</option>
-                {% endfor %}
-            </select>
-        </td>
-        <td>
-            <select name="id_varianta_comerciala[]" class="varianta-comerciala-select" required disabled>
-                <option value="">-- Alege un produs generic --</option>
-            </select>
-            <button type="button" class="add-variant-btn"
-                title="Adaugă o variantă comercială nouă, care nu există în listă.">
-                +
-            </button>
-        </td>
-        <td>
-            <input type="number" name="pret_unitar_pachet[]" step="0.01" min="0" required>
-        </td>
-        <td>
-            <input type="text" name="observatii[]" placeholder="ex: Livrare 60 zile, produs echivalent">
-        </td>
-        <td>
-            <button type="button" class="remove-articol-btn">Șterge</button>
-        </td>
-    </tr>
-</template>
-
-<!-- Modal pentru adăugare variantă nouă -->
-<div id="addVariantModal" class="modal">
-    <div class="modal-content">
-        <span class="close-button">&times;</span>
-        <h4>Adaugă Variantă Comercială Nouă</h4>
-        <form id="addVariantForm">
-
-            <label for="modalProdusGeneric">Produs Generic:</label>
-            <select id="modalProdusGeneric" name="id_produs_generic" required>
-                <option value="">-- Selectează produsul generic --</option>
-                {% for produs in produse_generice %}
-                <option value="{{ produs.ID_Produs }}">{{ produs.Nume_Generic }}</option>
-                {% endfor %}
-            </select>
-
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <div style="flex-grow: 1;">
-                    <label for="modalProducator">Producător:</label>
-                    <select id="modalProducator" name="id_producator" required>
-                        <option value="">-- Selectează un producător --</option>
-                        {% for producator in producatori %}
-                        <option value="{{ producator.ID_Producator }}">{{ producator.Nume_Producator }}</option>
+        <!-- Secțiunea Antet Ofertă -->
+        <div class="form-section">
+            <h3>Detalii Antet Ofertă</h3>
+            <div class="form-grid">
+                <div>
+                    <label for="id_furnizor">Furnizor (*)</label>
+                    <select id="id_furnizor" name="id_furnizor" required>
+                        <option value="">-- Selectează un furnizor --</option>
+                        {% for furnizor in furnizori %}
+                        <option value="{{ furnizor.ID_Furnizor }}" {% if furnizor.ID_Furnizor==oferta.ID_Furnizor
+                            %}selected{% endif %}>{{ furnizor.Nume_Furnizor }}</option>
                         {% endfor %}
                     </select>
                 </div>
-                <button type="button" id="add-producator-in-modal-btn" class="add-variant-btn" style="margin-top: 15px;"
-                    title="Adaugă un producător nou.">+</button>
+                <div>
+                    <label for="data_oferta">Data Ofertei (*)</label>
+                    <input type="date" id="data_oferta" name="data_oferta" value="{{ oferta.Data_Oferta.isoformat() }}"
+                        required>
+                </div>
+                <div>
+                    <label for="numar_inregistrare">Număr Înregistrare (opțional)</label>
+                    <input type="text" id="numar_inregistrare" name="numar_inregistrare"
+                        value="{{ oferta.Numar_Inregistrare or '' }}">
+                </div>
+                <div>
+                    <label for="moneda">Monedă</label>
+                    <input type="text" id="moneda" name="moneda" value="{{ oferta.Moneda }}" readonly>
+                </div>
             </div>
+        </div>
 
-            <label for="modalCodCatalog">Cod Catalog:</label>
-            <input type="text" id="modalCodCatalog" name="cod_catalog" required>
+        <h3>Articole Ofertate</h3>
+        {#-- Context 1: Procedură cu Super-Loturi --#}
+        {% if oferta.procedura_parinte and oferta.procedura_parinte.loturi_procedura %}
+        {% for lot in oferta.procedura_parinte.loturi_procedura %}
+        <fieldset class="lot-fieldset">
+            <legend>Lot: {{ lot.Nume_Lot }}</legend>
+            {% for articol_solicitat in lot.articole_incluse %}
+            {% set articol_ofertat = articole_oferite_map.get(articol_solicitat.ID_Produs_Referat) %}
+            <div class="item-row">
+                <label for="varianta_{{ articol_solicitat.ID_Produs_Referat }}">{{
+                    articol_solicitat.produs_generic_req.Nume_Generic }} ({{ articol_solicitat.Cantitate_Solicitata }}
+                    buc.)</label>
+                <select id="varianta_{{ articol_solicitat.ID_Produs_Referat }}" name="id_varianta_comerciala[]">
+                    <option value="">-- Selectează varianta ofertată --</option>
+                    {% for varianta in articol_solicitat.produs_generic_req.variante_comerciale %}
+                    <option value="{{ varianta.ID_Varianta_Comerciala }}" {% if articol_ofertat and
+                        articol_ofertat.ID_Varianta_Comerciala==varianta.ID_Varianta_Comerciala %}selected{% endif %}>{{
+                        varianta.producator.Nume_Producator }} - {{ varianta.Descriere_Ambalare }}</option>
+                    {% endfor %}
+                </select>
+                <input type="number" name="pret_unitar_pachet[]" placeholder="Preț Unitar" step="0.01"
+                    value="{{ articol_ofertat.Pret_Unitar_Pachet if articol_ofertat }}">
+                <input type="text" name="observatii[]" placeholder="Observații"
+                    value="{{ articol_ofertat.Observatii if articol_ofertat }}">
+                <input type="hidden" name="id_produs_referat[]" value="{{ articol_solicitat.ID_Produs_Referat }}">
+            </div>
+            {% endfor %}
+        </fieldset>
+        {% endfor %}
 
-            <label for="modalDescriereAmbalare">Descriere Ambalare:</label>
-            <input type="text" id="modalDescriereAmbalare" name="descriere_ambalare" placeholder="ex: Kit 48 teste"
-                required>
+        {#-- Context 2: Referat de Necesitate --#}
+        {% elif oferta.referat_asociat %}
+        <fieldset class="lot-fieldset">
+            <legend>Produse din Referat</legend>
+            {% for pir in oferta.referat_asociat.produse_in_referate %}
+            {% set articol_ofertat = articole_oferite_map.get(pir.ID_Produs_Referat) %}
+            <div class="item-row">
+                <label for="varianta_{{ pir.ID_Produs_Referat }}">{{ pir.produs_generic_req.Nume_Generic }} ({{
+                    pir.Cantitate_Solicitata }} buc.)</label>
+                <select id="varianta_{{ pir.ID_Produs_Referat }}" name="id_varianta_comerciala[]">
+                    <option value="">-- Selectează varianta ofertată --</option>
+                    {% for varianta in pir.produs_generic_req.variante_comerciale %}
+                    <option value="{{ varianta.ID_Varianta_Comerciala }}" {% if articol_ofertat and
+                        articol_ofertat.ID_Varianta_Comerciala==varianta.ID_Varianta_Comerciala %}selected{% endif %}>{{
+                        varianta.producator.Nume_Producator }} - {{ varianta.Descriere_Ambalare }}</option>
+                    {% endfor %}
+                </select>
+                <input type="number" name="pret_unitar_pachet[]" placeholder="Preț Unitar" step="0.01"
+                    value="{{ articol_ofertat.Pret_Unitar_Pachet if articol_ofertat }}">
+                <input type="text" name="observatii[]" placeholder="Observații"
+                    value="{{ articol_ofertat.Observatii if articol_ofertat }}">
+                <input type="hidden" name="id_produs_referat[]" value="{{ pir.ID_Produs_Referat }}">
+            </div>
+            {% endfor %}
+        </fieldset>
 
-            <label for="modalCantitateStandard">Cantitate Standard Ambalare:</label>
-            <input type="number" id="modalCantitateStandard" name="cantitate_standard_ambalare" min="1" required>
+        {% else %}
+        <p>Această ofertă nu este asociată cu o procedură sau un referat. Editează articolele direct.</p>
+        {# TODO: Afișare articole "goale" pentru oferte spontane (dacă e cazul) #}
+        {% endif %}
 
-            <label for="modalNumeComercial">Nume Comercial Extins (opțional):</label>
-            <input type="text" id="modalNumeComercial" name="nume_comercial_extins">
-
-            <button type="submit">Salvează Varianta</button>
-            <div id="modalError" class="error-message" style="margin-top: 10px; color: #721c24;"></div>
-        </form>
-    </div>
+        <div class="actions" style="margin-top: 20px;">
+            <button type="submit">Salvează Modificările</button>
+            {% if oferta.procedura_parinte %}
+            <a href="{{ url_for('proceduri.detalii_procedura', procedura_id=oferta.procedura_parinte.ID_Procedura) }}"
+                class="button-secondary">Anulează</a>
+            {% elif oferta.referat_asociat %}
+            <a href="{{ url_for('referate.detalii_referat', referat_id=oferta.referat_asociat.ID_Referat) }}"
+                class="button-secondary">Anulează</a>
+            {% else %}
+            <a href="{{ url_for('oferte.detalii_oferta', oferta_id=oferta.ID_Oferta) }}"
+                class="button-secondary">Anulează</a>
+            {% endif %}
+        </div>
+    </form>
 </div>
-
-<!-- Modal pentru adăugare producător nou -->
-<div id="addProducatorModal" class="modal">
-    <div class="modal-content">
-        <span class="close-button">&times;</span>
-        <h4>Adaugă Producător Nou</h4>
-        <form id="addProducatorForm">
-
-            <label for="modalNumeProducator">Nume Producător:</label>
-            <input type="text" id="modalNumeProducator" name="nume_producator" required>
-
-            <button type="submit">Salvează Producător</button>
-            <div id="modalProducatorError" class="error-message" style="margin-top: 10px; color: #721c24;"></div>
-        </form>
-    </div>
-</div>
-
-<!-- Modal pentru adăugare furnizor nou -->
-<div id="addFurnizorModal" class="modal">
-    <div class="modal-content">
-        <span class="close-button">&times;</span>
-        <h4>Adaugă Furnizor Nou</h4>
-        <form id="addFurnizorForm">
-
-            <label for="modalNumeFurnizor">Nume Furnizor:</label>
-            <input type="text" id="modalNumeFurnizor" name="nume_furnizor" required>
-
-            <label for="modalCui">CUI (opțional):</label>
-            <input type="text" id="modalCui" name="cui">
-
-            <label for="modalAdresa">Adresă (opțional):</label>
-            <textarea id="modalAdresa" name="adresa" rows="2"></textarea>
-
-            <button type="submit">Salvează Furnizor</button>
-            <div id="modalFurnizorError" class="error-message" style="margin-top: 10px; color: #721c24;"></div>
-        </form>
-    </div>
-</div>
-
-
-<style>
-    .add-variant-btn {
-        font-size: 1em;
-        padding: 4px 10px;
-        margin-left: 5px;
-        cursor: pointer;
-    }
-
-    .info-box {
-        background-color: #e7f3fe;
-        border-left: 6px solid #2196F3;
-        padding: 15px;
-        margin-bottom: 20px;
-    }
-
-    .modal {
-        display: none;
-        position: fixed;
-        z-index: 1000;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        overflow: auto;
-        background-color: rgba(0, 0, 0, 0.5);
-    }
-
-    .modal-content {
-        background-color: #fefefe;
-        margin: 10% auto;
-        padding: 20px;
-        border: 1px solid #888;
-        width: 80%;
-        max-width: 500px;
-        border-radius: 8px;
-    }
-
-    .close-button {
-        color: #aaa;
-        float: right;
-        font-size: 28px;
-        font-weight: bold;
-        cursor: pointer;
-    }
-</style>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const addBtn = document.getElementById('add-articol-btn');
-        const container = document.getElementById('articole-container');
-        const template = document.getElementById('articol-template');
-
-        const variantModal = document.getElementById('addVariantModal');
-        const closeVariantModalButton = variantModal.querySelector('.close-button');
-        const addVariantForm = document.getElementById('addVariantForm');
-        const modalErrorDiv = document.getElementById('modalError');
-        const modalProdusGenericSelect = document.getElementById('modalProdusGeneric');
-        const modalProducatorSelect = document.getElementById('modalProducator');
-        const addProducatorInModalBtn = document.getElementById('add-producator-in-modal-btn');
-        let targetSelectElement = null;
-
-        const producatorModal = document.getElementById('addProducatorModal');
-        const closeProducatorModalButton = producatorModal.querySelector('.close-button');
-        const addProducatorForm = document.getElementById('addProducatorForm');
-        const modalProducatorErrorDiv = document.getElementById('modalProducatorError');
-
-        const furnizorModal = document.getElementById('addFurnizorModal');
-        const closeFurnizorModalButton = furnizorModal.querySelector('.close-button');
-        const addFurnizorForm = document.getElementById('addFurnizorForm');
-        const modalFurnizorErrorDiv = document.getElementById('modalFurnizorError');
-        const addFurnizorBtn = document.getElementById('add-furnizor-btn');
-        const furnizorSelect = document.getElementById('id_furnizor');
-
-        addBtn.addEventListener('click', () => container.appendChild(template.content.cloneNode(true)));
-
-        container.addEventListener('click', (event) => {
-            if (event.target && event.target.classList.contains('remove-articol-btn')) {
-                event.target.closest('tr').remove();
-            }
-            if (event.target && event.target.classList.contains('add-variant-btn')) {
-                const row = event.target.closest('tr');
-                targetSelectElement = row.querySelector('select.varianta-comerciala-select');
-                const produsGenericSelect = row.querySelector('select.produs-generic-select');
-
-                modalErrorDiv.textContent = '';
-                addVariantForm.reset();
-
-                if (produsGenericSelect.value) {
-                    modalProdusGenericSelect.value = produsGenericSelect.value;
-                }
-
-                variantModal.style.display = 'block';
-            }
-        });
-
-        container.addEventListener('change', function (event) {
-            if (event.target && event.target.classList.contains('produs-generic-select')) {
-                populateVariante(event.target);
-            }
-        });
-
-        function populateVariante(produsSelectElement, initialVariantId = null) {
-            const produsId = produsSelectElement.value;
-            const row = produsSelectElement.closest('tr');
-            const variantaSelect = row.querySelector('.varianta-comerciala-select');
-
-            variantaSelect.innerHTML = '<option value="">-- Se încarcă... --</option>';
-            variantaSelect.disabled = true;
-
-            if (produsId) {
-                const urlTemplate = "{{ url_for('api.get_variante_by_produs', produs_id=999999) }}";
-                fetch(urlTemplate.replace('999999', produsId))
-                    .then(response => response.json())
-                    .then(data => {
-                        variantaSelect.innerHTML = '<option value="">-- Selectează o variantă --</option>';
-                        data.forEach(varianta => {
-                            variantaSelect.appendChild(new Option(varianta.text, varianta.id));
-                        });
-                        if (initialVariantId) {
-                            variantaSelect.value = initialVariantId;
-                        }
-                        variantaSelect.disabled = false;
-                    })
-                    .catch(error => {
-                        console.error('Eroare la preluarea variantelor:', error);
-                        variantaSelect.innerHTML = '<option value="">-- Eroare --</option>';
-                    });
-            } else {
-                variantaSelect.innerHTML = '<option value="">-- Alege un produs generic --</option>';
-            }
-        }
-
-        // Inițializare pentru rândurile existente
-        document.querySelectorAll('#articole-container .produs-generic-select').forEach(select => {
-            const initialVariantId = select.closest('tr').querySelector('.varianta-comerciala-select').dataset.initialVariantId;
-            populateVariante(select, initialVariantId);
-        });
-
-        // --- Logica pentru Modal Furnizori ---
-        addFurnizorBtn.addEventListener('click', function () {
-            modalFurnizorErrorDiv.textContent = '';
-            addFurnizorForm.reset();
-            furnizorModal.style.display = 'block';
-        });
-
-        closeFurnizorModalButton.onclick = () => furnizorModal.style.display = 'none';
-
-        addFurnizorForm.addEventListener('submit', function (event) {
-            event.preventDefault();
-            modalFurnizorErrorDiv.textContent = '';
-            const data = Object.fromEntries(new FormData(addFurnizorForm).entries());
-
-            fetch("{{ url_for('api.api_adauga_furnizor') }}", {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            })
-                .then(response => response.json().then(json => ({ ok: response.ok, json })))
-                .then(({ ok, json }) => {
-                    if (!ok) throw new Error(json.error || 'A apărut o eroare.');
-                    const newOption = new Option(json.text, json.id, false, true);
-                    furnizorSelect.appendChild(newOption);
-                    furnizorModal.style.display = 'none';
-                })
-                .catch(error => {
-                    modalFurnizorErrorDiv.textContent = error.message;
-                });
-        });
-
-        // --- Logica pentru Modal Producători (în interiorul modalului de variante) ---
-        addProducatorInModalBtn.addEventListener('click', function () {
-            variantModal.style.display = 'none'; // Ascunde modalul de variante
-            modalProducatorErrorDiv.textContent = '';
-            addProducatorForm.reset();
-            producatorModal.style.display = 'block'; // Afișează modalul de producători
-        });
-
-        closeProducatorModalButton.onclick = () => {
-            producatorModal.style.display = 'none';
-            variantModal.style.display = 'block'; // Re-afișează modalul de variante
-        };
-
-        addProducatorForm.addEventListener('submit', function (event) {
-            event.preventDefault();
-            modalProducatorErrorDiv.textContent = '';
-            const data = Object.fromEntries(new FormData(addProducatorForm).entries());
-
-            fetch("{{ url_for('api.api_adauga_producator') }}", {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            })
-                .then(response => response.json().then(json => ({ ok: response.ok, json })))
-                .then(({ ok, json }) => {
-                    if (!ok) throw new Error(json.error || 'A apărut o eroare.');
-                    const newOption = new Option(json.text, json.id, false, true);
-                    modalProducatorSelect.appendChild(newOption);
-                    producatorModal.style.display = 'none';
-                    variantModal.style.display = 'block';
-                })
-                .catch(error => modalProducatorErrorDiv.textContent = error.message);
-        });
-
-        // --- Logica pentru Modal Variante Comerciale ---
-        closeVariantModalButton.onclick = () => variantModal.style.display = 'none';
-
-        addVariantForm.addEventListener('submit', function (event) {
-            event.preventDefault();
-            modalErrorDiv.textContent = '';
-            const data = Object.fromEntries(new FormData(addVariantForm).entries());
-
-            fetch("{{ url_for('api.api_adauga_varianta_comerciala') }}", {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            })
-                .then(response => response.json().then(json => ({ ok: response.ok, json })))
-                .then(({ ok, json }) => {
-                    if (!ok) throw new Error(json.error || 'A apărut o eroare.');
-                    const newOption = new Option(json.text, json.id, false, true);
-                    targetSelectElement.appendChild(newOption);
-                    targetSelectElement.value = json.id;
-                    variantModal.style.display = 'none';
-                })
-                .catch(error => {
-                    modalErrorDiv.textContent = error.message;
-                });
-        });
-
-        // Închidere modal la click în afara lui
-        window.onclick = (event) => {
-            if (event.target == variantModal) variantModal.style.display = 'none';
-            if (event.target == furnizorModal) furnizorModal.style.display = 'none';
-            if (event.target == producatorModal) producatorModal.style.display = 'none';
-        };
-    });
-</script>
 {% endblock %}
