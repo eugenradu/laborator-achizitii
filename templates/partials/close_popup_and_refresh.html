@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Success</title>
+</head>
+<body>
+    <script>
+        try {
+            window.opener.refreshVariantsAndSelect('{{ produs_id }}', '{{ varianta_id }}');
+        } catch (e) {
+            console.error("Could not refresh parent window: ", e);
+        }
+        window.close();
+    </script>
+    <p>Varianta a fost adăugată. Puteți închide această fereastră.</p>
+</body>
+</html>

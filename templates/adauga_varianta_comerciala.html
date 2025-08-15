@@ -3,22 +3,28 @@
 {% block content %}
 <h2>Adaugă Variantă Comercială Nouă</h2>
 
-<form method="POST" action="{{ url_for('produse.adauga_varianta_comerciala') }}">
+<form method="POST" action="{{ url_for('produse.adauga_varianta_comerciala', source=source, produs_id=produs_id_preselectat) }}">
     <fieldset>
         <legend>Asociere Produs</legend>
 
         <label for="id_categorie">Selectează Categoria:</label>
-        <select id="id_categorie" name="id_categorie" required>
+        <select id="id_categorie" name="id_categorie" required {% if categorie_id_preselectata %}disabled{% endif %}>
             <option value="">-- Alege o categorie --</option>
             {% for categorie in categorii %}
-            <option value="{{ categorie.ID_Categorie }}">{{ categorie.Nume_Categorie }}</option>
+            <option value="{{ categorie.ID_Categorie }}" {% if categorie.ID_Categorie == categorie_id_preselectata %}selected{% endif %}>{{ categorie.Nume_Categorie }}</option>
             {% endfor %}
         </select>
+        {% if categorie_id_preselectata %}
+            <input type="hidden" name="id_categorie" value="{{ categorie_id_preselectata }}">
+        {% endif %}
 
         <label for="id_produs_generic">Selectează Produsul Generic:</label>
-        <select id="id_produs_generic" name="id_produs_generic" required disabled>
+        <select id="id_produs_generic" name="id_produs_generic" required {% if produs_id_preselectat %}disabled{% else %}disabled{% endif %}>
             <option value="">-- Mai întâi alege o categorie --</option>
         </select>
+        {% if produs_id_preselectat %}
+            <input type="hidden" name="id_produs_generic" value="{{ produs_id_preselectat }}">
+        {% endif %}
 
         <label for="id_producator">Selectează Producătorul:</label>
         <select id="id_producator" name="id_producator" required>
@@ -47,35 +53,52 @@
 
     <br>
     <button type="submit">Salvează Varianta Comercială</button>
-    <a href="{{ url_for('produse.variante_comerciale') }}" class="button-secondary"
-        style="margin-left: 10px;">Anulează</a>
+    {% if source == 'popup' %}
+        <a href="#" onclick="window.close(); return false;" class="button-secondary" style="margin-left: 10px;">Anulează</a>
+    {% else %}
+        <a href="{{ url_for('produse.variante_comerciale') }}" class="button-secondary" style="margin-left: 10px;">Anulează</a>
+    {% endif %}
 </form>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const categorySelect = document.getElementById('id_categorie');
-        const productSelect = document.getElementById('id_produs_generic');
+document.addEventListener('DOMContentLoaded', function () {
+    const categorySelect = document.getElementById('id_categorie');
+    const productSelect = document.getElementById('id_produs_generic');
+    const categorieIdPreselectata = {{ categorie_id_preselectata|tojson }};
+    const produsIdPreselectat = {{ produs_id_preselectat|tojson }};
 
-        categorySelect.addEventListener('change', function () {
-            const categoryId = this.value;
-            productSelect.innerHTML = '<option value="">-- Se încarcă... --</option>';
-            productSelect.disabled = true;
+    function fetchProducts(categoryId, selectedProductId = null) {
+        productSelect.innerHTML = '<option value="">-- Se încarcă... --</option>';
+        productSelect.disabled = true;
 
-            if (categoryId) {
-                const urlTemplate = "{{ url_for('api.get_produse_by_categorie', categorie_id=999999) }}";
-                fetch(urlTemplate.replace('999999', categoryId))
-                    .then(response => response.json())
-                    .then(data => {
-                        productSelect.innerHTML = '<option value="">-- Alege un produs --</option>';
-                        data.forEach(produs => {
-                            productSelect.appendChild(new Option(produs.nume, produs.id));
-                        });
-                        productSelect.disabled = false;
+        if (categoryId) {
+            const urlTemplate = "{{ url_for('api.get_produse_by_categorie', categorie_id=999999) }}";
+            fetch(urlTemplate.replace('999999', categoryId))
+                .then(response => response.json())
+                .then(data => {
+                    productSelect.innerHTML = '<option value="">-- Alege un produs --</option>';
+                    data.forEach(produs => {
+                        const option = new Option(produs.nume, produs.id);
+                        if (selectedProductId && produs.id === selectedProductId) {
+                            option.selected = true;
+                        }
+                        productSelect.appendChild(option);
                     });
-            } else {
-                productSelect.innerHTML = '<option value="">-- Mai întâi alege o categorie --</option>';
-            }
-        });
+                    productSelect.disabled = !!selectedProductId; // Disable if a product is pre-selected
+                });
+        } else {
+            productSelect.innerHTML = '<option value="">-- Mai întâi alege o categorie --</option>';
+        }
+    }
+
+    categorySelect.addEventListener('change', function () {
+        fetchProducts(this.value);
     });
+
+    if (categorieIdPreselectata) {
+        categorySelect.value = categorieIdPreselectata;
+        fetchProducts(categorieIdPreselectata, produsIdPreselectat);
+    }
+});
 </script>
 {% endblock %}

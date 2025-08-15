@@ -42,6 +42,12 @@
         padding: 10px 0;
         border-bottom: 1px solid #eee;
     }
+    
+    .variant-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
 
     .item-row:last-child {
         border-bottom: none;
@@ -126,14 +132,17 @@
                 <label for="varianta_{{ articol_solicitat.ID_Produs_Referat }}">{{
                     articol_solicitat.produs_generic_req.Nume_Generic }} ({{ articol_solicitat.Cantitate_Solicitata }}
                     buc.)</label>
-                <select id="varianta_{{ articol_solicitat.ID_Produs_Referat }}" name="id_varianta_comerciala[]">
-                    <option value="">-- Alegeți o variantă --</option>
-                    {% for varianta in articol_solicitat.produs_generic_req.variante_comerciale %}
-                    <option value="{{ varianta.ID_Varianta_Comerciala }}" {% if articol_oferit and
-                        articol_oferit.ID_Varianta_Comerciala==varianta.ID_Varianta_Comerciala %}selected{% endif %}>{{
-                        varianta.producator.Nume_Producator }} - {{ varianta.Descriere_Ambalare }}</option>
-                    {% endfor %}
-                </select>
+                <div class="variant-wrapper">
+                    <select id="varianta_{{ articol_solicitat.ID_Produs_Referat }}" name="id_varianta_comerciala[]" data-produs-id="{{ articol_solicitat.produs_generic_req.ID_Produs }}" style="width: 100%;">
+                        <option value="">-- Alegeți o variantă --</option>
+                        {% for varianta in articol_solicitat.produs_generic_req.variante_comerciale %}
+                        <option value="{{ varianta.ID_Varianta_Comerciala }}" {% if articol_oferit and
+                            articol_oferit.ID_Varianta_Comerciala==varianta.ID_Varianta_Comerciala %}selected{% endif %}>{{
+                            varianta.producator.Nume_Producator }} - {{ varianta.Descriere_Ambalare }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="button" class="button-secondary" onclick="openAddVariantPopup('{{ articol_solicitat.produs_generic_req.ID_Produs }}')">+</button>
+                </div>
                 <input type="number" name="pret_unitar_pachet[]" placeholder="Preț" step="0.01"
                     value="{{ articol_oferit.Pret_Unitar_Pachet if articol_oferit else '' }}">
                 <input type="text" name="observatii[]" placeholder="Observații"
@@ -152,14 +161,17 @@
             <div class="item-row">
                 <label for="varianta_{{ pir.ID_Produs_Referat }}">{{ pir.produs_generic_req.Nume_Generic }} ({{
                     pir.Cantitate_Solicitata }} buc.)</label>
-                <select id="varianta_{{ pir.ID_Produs_Referat }}" name="id_varianta_comerciala[]">
-                    <option value="">-- Alegeți o variantă --</option>
-                    {% for varianta in pir.produs_generic_req.variante_comerciale %}
-                    <option value="{{ varianta.ID_Varianta_Comerciala }}" {% if articol_oferit and
-                        articol_oferit.ID_Varianta_Comerciala==varianta.ID_Varianta_Comerciala %}selected{% endif %}>{{
-                        varianta.producator.Nume_Producator }} - {{ varianta.Descriere_Ambalare }}</option>
-                    {% endfor %}
-                </select>
+                <div class="variant-wrapper">
+                    <select id="varianta_{{ pir.ID_Produs_Referat }}" name="id_varianta_comerciala[]" data-produs-id="{{ pir.produs_generic_req.ID_Produs }}" style="width: 100%;">
+                        <option value="">-- Alegeți o variantă --</option>
+                        {% for varianta in pir.produs_generic_req.variante_comerciale %}
+                        <option value="{{ varianta.ID_Varianta_Comerciala }}" {% if articol_oferit and
+                            articol_oferit.ID_Varianta_Comerciala==varianta.ID_Varianta_Comerciala %}selected{% endif %}>{{
+                            varianta.producator.Nume_Producator }} - {{ varianta.Descriere_Ambalare }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="button" class="button-secondary" onclick="openAddVariantPopup('{{ pir.produs_generic_req.ID_Produs }}')">+</button>
+                </div>
                 <input type="number" name="pret_unitar_pachet[]" placeholder="Preț" step="0.01"
                     value="{{ articol_oferit.Pret_Unitar_Pachet if articol_oferit else '' }}">
                 <input type="text" name="observatii[]" placeholder="Observații"
@@ -175,4 +187,34 @@
         </div>
     </form>
 </div>
+
+<script>
+    function openAddVariantPopup(produsGenericId) {
+        const url = `{{ url_for('produse.adauga_varianta_comerciala') }}?produs_id=${produsGenericId}&source=popup`;
+        window.open(url, 'adaugaVarianta', 'width=800,height=600,scrollbars=yes');
+    }
+
+    function refreshVariantsAndSelect(produsId, variantaId) {
+        const selectElement = document.querySelector(`select[data-produs-id="${produsId}"]`);
+        if (!selectElement) {
+            console.error("Select element not found for produsId:", produsId);
+            return;
+        }
+
+        const url = `{{ url_for('api.get_variante_by_produs', produs_id=999999) }}`.replace('999999', produsId);
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                selectElement.innerHTML = '<option value="">-- Selectează varianta ofertată --</option>';
+                data.forEach(varianta => {
+                    const option = new Option(varianta.text, varianta.id);
+                    if (varianta.id == variantaId) {
+                        option.selected = true;
+                    }
+                    selectElement.appendChild(option);
+                });
+            });
+    }
+</script>
 {% endblock %}

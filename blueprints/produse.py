@@ -391,38 +391,66 @@ def variante_comerciale():
 @produse_bp.route('/variante_comerciale/adauga', methods=['GET', 'POST'])
 @login_required
 def adauga_varianta_comerciala():
+    produs_id_preselectat = request.args.get('produs_id', type=int)
+    source = request.args.get('source')
+    categorie_id_preselectata = None
+
+    if produs_id_preselectat:
+        produs = Produs.query.get(produs_id_preselectat)
+        if produs:
+            categorie_id_preselectata = produs.ID_Categorie
+
     if request.method == 'POST':
-        id_produs_generic = request.form.get('id_produs_generic')
-        id_producator = request.form.get('id_producator')
-        cod_catalog = request.form.get('cod_catalog')
-        nume_comercial_extins = request.form.get('nume_comercial_extins')
-        descriere_ambalare = request.form.get('descriere_ambalare')
-        cantitate_standard_ambalare = request.form.get('cantitate_standard_ambalare')
+        id_produs_generic = request.form.get('id_produs_generic', type=int)
+        id_producator = request.form.get('id_producator', type=int)
+        cod_catalog = request.form.get('cod_catalog', '').strip()
+        descriere_ambalare = request.form.get('descriere_ambalare', '').strip()
+        cantitate_standard_ambalare = request.form.get('cantitate_standard_ambalare', type=int)
+        nume_comercial_extins = request.form.get('nume_comercial_extins', '').strip()
 
         if not all([id_produs_generic, id_producator, cod_catalog, descriere_ambalare, cantitate_standard_ambalare]):
             flash('Toate câmpurile, cu excepția numelui comercial extins, sunt obligatorii.', 'danger')
+            # Re-render form with errors
+            categorii = Categorie.query.order_by(Categorie.Nume_Categorie).all()
+            producatori = Producator.query.order_by(Producator.Nume_Producator).all()
+            return render_template('adauga_varianta_comerciala.html', categorii=categorii, producatori=producatori, produs_id_preselectat=id_produs_generic, categorie_id_preselectata=categorie_id_preselectata, source=source), 400
+
+        existing_variant = VariantaComercialaProdus.query.filter_by(Cod_Catalog=cod_catalog).first()
+        if existing_variant:
+            flash(f'Codul de catalog "{cod_catalog}" există deja.', 'danger')
+            categorii = Categorie.query.order_by(Categorie.Nume_Categorie).all()
+            producatori = Producator.query.order_by(Producator.Nume_Producator).all()
+            return render_template('adauga_varianta_comerciala.html', categorii=categorii, producatori=producatori, produs_id_preselectat=id_produs_generic, categorie_id_preselectata=categorie_id_preselectata, source=source), 409
+
+        new_varianta = VariantaComercialaProdus(
+            ID_Produs_Generic=id_produs_generic,
+            ID_Producator=id_producator,
+            Cod_Catalog=cod_catalog,
+            Nume_Comercial_Extins=nume_comercial_extins,
+            Descriere_Ambalare=descriere_ambalare,
+            Cantitate_Standard_Ambalare=cantitate_standard_ambalare
+        )
+        db.session.add(new_varianta)
+        db.session.commit()
+
+        if source == 'popup':
+            # If the request comes from a popup, we render a script to close the popup and refresh the parent.
+            return render_template('partials/close_popup_and_refresh.html', 
+                                   produs_id=id_produs_generic, 
+                                   varianta_id=new_varianta.ID_Varianta_Comerciala)
         else:
-            existing_variant = VariantaComercialaProdus.query.filter_by(Cod_Catalog=cod_catalog).first()
-            if existing_variant:
-                flash(f'Codul de catalog "{cod_catalog}" există deja.', 'danger')
-            else:
-                new_varianta = VariantaComercialaProdus(
-                    ID_Produs_Generic=id_produs_generic,
-                    ID_Producator=id_producator,
-                    Cod_Catalog=cod_catalog,
-                    Nume_Comercial_Extins=nume_comercial_extins,
-                    Descriere_Ambalare=descriere_ambalare,
-                    Cantitate_Standard_Ambalare=cantitate_standard_ambalare
-                )
-                db.session.add(new_varianta)
-                db.session.commit()
-                flash('Varianta comercială a fost adăugată cu succes!', 'success')
-                return redirect(url_for('produse.variante_comerciale'))
-    
+            flash('Varianta comercială a fost adăugată cu succes!', 'success')
+            return redirect(url_for('produse.variante_comerciale'))
+
     # GET request
     categorii = Categorie.query.order_by(Categorie.Nume_Categorie).all()
     producatori = Producator.query.order_by(Producator.Nume_Producator).all()
-    return render_template('adauga_varianta_comerciala.html', categorii=categorii, producatori=producatori)
+    return render_template('adauga_varianta_comerciala.html', 
+                           categorii=categorii, 
+                           producatori=producatori, 
+                           produs_id_preselectat=produs_id_preselectat,
+                           categorie_id_preselectata=categorie_id_preselectata,
+                           source=source)
 
 @produse_bp.route('/variante_comerciale/edit/<int:varianta_id>', methods=['GET', 'POST'])
 @login_required
