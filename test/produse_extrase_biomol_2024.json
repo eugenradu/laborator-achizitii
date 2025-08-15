@@ -1,0 +1,572 @@
+[
+  {
+    "Categorie": "MiniSeq secvențiere",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit reactivi de secvențiere, 300 cicluri, capacitate medie",
+    "Specificatii_Tehnice": "Kit ce conține un cartuș cu reactivii necesari pentru secvențiere, tampon de hibridizare și o celulă (cameră) de secvențiere, compatibile cu sistemul miniSeq produs de Illumina, din dotarea laboratorului\nReactivii permit generarea clusterelor pe suprafața chipului, secvențierea prin sinteză și spălările necesare\nKitul permite 300 de cicluri de citire a secvențelor de ADN și a două secvențe index\nCapabil să secvențieze 2,4 Gigabaze (8 milioane de fragmente)"
+  },
+  {
+    "Categorie": "MiniSeq secvențiere",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit reactivi de secvențiere, 300 cicluri, capacitate mare",
+    "Specificatii_Tehnice": "Kit ce conține un cartuș cu reactivii necesari pentru secvențiere, tampon de hibridizare și o celulă (cameră) de secvențiere, compatibile cu sistemul miniSeq produs de Illumina, din dotarea laboratorului\nReactivii permit generarea clusterelor pe suprafața chipului, secvențierea prin sinteză și spălările necesare\nKitul permite 300 de cicluri de citire a secvențelor de ADN și a două secvențe index\nCapabil să secvențieze 7,5 Gigabaze (25 milioane de fragmente)"
+  },
+  {
+    "Categorie": "Nanopore secvențiere",
+    "Unitate_Masura": "buc",
+    "Nume_Generic": "Celule de secvențiere cu 2048 nanopori",
+    "Specificatii_Tehnice": "Celulă (cameră) de secvențiere ce permite citirea secvenței unor molecule individuale de ADN cu lungimea cuprinsă între 200 baze și 30.000 baze sau mai mult, prin metoda nanoporilor\nCelula este un dispozitiv consumabil ce poate fi utilizată cu un sistem compatibil pentru achiziția și prelucrarea datelor\nPoate fi folosită împreună cu reactivii corespunzători, permițând citirea secvențelor ADN cu o rată de eroare mică (precizie mai mare de 99%, Q20+)\nConține 2048 de nanopori, din care maxim 512 pot fi utilizați simultan pentru secvențiere\nInclude un circuit integrat specific\nPoate fi stocată la 2-8˚C pentru perioada specificată de producător\nPoate fi spălată și reutilizată pentru cel puțin un nou experiment, în condițiile specificate de producător\nPachetul conține o celulă de secvențiere"
+  },
+  {
+    "Categorie": "Nanopore secvențiere",
+    "Unitate_Masura": "buc",
+    "Nume_Generic": "Celule de secvențiere cu 126 nanopori",
+    "Specificatii_Tehnice": "Celulă (cameră) de secvențiere ce permite citirea secvenței unor molecule individuale de ADN cu lungimea cuprinsă între 200 baze și 30.000 baze sau mai mult, prin metoda nanoporilor\nCelula este un dispozitiv consumabil ce poate fi utilizată cu un sistem compatibil pentru achiziția și prelucrarea datelor\nUtilizarea celulei necesită un adaptor care include un circuit integrat specific și care este reutilizabil\nPoate fi folosită împreună cu reactivii corespunzători, permițând citirea secvențelor ADN cu o rată de eroare mică (precizie mai mare de 99%, Q20+)\nConține 126 de nanopori\nPoate fi stocată la 2-8˚C pentru perioada specificată de producător\nPachetul conține 12 celule de secvențiere"
+  },
+  {
+    "Categorie": "Nanopore secvențiere",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit reactivi pentru amorsarea celulelor de secvențiere, 6 reacții",
+    "Specificatii_Tehnice": "Set de reactivi necesari pentru amorsarea celulelor de secvențiere specificate la poziția 1\nReactivii sunt suficienți pentru 6 reacții\nCompatibil cu protocoalele de preparare a bibliotecilor de fragmente recomandate de producătorul celulelor de secvențiere.\nReactivii sunt compatibili cu toate tipurile de biblioteci de fragmente ADN"
+  },
+  {
+    "Categorie": "Nanopore secvențiere",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit reactivi pentru spălarea celulelor de secvențiere",
+    "Specificatii_Tehnice": "Kitul conține reactivi pentru spălarea camerelor de secvențiere cu nanopori în vederea stocării și reutilizării\nConține reactivi care permit îndepărtarea fragmentelor de ADN rămase de la utilizarea anterioară a camerei, în vederea evitării contaminării\nReactivii sunt compatibili cu celulele pentru secvențiere  solicitate\nInclud tampoanele pentru spălarea și pentru stocarea camerei de curgere\nReactivii sunt compatibili cu toate tipurile de biblioteci de fragmente ADN\nConține reactivi suficienți pentru 6 utilizări"
+  },
+  {
+    "Categorie": "Nanopore secvențiere",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit cu reactivi suplimentari pentru secvențiere",
+    "Specificatii_Tehnice": "Pachet de reactivi compatibili cu celulele de secvențiere descrise la punctul 1\nPermit reutilizarea celulelor de secvențiere, în condițiile descrise de producător\nReactivii includ: tampon de secvențiere, tampon de eluție, soluție pentru diluarea bibliotecilor de fragmente, reactivi pentru amorsarea camerei de secvențiere\nReactivii sunt compatibili cu toate tipurile de biblioteci de fragmente ADN\nConține reactivi suficienți pentru 12 reacții"
+  },
+  {
+    "Categorie": "Nanopore biblioteci",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit reactivi pentru prepararea probelor prin ligare, multiplex",
+    "Specificatii_Tehnice": "Conține reactivi ce permit prepararea bibliotecilor de fragmente pentru secvențiere prin metoda nanoporilor\nUtilizarea reactivilor este compatibilă cu celulele de secvențiere prin metoda nanoporilor\nMetoda de obținere a bibliotecilor de fragmente este bazată pe ligarea la capetele fragmentelor de ADN a unor adaptori care conțin etichete moleculare (secvențe index), urmată de ligarea adaptorilor pentru secvențiere\nMetoda nu utilizează amplificarea prin PCR și menține metilarea fragmentelor de ADN genomic din probele biologice\nReactivii permit secvențierea a până la 24 de probe ADN diferite în cadrul aceluiași experiment (multiplexare)\nReactivii permit citirea secvențelor ADN cu o rată de eroare mică (precizie mai mare de 99%, Q20+)\nKitul include 24 de secvențe index unice, adaptorii specifici, soluțiile tampon necesare, particule magnetice pentru purificarea produșilor de reacție, soluția pentru spălarea camerei de secvențiere înainte de utilizare, reactivii necesari pentru încărcarea camerei de secvențiere\nKitul poate fi utilizat pentru secvențierea a 400 – 1000 ng ADN genomic sau a ampliconilor\nConține reactivi suficienți pentru 6 reacții"
+  },
+  {
+    "Categorie": "Nanopore biblioteci",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit cu reactivi suplimentari pentru prepararea probelor prin ligare",
+    "Specificatii_Tehnice": "Kitul conține reactivi suplimentari, utilizați pentru a crește numărul de reacții ce pot fi efectuate cu ajutorul kitului descris la punctul 1 (pentru prepararea probelor prin ligare, multiplex)\nInclude: adaptori pentru secvențiere, particule magnetice pentru purificarea produșilor de reacție, tampoane specifice\nReactivii sunt compatibili cu celulele de secvențiere prin metoda nanoporilor  solicitate\nConține reactivi suficienți pentru 12 reacții"
+  },
+  {
+    "Categorie": "Nanopore biblioteci",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit reactivi pentru prepararea probelor prin ligare, uniplex",
+    "Specificatii_Tehnice": "Conține reactivi ce permit prepararea bibliotecilor de fragmente pentru secvențiere prin metoda nanoporilor\nUtilizarea reactivilor este compatibilă cu celulele de secvențiere prin metoda nanoporilor descrise la Lotul 2, pozițiile 1 și 2\nMetoda de obținere a bibliotecilor de fragmente este bazată pe ligarea la capetele fragmentelor de ADN a unor adaptori, urmată de ligarea adaptorilor pentru secvențiere\nMetoda nu utilizează amplificarea prin PCR și menține metilarea fragmentelor de ADN genomic din probele biologice\nReactivii permit secvențierea unei singure probe ADN în cadrul aceluiași experiment (uniplex)\nReactivii permit citirea secvențelor ADN cu o rată de eroare mică (precizie mai mare de 99%, Q20+)\nKitul include adaptorii specifici, soluțiile tampon necesare, particule magnetice pentru purificarea produșilor de reacție, soluția pentru spălarea camerei de secvențiere înainte de utilizare, reactivii necesari pentru încărcarea camerei de secvențiere\nKitul poate fi utilizat pentru secvențierea a 1 microgram ADN genomic sau a ampliconilor\nPermite secvențierea directă a ADNc și multiplexarea prin PCR\nConține reactivi suficienți pentru 6 reacții"
+  },
+  {
+    "Categorie": "Nanopore biblioteci",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit reactivi pentru prepararea rapida a probelor, multiplex",
+    "Specificatii_Tehnice": "Conține reactivi ce permit prepararea rapidă a bibliotecilor de fragmente pentru secvențiere prin metoda nanoporilor\nUtilizarea reactivilor este compatibilă cu celulele de secvențiere prin metoda nanoporilor\nMetoda de obținere a bibliotecilor de fragmente este bazată pe ligarea la capetele fragmentelor de ADN a unor adaptori care conțin etichete moleculare (secvențe index), urmată de ligarea adaptorilor pentru secvențiere\nReactivii permit secvențierea a până la 12 de probe ADN diferite în cadrul aceluiași experiment (multiplexare)\nReactivii permit citirea secvențelor ADN cu o rată de eroare mică (precizie mai mare de 99%, Q20+)\nKitul include 12 de secvențe index unice, adaptorii specifici, soluțiile tampon necesare, soluția pentru spălarea camerei de secvențiere înainte de utilizare, reactivii necesari pentru încărcarea camerei de secvențiere\nKitul poate fi utilizat pentru secvențierea a 10 nanograme – 2 micrograme ADN genomic sau a ampliconilor\nConține reactivi suficienți pentru 6 reacții"
+  },
+  {
+    "Categorie": "Nanopore biblioteci",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit cu reactivi suplimentari pentru prepararea rapida a probelor",
+    "Specificatii_Tehnice": "Kitul conține reactivi suplimentari, utilizați pentru a crește numărul de reacții ce pot fi efectuate cu ajutorul kitului descris la punctul 1 (pentru prepararea rapidă a probelor, multiplex)\nInclude: adaptori pentru secvențiere, particule magnetice pentru purificarea produșilor de reacție, tampoane specifice\nReactivii sunt compatibili cu celulele de secvențiere prin metoda nanoporilor\nConține reactivi suficienți pentru 12 reacții"
+  },
+  {
+    "Categorie": "Nanopore biblioteci",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit cu reactivi pentru multiplexarea probelor prin utilizarea PCR",
+    "Specificatii_Tehnice": "Conține reactivi ce permit prepararea bibliotecilor de fragmente pentru secvențiere prin metoda nanoporilor. Utilizarea reactivilor este compatibilă cu celulele de secvențiere prin metoda nanoporilor descrise la Lotul 2, pozițiile 1 și 2. Kitul permite multiplexarea probelor ce vor fi secvențiate pe baza protocolului de ligare a adaptorilor. Reactivii funcționează ca o extindere a kitului descris la poziția 3. Reactivii permit secvențierea a până la 12 de probe ADN diferite în cadrul aceluiași experiment (multiplexare). Metoda se bazează pe incorporarea de secvențe index la capetele fragmentelor de ADN cu ajutorul unor primeri unici, prin PCR. Ulterior, aceste  fragmente  sunt pregătite pentru secvențiere prin ligarea adaptorilor specifici. Kitul include 12 primeri cu secvențe index și un adaptor amplificabil. Conține reactivi suficienți pentru 6 reacții."
+  },
+  {
+    "Categorie": "Nanopore biblioteci",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit pentru prepararea rapidă a probelor și amplificare PCR",
+    "Specificatii_Tehnice": "Conține reactivi ce permit prepararea bibliotecilor de fragmente pentru secvențiere prin metoda nanoporilor. Utilizarea reactivilor este compatibilă cu celulele de secvențiere prin metoda nanoporilor  solicitate. Kitul se bazează pe utilizarea unei transpozaze care clivează moleculele de ADN și, simultan, adaugă secvențe amplificabile la capetele acestora. Urmează apoi o amplificare PCR cu primeri ce include secvențe index unice și, în final, atașarea de adaptori specifici. Reactivii permit secvențierea a până la 24 de probe ADN diferite în cadrul aceluiași experiment (multiplexare). Reactivii permit secvențierea probelor ce conțin cantități reduse de ADN (1-5 ng). Kitul include adaptorii amplificabili, soluțiile tampon necesare, enzimele necesare, 24 de primeri cu secvențe index, adaptorul raid pentru secvențiere particule magnetice pentru purificarea produșilor de reacție, soluția pentru spălarea camerei de secvențiere înainte de utilizare, reactivii necesari pentru încărcarea camerei de secvențiere. Conține reactivi suficienți pentru 6 reacții."
+  },
+  {
+    "Categorie": "Nanopore biblioteci",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Reactivi pentru îndepărtarea fragmentelor mici de ADN",
+    "Specificatii_Tehnice": "Reactiv ce permite eliminarea fragmentelor de ADN mai scurte de 25 kbaze prin precipitare, spălare și apoi resuspendare. Compatibil cu toate kiturile de obținere a bibliotecilor de fragmente pentru secvențierea prin metoda nanoporilor. Utilizarea reactivilor este compatibilă cu celulele de secvențiere prin metoda nanoporilor  solicitate. Conține reactivi suficienți pentru 30 reacții."
+  },
+  {
+    "Categorie": "MiniSeq tumori",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit reactivi pentru analiza ARN tumoral, multiplex",
+    "Specificatii_Tehnice": "Kit pentru analiza prin secvențiere de nouă generație a ARN mesager exprimat în țesuturi tumorale.\nReactivii sunt compatibili cu secvențiatorul Illumina MiniSeq aflat în dotarea laboratorului.\nPermite analiza expresiei genelor, identificarea variantelor de secvență (polimorfisme uninucleotidice și inserții/deleții mici) și detecția genelor de fuziune.\nKitul analizează un panel de cel puțin 130 gene implicate în oncogeneză.\nKitul necesită cantități reduse de ARN extras, începând de la 10ng.\nProducătorul furnizează o soluție pentru analiza datelor generate, ce permite elaborarea unui raport privind rezultatele analizei. Inclusă în costul reactivilor.\nKitul include reactivii necesari pentru prepararea bibliotecilor de fragmente ce vor fi secvențiate - reactivi pentru: repararea capetelor fragmentelor de ADN, ligarea adaptorilor, amplificarea PCR, captura prin hibridizare a moleculelor ARN de interes, multiplexarea probelor (12 secvențe index diferite).\nPachetul include reactivi pentru reverstranscriere, cu următoarele caracteristici:\nReactivul conține 10.000 unități reverstranscriptază pentru sinteza lanțului de ADN complementar ARN\nEnzima este derivată din M-MuLV, are activitate redusă de RNAză H și termostabilitate sporită (până la 48˚C)\nEnzima are specificitate și eficiență crescute, permite sinteza de molecule de cDNA de până la 12.000 nucleotide\nKitul include enzima, tamponul de reacție optimizat și soluție DTT 0,1M. Concentrația enzimei este de 200.000 U/mL.\nKitul include numărul necesar de cartușe cu reactivi de secvențiere (150 cicluri de citire) și de camere de secvențiere (flow-cells).\nReactivii permit citirea a până la 25 milioane fragmente de ADN și sunt compatibili cu sistemul miniSeq.\nPentru a facilita compararea ofertelor, furnizorul va calcula și specifica costul / test, ținând cont de faptul că vor fi realizate 8 teste / rundă de secvențiere"
+  },
+  {
+    "Categorie": "MiniSeq tumori",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit reactivi pentru analiza ADN și ARN din tumori solide prin amplificarea regiunilor de interes",
+    "Specificatii_Tehnice": "Kit pentru analiza prin secvențiere de nouă generație a ADN și ARN din tumori solide.\nReactivii sunt compatibili cu secvențiatorul Illumina MiniSeq aflat în dotarea laboratorului.\nKitul permite analiza a 52 de oncogene cu rol de biomarker în tumori maligne solide de plâmân, colon, sân, ovar, prostată și melanocitare.\nMetoda este bazată pe amplificarea prin PCR multiplex a genelor de interes.\nReactivii permit analiza acizilor nucleici extrași din țesuturi fixate și incluse la parafină.\nKitul conține amestecul de primeri specifici.\nProducătorul furnizează o soluție pentru analiza datelor generate, inclusă în costul reactivilor.\nReactivi suficienți pentru analiza a 24 de probe"
+  },
+  {
+    "Categorie": "MiniSeq tumori",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit pentru preparearea bibliotecilor de secvențiere prin amplificare, multiplex",
+    "Specificatii_Tehnice": "Reactivi pentru prepararea rapidă a bibliotecilor de  fragmente , pornind de la produși de amplificare PCR.\nReactivii sunt compatibili cu secvențiatorul Illumina MiniSeq aflat în dotarea laboratorului.\nReactivii pot fi utilizați împreună cu kiturile descrise la pozițiile 2 și 3\nKitul permite ligarea secvențelor index, purificarea bibliotecii de fragmente și amplificarea fragmentelor.\nKitul conține primeri specifici, amestec enzimatic pentru amplificarea probelor, ligază ADN, reactivi pentru amplificarea bibliotecii de fragmente, reactivi pentru adăugarea de secvențe index.\nReactivi suficienți pentru 24 de reacții"
+  },
+  {
+    "Categorie": "MiniSeq tumori",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit reactivi pentru indexarea prin ligare a bibliotecilor de fragmente amplificate",
+    "Specificatii_Tehnice": "Reactivi pentru indexarea bibliotecilor de fragmente.\nReactivii sunt compatibili cu secvențiatorul Illumina MiniSeq aflat în dotarea laboratorului.\nReactivii pot fi utilizați împreună cu kiturile descrise la pozițiile 2, 3 și 4\nKitul conține combinații unice de adaptori index i7 și index i5 ce se leagă de capetele fragmentelor ADN prin ligare.\nKitul conține 24 de adaptori indexați, suficienți pentru 24 de probe, dispuși în placă cu 96 de godeuri"
+  },
+  {
+    "Categorie": "MiniSeq tumori",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit de reactivi pentru obținerea ADNc",
+    "Specificatii_Tehnice": "Reactivi pentru sinteza lanțului de ADN complementar ARN.\nCompatibil cu reactvii de la poziția 5\nConține amestecul de reacție și, separat, enzimele necesare.\nReactivi suficienți pentru 100 de reacții"
+  },
+  {
+    "Categorie": "MiniSeq tumori",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit reactivi pentru obținerea ADN pentru secvențiere prin amplificare din probe incluse la parafină",
+    "Specificatii_Tehnice": "Reactiv ce permite amplificarea directă a ADN din țesuturi fixate și incluse în parafină.\nCompatibil cu reactvii de la poziția 5\nNu necesită deparafinarea țesuturilor și purificarea ADN\nConține soluție de transfer și un reactiv de preparare directă.\nReactivi suficienți pentru 24 de reacții"
+  },
+  {
+    "Categorie": "MiniSeq tumori",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit pentru analiza riscului ereditar de cancer 113 gene",
+    "Specificatii_Tehnice": "Kit pentru analiza prin secvențiere de nouă generație a variantelor genetice asociate cu risc ereditar crescut de cancer colorectal, de sân, ovarian, gastric și cu alte localizări.\nReactivii sunt compatibili cu secvențiatorul Illumina MiniSeq aflat în dotarea laboratorului.\nKitul permite analiza a 113 gene și 125 de polimorfisme uninucleotidice (din care 77 pot fi utilizate pentru calcularea scorului de risc poligenic).\nMetoda poate detecta variante genetice germinale: variații ale numărului de copii, inserții/deleții, polimorfisme uninucleotidice.\nKit bazat pe hibridizarea de sonde oligonucleotidice biotinilate cu fragmentele indexate de ADN genomic.\nPoate fi utilizat pentru ADN extras din sânge sau salivă.\nProducătorul furnizează o soluție pentru analiza datelor generate, inclusă în costul reactivilor.\nReactivi pentru 8 reacții de selecție multiplexate"
+  },
+  {
+    "Categorie": "MiniSeq tumori",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit pentru prepararea bibliotecilor de secvențiere prin fragmentare enzimatică, multiplex",
+    "Specificatii_Tehnice": "Reactivi pentru obținerea de biblioteci de fragmente care pot fi secvențiate pe sistemul MiniSeq Illumina, aflat în dotarea laboratorului.\nKitul trebuie să fie compatibil cu reactivii pentru selecția regiunilor genomice de interes specificați la poziția 8\nKitul permite prelucrarea ADN genomic prin fragmentare enzimatică (tagmentare) și adăugarea de secvențe cunoscute la capetele fragmentelor.\nMetoda este una rapidă (timp total de lucru aprox. 7 ore)\nPermite adăugarea de etichete moleculare unice (indici) la capetele fragmentelor prin reacții PCR.\nPermite amplificarea bibliotecilor de fragmente după pasul de selecție prin hibridizare și captură.\nKitul conține toți reactivii necesari pentru realizarea pașilor descriși mai sus, mai puțin particulele magnetice pentru purificarea și selecția fragmentelor de ADN.\nKit pentru 16 reacții"
+  },
+  {
+    "Categorie": "MiniSeq tumori",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit reactivi pentru indexarea bibliotecilor obținute prin fragmentare enzimatică, multiplex",
+    "Specificatii_Tehnice": "Reactivi pentru indexarea fragmentelor ADN, compatibili cu reactivii specificați la punctul 9.\nInclude oligonucleotide cu secvențe unice pentru identificarea a 96 de probe.\nSe utilizează în cursul unei reacții PCR, înainte de selecția prin hibridizare și captură a fragmentelor de interes.\nReactivi suficienți pentru indexarea a 96 probe"
+  },
+  {
+    "Categorie": "Extracție manuală",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit reactivi pentru extracția manuala a ARN din țesuturi fibroase",
+    "Specificatii_Tehnice": "Kit de reactivi pentru extracția ARN din țesuturi fibroase (țesut conjunctiv, piele, mușchi) bazat pe centrifugare și adsorbție pe membrane selective.\nPentru izolarea ARN cu lungime mai mare de 200 nucleotide\nInclude proteinaza K pentru îndepărtarea proteinelor.\nInclude DNAză fără activitate de RNAză pentru îndepărtarea ARN.\nPermite prelucrarea a 0,5-30 mg țesut și produce până la 100µg ARN într-un volum de 30µL eluat.\nCompatibil cu omogenizatorul mecanic TissueLyser II aflat în dotarea laboratorului.\nInclude coloanele de separare și tuburile de colectare necesare.\nInclude toți reactivii necesari (tampoane de liză, de spălare etc)\nKit pentru 50 reacții"
+  },
+  {
+    "Categorie": "Extracție manuală",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Reactiv pentru prezervarea ARN din țesuturi",
+    "Specificatii_Tehnice": "Soluție pentru stabilizarea imediată și prezervarea ARN.\nPermite procesarea fragmentelor de țesut la temperatura camerei.\nConservă profilul expresiei de gene în țesuturile recoltate.\nPermite conservarea țesuturilor cu protecția ARN pentru 24h la 37˚C, 7 zile la temperatura ambientală, 4 săptămâni la frigider sau pe termen nelimitat la -20 - -80˚C\nCompatibil cu kitul de extracție ARN specificat la poziția 1\nKitul conține 50 mL de soluție, suficientă pentru 25 probe"
+  },
+  {
+    "Categorie": "Extracție manuală",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit pentru extracția manuala a ADN bacterian pentru studiul microbiomului",
+    "Specificatii_Tehnice": "Kitul permite izolarea și purificarea ADN bacterian total din fluide biologice sau țesuturi.\nKitul conține reactivi care permit îndepărtarea selectivă a ADN-ului uman prezent în probele biologice, prin liza selectivă a celulelor eucariote și degradarea acizilor nucleici ai acestora folosind benzonază.\nConține reactivi care permit liza celulelor bacteriene prin procedee chimice și mecanice.\nPurificarea ADN bacterian se realizează prin adsorbția selectivă pe coloane și cenntrifugare.\nKitul este compatibil cu disociere mecanică a probelor folosind sistemul TissueLyser II aflat în dotarea laboratorului\nKit pentru 50 probe"
+  },
+  {
+    "Categorie": "Extracție manuală",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit pentru extractia manuala a ADN genomic de masă moleculară mare",
+    "Specificatii_Tehnice": "Kitul permite izolarea și purificarea ADN genomic cu lungime mare (100 – 200 kbaze)\nPermite îndepărtarea blândă a contaminanților (proteine, lipide și alții)\nPermite extracția ADN din 8 x 108 celule sau din s ânge integral\nCelulele sunt lizate în prezența unui stabilizator pentru ADN, apoi proba este tratată cu RNAză.\nProteinele sunt îndepărtate prin precipitare cu săruri, iar ADN este precipitat cu alcool și apoi recuperat în tampon de eluție"
+  },
+  {
+    "Categorie": "Extracție manuală",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit reactivi pentru purificarea ADN din țesuturi fixate și incluse în parafină",
+    "Specificatii_Tehnice": "Trusă de reactivi pentru extracția și purificarea ADN din țesuturi fixate și incluse în parafină, marcaj CE-IVD.\nMetodă manuală, bazată pe adsorbția pe membrane de siliciu și centrifugare.\nMetoda nu presupune incubări îndelungate și îndepărtează parțial efectele fixării cu formol asupra ADN\nProtocolul de lucru include condiții speciale de liză și deparafinare a probelor.\nKit pentru 50 de probe"
+  },
+  {
+    "Categorie": "Extracție manuală",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit reactivi pentru purificarea ARN din țesuturi fixate și incluse în parafină",
+    "Specificatii_Tehnice": "Trusă de reactivi pentru extracția și purificarea ARN din țesuturi fixate și incluse în parafină, marcaj CE-IVD.\nMetodă manuală, bazată pe adsorbția pe membrane de siliciu și centrifugare.\nKitul include soluția de deparafinare a secțiunilor.\nMetoda permite îndepărtarea efectelor fixării cu formol și permite eliberarea ARN fără a afecta integritatea acestuia.\nMetoda include condiții speciale de liză a probeloșr și un pas de îndepărtare a ADN.\nKit pentru 50 de probe"
+  },
+  {
+    "Categorie": "Extracție manuală",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit pentru purificarea acizilor nucleici liberi din plasmă",
+    "Specificatii_Tehnice": "Trusă de reactivi pentru purificarea și concentrarea ADN și ARN liber, circulant în plasmă.\nMetodă manuală, bazată pe adsorbția pe membrane de siliciu și centrifugare.\nMetoda permite concentrarea cantităților mici de acizi nucleici liberi și poate fi folosită înn scop diagnostic.\nMetoda permite eluarea în volume variabile, între 20 și 150 microlitri.\nKit pentru 50 de probe"
+  },
+  {
+    "Categorie": "Extracție Qia",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit de extracție automată a ADN din sânge compatibil cu sistemul QiaSymphony",
+    "Specificatii_Tehnice": "Reactivi și consumabile pentru extracția automată a ADN compatibili cu sistemul  QiaSymphony din dotarea laboratorului.\nPermite extracția ADN din 200 µL de sânge integral, suspensie de leucocite, țesuturi și țesuturi fixate și incluse în parafină.\nPrincipiul de funcționare: purificare magnetică.\nKitul include toți reactivii necesari extracției (tampoane de legare, de spălare, de eluție ADN, proteinază K).\nReactivii sunt ambalați într-un cartuș care poate fi păstrat la temperatura camerei și se încarcă direct în sistemul de extracție.\nUn kit conține reactivi suficienți pentru prelucrarea a 192 probe.\nMarcă CE-IVD"
+  },
+  {
+    "Categorie": "Extracție Qia",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit de extracție ARN total din sânge compatibil cu sistemul QiaSymphony",
+    "Specificatii_Tehnice": "Reactivi și consumabile pentru extracția automată a ARN compatibili cu sistemul  QiaSymphony din dotarea laboratorului.\nPermite extracția ARN din sânge integral recoltat în tuburi cu soluție de conservare a ARN (PAXgene Blood RNA Tubes).\nPrincipiul de funcționare: purificare magnetică.\nKitul include toți reactivii necesari extracției (tampoane de legare, de spălare, de eluție ADN, proteinază K, DNAză).\nReactivii sunt ambalați într-un cartuș care se încarcă direct în sistemul de extracție.\nUn kit conține reactivi suficienți pentru prelucrarea a 96 probe.\nMarcă CE-IVD"
+  },
+  {
+    "Categorie": "Extracție Qia",
+    "Unitate_Masura": "cutie",
+    "Nume_Generic": "Vârfuri de pipetare de 1500 µL. Cutie cu 1024 vârfuri",
+    "Specificatii_Tehnice": "Vârfuri de pipetare cu volumul de 1500 µL, compatibile cu sistemul QIAsymphony din dotarea laboratorului.\nPrevăzute cu filtru și capabile de detecția nivelului de lichid.\nCutii cu 1024 vârfuri (32 suporturi cu câte 32 vârfuri fiecare)"
+  },
+  {
+    "Categorie": "Extracție Qia",
+    "Unitate_Masura": "cutie",
+    "Nume_Generic": "Vârfuri de pipetare de 200 µL. Cutie cu 1024 vârfuri",
+    "Specificatii_Tehnice": "Vârfuri de pipetare cu volumul de 200 µL, compatibile cu sistemul QIAsymphony din dotarea laboratorului.\nCutii cu 1024 vârfuri (32 suporturi cu câte 32 vârfuri fiecare)"
+  },
+  {
+    "Categorie": "Extracție Qia",
+    "Unitate_Masura": "cutie",
+    "Nume_Generic": "Plăci cu 8 cupe de reacție. Cutie cu 336 bucăți",
+    "Specificatii_Tehnice": "Plăci cu 8 cupe de reacție, compatibile cu sistemul QIAsymphony din dotarea laboratorului.\nCutie cu 336 bucăți"
+  },
+  {
+    "Categorie": "Extracție Qia",
+    "Unitate_Masura": "cutie",
+    "Nume_Generic": "Capace pentru bare magnetice. Cutie cu 144 bucăți",
+    "Specificatii_Tehnice": "Capace pentru bare magnetice, compatibile cu sistemul QIAsymphony din dotarea laboratorului.\nCutie cu 144 bucăți"
+  },
+  {
+    "Categorie": "Extracție Qia",
+    "Unitate_Masura": "cutie",
+    "Nume_Generic": "Plăci cu 96 godeuri pentru eluat. Cutie cu 24 plăci",
+    "Specificatii_Tehnice": "Plăci cu 96 godeuri pentru eluat, compatibile cu sistemul QIAsymphony din dotarea laboratorului.\nVolum de stocare 100 µL\nInclud capace pentru godeuri.\nGodeuri cu fund rotund.\nCutie cu 144 bucăți"
+  },
+  {
+    "Categorie": "Bioanalyzer",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit reactivi electroforeză microfluidică a ARN",
+    "Specificatii_Tehnice": "Kit pentru analiza prin electroforeză microfluidică a ARN compatibil cu sistemul Bioanlyzer 2100 aflat în dotarea laboratorului. Permite analiza și cuantificarea ARN total și ARN mesager cu concentrații de 25 - 500 ng/µL. Kitul include 25 chipuri microfluidice, care pot fi utilizate pentru analiza a 300 probe. Permite analiza integrității ARN extras și calculează parametrul RIN (RNA Integrity Number). Include toți reactivii necesari (gel de migrare, fluorocrom, tampon de migrare, markeri de masă moleculară, etc)."
+  },
+  {
+    "Categorie": "Bioanalyzer",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit reactivi electroforeză microfluidică a ADN",
+    "Specificatii_Tehnice": "Kit pentru analiza prin electroforeză microfluidică a ARN compatibil cu sistemul Bioanlyzer 2100 aflat în dotarea laboratorului. Permite analiza și cuantificarea ADN cu concentrații de 0.5-50 ng/µL. Permite analiza fragmentelor cu dimensiuni între 50 și 1000 baze. Kitul include 25 chipuri microfluidice, care pot fi utilizate pentru analiza a 300 probe. Include toți reactivii necesari (gel de migrare, fluorocrom, tampon de migrare, markeri de masă moleculară, etc)."
+  },
+  {
+    "Categorie": "Bioanalyzer",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit reactivi electroforeză microfluidică de mare sensibilitate a ADN",
+    "Specificatii_Tehnice": "Kit pentru analiza prin electroforeză microfluidică a ARN compatibil cu sistemul Bioanlyzer 2100 aflat în dotarea laboratorului. Permite analiza și cuantificarea ADN cu concentrații de 5-500 pg/µL. Permite analiza fragmentelor cu dimensiuni între 50 și 7000 baze. Kitul include 10 chipuri microfluidice, care pot fi utilizate pentru analiza a 110 probe. Include toți reactivii necesari (gel de migrare, fluorocrom, tampon de migrare, markeri de masă moleculară, etc)."
+  },
+  {
+    "Categorie": "Qubit",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit pentru cuantificarea fluorimetrică de sensibilitate ridicată a ARN",
+    "Specificatii_Tehnice": "Kitul permite cuantificarea fluorimetrică de sensibilitate ridicata a ARN. Compatibil cu sistemul de cuantificare fluorimetrică Qubit, produs de ThermoFisher Scientific. Spectrul de excitație și emisie a fluorescenței: 644/673. Limita de cuantificare ARN cuprinsă între 4-200 de nanograme. Kitul include tamponul de diluție, soluție fluorescentă concentrată, standarde de cantitate. Kit pentru 100 de reacții."
+  },
+  {
+    "Categorie": "Qubit",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit pentru cuantificarea fluorimetrică de sensibilitate ridicată a ADN",
+    "Specificatii_Tehnice": "Kitul permite cuantificarea fluorimetrică de sensibilitate ridicată a ADN dublu catenar. Compatibil cu sistemul de cuantificare fluorimetrică Qubit, produs de ThermoFisher Scientific. Spectrul de excitație și emisie a fluorescenței: 510/527. Limita de cuantificare ADN cuprinsă între 0,1 - 120 nanograme. Kitul include tamponul de diluție, soluție fluorescentă concentrată, standarde de cantitate. Kit pentru 100 de reacții."
+  },
+  {
+    "Categorie": "Qubit",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit pentru cuantificarea fluorimetrică a ARN",
+    "Specificatii_Tehnice": "Kitul permite cuantificarea fluorimetrică  a ARN. Compatibil cu sistemul de cuantificare fluorimetrică Qubit, produs de ThermoFisher Scientific. Spectrul de excitație și emisie a fluorescenței: 644/673. Limita de cuantificare ARN cuprinsă între 10 - 2000 nanograme. Kitul include tamponul de diluție, soluție fluorescentă concentrată, standarde de cantitate. Kit pentru 100 de reacții."
+  },
+  {
+    "Categorie": "Qubit",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit pentru cuantificarea fluorimetrică a ADN",
+    "Specificatii_Tehnice": "Kitul permite cuantificarea fluorimetrică a ADN dublu catenar. Compatibil cu sistemul de cuantificare fluorimetrică Qubit, produs de ThermoFisher Scientific. Spectrul de excitație și emisie a fluorescenței: 510/527. Limita de cuantificare ADN cuprinsă între 4 - 2000 nanograme. Kitul include tamponul de diluție, soluție fluorescentă concentrată, standarde de cantitate. Kit pentru 100 de reacții."
+  },
+  {
+    "Categorie": "MSI Dx",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Reactivi pentru analiza prin PCR a instabilității microsateliților ADN",
+    "Specificatii_Tehnice": "Set de reactivi ce permit amplificarea prin PCR și apoi analiza lungimii unor regiuni genomice ce conțin microsateliți ADN mono- sau multi-nucleotidici. Regiunile analizate trebie să aibă o variație redusă (cuasi-monomorfice) în populația fără patologie, astfel încât polimorfismele de lungime să poată fi detectate fără a fi necesară analiza unei probe de ADN non-tumorale a pacientului. Setul trebuie să analizeze cel puțin 4 locusuri genomice. Metoda permite analiza ADN extras din țesuturi fixate în formol și incluse în parafină. Kitul conține toți reactivii necesari amplificării PCR și detecției fluorescente a polimorfismelor de lungime în regiunile genomice studiate. Metoda de testare să fie validată prin studii care au validat caracteristicile analitice în populații de pacienți cu diferite tumori maligne (cel puțin cancer colorectal). În cazul în care reactivii nu pot fi utilizați folosind echipamentele aflate în dotarea laboratorului (extracție ADN cu kit CE-IVD, termocicloare Applied Biosciences GeneAmp 9700 și SensoQuest Labcycler, sisteme real-time PCR Bio-Rad CFX 96 și Roche LC480 II, sistem de electroforeză capilară Beckman Coulter GenomeLab GeXP), furnizorul trebuie să pună la dispoziția Autorității Contractante un sistem de analiză compatibil pe toată perioada de valabilitate a contractelor subsecvente. În cazul în care sunt necesare programe de calculator dedicate analizei și interpretării rezultatelor, acestea vor fi oferite împreună cu reactivii. Reactivii trebuie să aibă marcaj CE-IVD. La evaluarea ofertelor se va lua în considerare prețul per test la care este oferit produsul (1 test reprezintă analiza unei probe de țesut)."
+  },
+  {
+    "Categorie": "GeXP",
+    "Unitate_Masura": "buc",
+    "Nume_Generic": "Capilare pentru electroforeză",
+    "Specificatii_Tehnice": "Set 8 capilare pentru electroforeza ADN. Capilarele sunt compatibile cu sistemul GenomeLab GeXP aflat în dotarea laboratorului. Capilarele au diametrul intern 75 microni și lungimea 33 cm. Kitul include adaptorul pentru instalare rapidă."
+  },
+  {
+    "Categorie": "GeXP",
+    "Unitate_Masura": "buc",
+    "Nume_Generic": "Gel pentru electroforeză",
+    "Specificatii_Tehnice": "Gel de înaltă rezoluție din poliacrilamidă pentru electroforeza ADN. Gelul este împachetat în cartușe de 20 mL ce pot fi folosite direct pe sistemul de secvențiere GenomeLab GeXP, aflat în dotarea laboratorului."
+  },
+  {
+    "Categorie": "GeXP",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit standarde de dimensiuni fragmente ADN 640 nucleotide",
+    "Specificatii_Tehnice": "Kit standarde de dimensiuni ale fragmentelor de ADN, compatibil cu sistemul GenomeLab GeXP. Reactivul conține fragmente ADN cu lungimi cuprinse între 60 si 640 nucleotide, marcate fluorescent cu WellRED. Kit pentru 96 reactii."
+  },
+  {
+    "Categorie": "GeXP",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit standarde de dimensiuni fragmente ADN 420 nucleotide",
+    "Specificatii_Tehnice": "Kit standarde de dimensiuni ale fragmentelor de ADN, compatibil cu sistemul GenomeLab GeXP. Reactivul conține fragmente ADN cu lungimi cuprinse între 60 si 420 nucleotide, marcate fluorescent cu WellRED. Kit pentru 96 reactii."
+  },
+  {
+    "Categorie": "GeXP",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Soluție tampon pentru separare",
+    "Specificatii_Tehnice": "Soluție tampon pentru separarea electroforetică a fragmentelor de ADN, compatibilă cu sistemul GenomeLab GeXP. Permite migrarea fragmentelor de ADN în matricea de gel. Kitul conține 120 mL soluție."
+  },
+  {
+    "Categorie": "GeXP",
+    "Unitate_Masura": "flacon",
+    "Nume_Generic": "Soluție pentru încărcarea probelor în capilare",
+    "Specificatii_Tehnice": "Soluție salină pentru diluarea și denaturarea probelor de ADN. Permite încărcarea fragmentelor de ADN în capilare. Compatibilă cu sistemul GenomeLab GeXP aflat în dotarea laboratorului. Flacon cu 6 mL."
+  },
+  {
+    "Categorie": "Nanopore dx",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit pentru testarea mutațiilor genelor BRCA1 și BRCA2",
+    "Specificatii_Tehnice": "Kit de reactivi care permit testarea variantelor genetice somatice și germinale ale genelor BRCA1 și BRCA2. Reactivii permit identificarea variantelor genomice scurte și a numărului de copii. Metodă bazată pe amplificarea țintită a regiunilor genomice de interes. Reactivii permit utilizarea ADN extras din sânge sau din țesuturi. Reactivi cu marcaj CE-IVD pentru utilizarea pe sistemele de secvențiere bazate pe nanopori, cu capacitatea de a secvenția fragmente lungi de ADN. Kitul include reactivii necesari pentru amplificare, pentru multiplexare și adaptorii necesari pentru secvențiere. Kit pentru 16 teste."
+  },
+  {
+    "Categorie": "Nanopore dx",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit pentru testarea mutațiilor genei CFTR",
+    "Specificatii_Tehnice": "Kit de reactivi care permit testarea variantelor genetice germinale ale genei CFTR. Reactivii permit identificarea variantelor genomice scurte și a numărului de copii. Metodă bazată pe amplificarea țintită a regiunilor genomice de interes. Reactivii permit utilizarea ADN extras din sânge sau din țesuturi. Reactivi cu marcaj CE-IVD pentru utilizarea pe sistemele de secvențiere bazate pe nanopori, cu capacitatea de a secvenția fragmente lungi de ADN. Kitul include reactivii necesari pentru amplificare, pentru multiplexare și adaptorii necesari pentru secvențiere. Kit pentru 16 teste."
+  },
+  {
+    "Categorie": "Nanopore dx",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit pentru testarea mutațiilor oncogenelor implicate în mai multe tipuri de cancer",
+    "Specificatii_Tehnice": "Kit de reactivi care permit testarea variantelor genetice germinale și somatice ale unui număr de peste 40 gene asociate diferitelor forme de cancer: de sân, de ovar, colorectal ereditar. Panelul testează cel puțin următoarele gene: APC, BRCA 1 și 2, EPCAM, MLH1, MSH2, MSH6, PIK3CA, PMS2. Reactivii permit identificarea variantelor genomice scurte și a numărului de copii. Metodă bazată pe captura prin hibridizare a regiunilor genomice de interes. Reactivii permit utilizarea ADN extras din sânge sau din țesuturi (proaspete, congelate sau fixate). Reactivi cu marcaj CE-IVD pentru utilizarea pe sistemele de secvențiere bazate pe nanopori, cu capacitatea de a secvenția fragmente lungi de ADN. Kitul include reactivii necesari pentru captură, pentru multiplexare și adaptorii necesari pentru secvențiere. Kitul este însoțit de un program de analiză a datelor care permite analiza calității datelor, identificarea variantelor (SNV și CNV), clasificarea acestora și redactarea unui raport de analiză. Kit pentru 16 teste."
+  },
+  {
+    "Categorie": "Nanopore dx",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit pentru secvențierea întregului exom",
+    "Specificatii_Tehnice": "Kit de reactivi care permit analiza majorității (>99%, >22.000 gene) regiunilor codante din genomul uman. Regiunile genomice analizate însumează peste 40 Mbaze. Reactivii permit identificarea variantelor genomice de secvență și a numărului de copii. Metodă bazată pe captura prin hibridizare a regiunilor genomice de interes. Reactivii permit utilizarea ADN extras din sânge sau din țesuturi (proaspete, congelate sau fixate). Reactivi cu marcaj CE-IVD pentru utilizarea pe sistemele de secvențiere bazate pe nanopori, cu capacitatea de a secvenția fragmente lungi de ADN. Kitul include reactivii necesari pentru captură, pentru multiplexare și adaptorii necesari pentru secvențiere. Kitul este însoțit de un program de analiză a datelor care permite analiza calității datelor, identificarea variantelor (SNV și CNV), clasificarea acestora și redactarea unui raport de analiză. Kit pentru 16 teste."
+  },
+  {
+    "Categorie": "Nanopore dx",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit pentru diagnosticul afecțiunilor cardiace",
+    "Specificatii_Tehnice": "Kit de reactivi care permit analiza genelor implicate în cardiomiopatii, aritmii. multe gene. niste boli."
+  },
+  {
+    "Categorie": "MLPA",
+    "Unitate_Masura": "buc",
+    "Nume_Generic": "Amestec de oligonucleotide pentru analiza metilării în sindromul Lynch prin metoda MS-MLPA",
+    "Specificatii_Tehnice": "Amestec de oligonucleotide utilizate ca sonde pentru analiza metilării în sindromul Lynch. Reactivii permit analiza prin metoda MS-MLPA (amplificarea multiplex a sondelor oligonucleotidice, dependentă de ligare și specifică pentru metilare). Metoda analizează statutul metilării regiunilor promoter ale genelor MLH1, MSH2, PMS2 și MSH6, precum și existența mutației BRAF p.V600E. Reacția poate fi utilizată și pentru detecția delețiilor sau duplicațiilor în regiunea 3’ a genei EPCAM sau în regiunile promoterilor genelor  MLH1, MSH2, PMS2 și MSH6. Kitul include și ADN de control. Produsul este însoțit de o soluție informatică de analiză și interpretare a rezultatelor, inclusă în costul reactivilor. Reactivi pentru diagnostic in vitro. Kit pentru 25 de teste."
+  },
+    {
+    "Categorie": "MLPA",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit reactivi suplimentari pentru analiza MS-MLPA",
+    "Specificatii_Tehnice": "Reactivi necesari realizării reacției MS-MLPA cu amestecul de sonde nucleotidice descris la poziția 1.\nReactivii sunt compatibili cu sistemul de electroforeză capilară Beckman Coulter GeXP din dotarea laboratorului.\nKitul conține: tampoane de reacție, enzimele necesare ligării, mix de primeri cuplați cu fluorocromul Cy5, polimerază ADN termostabilă.\nReactivi suficienți pentru 100 de reacții."
+  },
+  {
+    "Categorie": "MLPA",
+    "Unitate_Masura": "buc",
+    "Nume_Generic": "Enzimă de restricție HhaI",
+    "Specificatii_Tehnice": "Reactiv ce conține enzima Hha I, endonuclează dependentă de metilare.\nSe utilizează împreună cu produsele de la pozițiile 1 și 2 pentru analiza metilării unor regiuni genomice.\nPentru diagnostic in vitro."
+  },
+  {
+    "Categorie": "Biomol",
+    "Unitate_Masura": "buc",
+    "Nume_Generic": "ADN polimerază pentru amplificarea fragmentelor lungi de ADN",
+    "Specificatii_Tehnice": "Amestec de ADN polimeraze recombinante ce permit amplificarea unor fragmente de ADN de până la 30 kbaze.\nFidelitate de 2 ori mai mare decât a polimerazei Taq.\nCu activitate de 3-5 și 5-3 exonuclează.\nPolimerază de tip hot-start, ce utilizează un aptamer pentru blocare la temperaturi sub 45˚C.\nReactivul furnizat sub forma unui amestec gata de utilizare, cu concentrația 2X.\nReactiv pentru 100 reacții cu volum final de 50 µL."
+  },
+  {
+    "Categorie": "Biomol",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit de enzime pentru repararea capetelor fragmentelor de ADN și pentru adăugarea de adenozină la capătul 3",
+    "Specificatii_Tehnice": "Kitul include un amestec enzimatic (diferite ADN polimeraze) care repară capetele fragmentelor de ADN rezultate în urma amplificării PCR.\nAmestecul include și o enzimă ce adaugă o adenozină fosforilată în 5’ la capătul 3’ al fragmentelor de ADN rezultate.\nKitul include și tamponul optimizat pentru desfășurarea reacțiilor.\nReactivi pentru prepararea bibliotecilor de fragmente în vederea secvențierii prin metoda nanoporilor.\nReactivi suficienți pentru 24 de reacții cu volum final de 60 µL."
+  },
+  {
+    "Categorie": "Biomol",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit pentru ligarea rapidă a adaptorilor de secvențiere",
+    "Specificatii_Tehnice": "Kitul include o ligază ADN T4 cu acțiune rapidă pentru ligarea adaptorilor necesari secvențierii.\nKitul include tamponul de reacție optimizat, în concentrație 5X.\nReactivi pentru prepararea bibliotecilor de fragmente în vederea secvențierii prin metoda nanoporilor.\nReactivi suficienți pentru 20 reacții de ligare."
+  },
+  {
+    "Categorie": "Biomol",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit pentru ligarea etichetelor oligonucleotidice",
+    "Specificatii_Tehnice": "Kitul include ADN ligaza T4 în tampon gata de întrebuințare.\nUtilizat pentru legarea etichetelor oligonucleotidice de fragmentele de ADN din probe diferite.\nInclude un reactiv de îmbunătățire a activității enzimatice.\nPermite ligarea fragmentelor de ADN cu capete drepte sau cu capete inegale (ligare TA).\nReactivi pentru prepararea bibliotecilor de fragmente în vederea secvențierii prin metoda nanoporilor.\nReactiv suficient pentru 50 reacții de ligare în volum de 5µL / reacție."
+  },
+  {
+    "Categorie": "Biomol",
+    "Unitate_Masura": "buc",
+    "Nume_Generic": "Reactiv pentru repararea ADN din probe fixate și incluse",
+    "Specificatii_Tehnice": "Amestec enzimatic ce permite repararea ADN din probe fixate cu formol și incluse în parafină.\nPermite repararea citozinelor deaminate, a rupturilor ADN, a bazelor oxidate.\nAmestec gata de întrebuințare.\nReactivi pentru prepararea bibliotecilor de fragmente în vederea secvențierii prin metoda nanoporilor.\nReactiv suficient pentru 24 reacții."
+  },
+  {
+    "Categorie": "Biomol",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit de reactivi auxiliari de preparare a probelor pentru secvențierea prin metoda nanoporilor",
+    "Specificatii_Tehnice": "Kit care conține mai mulți reactivi utilizați pentru prepararea probelor în vederea secvențierii prin metoda nanoporilor.\nRecomandat de producător pentru bibliotecile de fragmente obținute prin reacții de ligare, permite citirea secvențelor de ADN cu precizie mare (Q20+).\nInclude următorii reactivi:\nAmestec de reparare ADN din probe fixate și incluse la parafină și tamponul de reacție aferent\nEnzime pentru repararea capetelor fragmentelor de ADN și pentru adăugarea de adenozină la capătul 3’ și tamponul de reacție aferent\nLigază DNA T4 cu acțiune rapidă\nReactivi suficienți pentru 24 de reacții în volumele recomandate."
+  },
+  {
+    "Categorie": "Biomol",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit pentru amplificare qPCR și detecție pe baza hidrolizei sondelor fluorescente",
+    "Specificatii_Tehnice": "Kitul conține un amestec de reacție ce permite amplificarea PCR și detecția produșilor de reacție pe baza hidrolizei sondelor oligonucleotidice cuplate cu fluorocromi.\nInclude Taq polimerază de tip hot-start.\nNu conține ROX.\nConține dUTP în amestecul de reacție pentru a preveni contaminarea.\nConține un colorant vizibil pentru a reduce erorile de pipetare.\nFormulat ca amestec 2X ce include toate componentele necesare reacției.\nKit pentru 200 reacții."
+  },
+  {
+    "Categorie": "Biomol",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit amestec ezimatic pentru reverstranscriere și amplificare simultană qPCR",
+    "Specificatii_Tehnice": "Kitul permite desfășurarea reacțiilor de reverstranscriere și de amplificare qPCR într-un singur pas.\nDetecția se realizează pe baza hidrolizei sondelor oligonucleotidice cuplate cu fluorocromi.\nInclude o reverstranscriptază care devine activă la temperaturi mai mari decât temperatura camerei. Reverstranscriptaza funcționează la temperaturi de 55-60˚C.\nInclude Taq polimerază de tip hot-start.\nNu conține ROX.\nConține dUTP în amestecul de reacție pentru a preveni contaminarea.\nConține un colorant vizibil pentru a reduce erorile de pipetare.\nKit pentru 200 reacții."
+  },
+  {
+    "Categorie": "Biomol",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit pentru amplificare qPCR și detecție cu fluorocrom legat nespecific",
+    "Specificatii_Tehnice": "Kitul conține un amestec de reacție ce permite amplificarea PCR și detecția produșilor de reacție pe baza legării unui fluorocrom la moleculele de ADN dublu-catenar, fără specificitate de secvență.\nInclude Taq polimerază de tip hot-start.\nNu conține ROX.\nConține dUTP în amestecul de reacție pentru a preveni contaminarea.\nConține un colorant vizibil pentru a reduce erorile de pipetare.\nFormulat ca amestec 2X ce include toate componentele necesare reacției.\nKit pentru 200 reacții."
+  },
+  {
+    "Categorie": "Biomol",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "ADN-polimerază de înaltă fidelitate, tip hot-start",
+    "Specificatii_Tehnice": "Kit cu polimerază optimizată, de înaltă fidelitate, cu activitate rapidă.\nRata de eroare la incorporarea bazelor de peste 250 ori mai mică decât cea a polimerazei Taq clasice.\nEnzimă de tip hot-start.\nEficiență sporită pentru regiunile bogate în GC.\nInclude enzima, cantitate totală 100U.\nInclude tampon de reacție optimizat, cu concentrația finală de 2mM Mg++.\nInclude separat tampon optimizat pentru amplificarea regiunilor genomice bogate în GC.\nKit pentru 100 reacții la 1U polimerază/reacție."
+  },
+  {
+    "Categorie": "Biomol",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit pentru reverstranscriere, include primeri",
+    "Specificatii_Tehnice": "Conține un amestec de reacție ce include reverstranscriptază, inhibitor de RNAze și amestecul dNTP.\nReverstranscriptază cu viteză mare de reacție, necesită un timp de incubare de cel mult 15min la 55˚C.\nInclude primeri oligo-dT și hexameri cu secvență aleatorie.\nConține un colorant vizibil pentru a reduce erorile de pipetare.\nInclude amestec de control noRT.\nKit pentru 25 reacții."
+  },
+  {
+    "Categorie": "Biomol",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit pentru reverstranscriere, nu include primeri",
+    "Specificatii_Tehnice": "Conține un amestec de reacție ce include reverstranscriptază, inhibitor de RNAze și amestecul dNTP.\nReverstranscriptază cu viteză mare de reacție, necesită un timp de incubare de cel mult 15min la 55˚C.\nNu include primeri în amestecul de reacție.\nConține un colorant vizibil pentru a reduce erorile de pipetare.\nInclude amestec de control noRT.\nKit pentru 25 reacții."
+  },
+  {
+    "Categorie": "Biomol",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "ADN-polimerază hot-start",
+    "Specificatii_Tehnice": "Kitul include ADN-polimerază tip hot-start.\nInclude un aptamer pentru blocare la temperaturi sub 45˚C.\nInclude tampon standard pentru amplificare, concentrație 10X.\nConține 200 U polimerază."
+  },
+  {
+    "Categorie": "Hibridizare",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit reactivi pentru testarea riscului genetic de trombofilie",
+    "Specificatii_Tehnice": "Permite depistarea simultană a cel puțin următoarelor variante genetice: Factor V G1691A (Leiden), Factor V H1299R (R2), Protrombină G20210A, MTHFR C677T, MTHFR A1298C, Factor XIII V34L, PAI-1 4G/5G, EPCR A4600G, EPCR G4678C.\nTest bazat pe amplificarea ADN genomic din regiunile de interes şi hibridizarea\nprodusului de amplificare pe membrane, urmată de o reacție de culoare pentru evidențierea hibridizării.\nHibridizarea se realizează pe suport solid (benzi de hârtie).\nInclude pe fiecare test un control de reacție.\nConține amestecul pentru amplificarea PCR, cu excepția polimerazei.\nConține benzile de hârtie pentru hibridizarea produșilor de amplificare.\nConține reactivii necesari hibridizării (tampon de hibridizare, soluții de spălare, conjugat, substrat colorant) gata de întrebuințare.\nTimp de lucru total maxim 8 ore.\nCompatibil cu sistemul de hibridizare automată BeeBlot 20, existent în dotarea\nlaboratorului.\nMarcaj CE IVD"
+  },
+  {
+    "Categorie": "PCR virale",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit detecție și cuantificare infecții EBV, CMV, HHV6",
+    "Specificatii_Tehnice": "Kit RT-PCR multiplex hot-start care permite screening-ul si evaluarea cantitativă simultană pentru infecțiile virale cu virusurile EBV, CMV și Herpes simplex 6 (HHV6).\nPermite analiza ADN extras din probe clinice de sânge integral, lichid cefalorahidian.\nKit-ul detectează gena umană pentru beta-globină pentru controlul intern.\nDeterminarea cantitativă se face prin raportarea la numărul de copii de control intern.\nKit-ul include reactivi pentru controlul pozitiv de extracție și standarde cu diferite concentrații.\nKit certificat CE-IVD.\nCompatibil cu sistemele real-time PCR Bio-Rad CFX96 sau Roche LightCycler 480 II din dotarea laboratorului.\nFormă de ambalare: kit pentru cel puțin 96 de reacții"
+  },
+  {
+    "Categorie": "PCR virale",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit detecție și cuantificare infecție HHV7",
+    "Specificatii_Tehnice": "Kit RT-PCT pentru screening-ul și evaluarea cantitativă a infecției cu virusul Herpes simplex 7 (HHV7).\nPermite analiza ADN extras din probe clinice de plasmă, sânge integral, salivă, exsudat nazo-faringian, lichid cefalorahidian.\nKit-ul detectează gena umană pentru beta-globină pentru controlul intern.\nDeterminarea cantitativă se face prin raportarea la numărul de copii dintr-un material de control exogen inclus în kit.\nInclude un control pentru verificarea corectitudinii extracției ADN.\nKit-ul include standarde cu diferite concentrații.\nKit certificat CE-IVD.\nCompatibil cu sistemele real-time PCR Bio-Rad CFX96 sau Roche LightCycler 480 II din dotarea laboratorului.\nFormă de ambalare: kit pentru cel puțin 96 de reacții"
+  },
+  {
+    "Categorie": "PCR virale",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit detecție și cuantificare infecție Parvovirus B19",
+    "Specificatii_Tehnice": "Kit RT-PCT hot-start pentru screening-ul și evaluarea cantitativă a infecției cu parvovirus B19.\nPermite analiza ADN extras din probe clinice de plasmă, sânge periferic integral, salivă, exsudat nazo-faringian, lichid cefalorahidian, biopsie osteo-medulară.\nDeterminarea cantitativă se face prin calcularea numărului de copii raportat la numărul de copii de control intern.\nKit-ul conține și reactivi pentru controlul corectitudinii extracției ADN.\nKit-ul include standarde cu diferite concentrații.\nKit certificat CE-IVD.\nCompatibil cu sistemele real-time PCR Bio-Rad CFX96 sau Roche LightCycler 480 II din dotarea laboratorului.\nFormă de ambalare: kit pentru cel puțin 48 de reacții"
+  },
+  {
+    "Categorie": "dPCR",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit pentru testarea cantitativă a produsului genei de fuziune bcr-abl prin PCR digital",
+    "Specificatii_Tehnice": "Reactivi și consumabile pentru detecția cantitativă cel puțin a variantei majore (e13a2 și e14a2) a genei de fuziune BCR-ABL1.\nPrincipiul metodei: reacție PCR cu sonde fluorescente cu partiționarea volumului de reacție într-un număr mare (peste 15.000) de compartimente individuale.\nMetoda nu necesită analiza unei curbe de diluții standard.\nTimpul de lucru (excluzând extracția ARN): maxim 2h.\nTestul trebuie să permită utilizarea ca probe biologice a sângelui periferic recoltat pe un mediu de stabilizare a ARN.\nSistemul de analiză generază un raport al testului cu rezultatul cantitativ exprimat în unități IS și în răspuns molecular (MR).\nSensibilitatea testului: minim 0,003% IS (MR 4,52) sau mai bună.\nKitul include reactivii consumabilele necesare (de exemplu cartușe de reacție).\nSistem cu marcaj CE-IVD.\nFurnizorul trebuie să pună la dispoziția Autorității Contractante un echipament compatibil cu testele descrise, pe toată perioada de valabilitate a contractelor subsecvente.\nÎn cazul în care sunt necesare programe de calculator dedicate analizei și interpretării rezultatelor, acestea vor fi oferite împreună cu reactivii.\nLa evaluarea ofertelor se va lua în considerare prețul per test la care este oferit produsul (1 test reprezintă analiza unei probe biologice)"
+  },
+  {
+    "Categorie": "PCR hemato",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit pentru testarea cantitativă a produsului genei de fuziune PML-RARA",
+    "Specificatii_Tehnice": "Reactivi pentru analiza cantitativă a produsului genei de fuziune PML-RARA (formele BCR1 și BCR2) prin real-time qPCR.\nReactivii trebuie să fie compatibili cu sistemele real-time PCR Bio-Rad CFX96 sau Roche LightCycler 480 II din dotarea laboratorului, în caz contrar, furnizorul trebuie să pună la dispoziția Autorității Contractante un echipament compatibil cu testele descrise, pe toată perioada de valabilitate a contractelor subsecvente.\nKit cu marcaj CE-IVD"
+  },
+  {
+    "Categorie": "PCR hemato",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit pentru testarea calitativă a mutației JAK2 V617F",
+    "Specificatii_Tehnice": "Reactivi pentru analiza calitativă a mutației JAK2 V617F prin real-time qPCR.\nReactivii trebuie să fie compatibili cu rsistemele real-time PCR Bio-Rad CFX96 sau Roche LightCycler 480 II din dotarea laboratorului, în caz contrar, furnizorul trebuie să pună la dispoziția Autorității Contractante un echipament compatibil cu testele descrise, pe toată perioada de valabilitate a contractelor subsecvente.\nKit cu marcaj CE-IVD"
+  },
+  {
+    "Categorie": "PCR hemato",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit pentru testarea calitativă a mutației MPL V515K / L",
+    "Specificatii_Tehnice": "Reactivi pentru analiza calitativă a mutației MPL V515K / L prin real-time qPCR.\nReactivii trebuie să fie compatibili cu rsistemele real-time PCR Bio-Rad CFX96 sau Roche LightCycler 480 II din dotarea laboratorului, în caz contrar, furnizorul trebuie să pună la dispoziția Autorității Contractante un echipament compatibil cu testele descrise, pe toată perioada de valabilitate a contractelor subsecvente.\nKit cu marcaj CE-IVD"
+  },
+  {
+    "Categorie": "PCR hemato",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit pentru testarea calitativă a mutațiilor CALR tip 1 și 2",
+    "Specificatii_Tehnice": "Reactivi pentru analiza calitativă a mutațiilor CALR tip 1 și 2 prin real-time qPCR.\nReactivii trebuie să fie compatibili cu rsistemele real-time PCR Bio-Rad CFX96 sau Roche LightCycler 480 II din dotarea laboratorului, în caz contrar, furnizorul trebuie să pună la dispoziția Autorității Contractante un echipament compatibil cu testele descrise, pe toată perioada de valabilitate a contractelor subsecvente.\nKit cu marcaj CE-IVD"
+  },
+  {
+    "Categorie": "PCR hemato",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit pentru testarea calitativă a mutațiilor IDH1 și IDH2",
+    "Specificatii_Tehnice": "Reactivi pentru analiza calitativă a mutațiilor IDH1 (aminoacizii 132 și 100) și IDH2 (aminoacizii 172 și 140) prin real-time qPCR.\nReactivii trebuie să fie compatibili cu rsistemele real-time PCR Bio-Rad CFX96 sau Roche LightCycler 480 II din dotarea laboratorului, în caz contrar, furnizorul trebuie să pună la dispoziția Autorității Contractante un echipament compatibil cu testele descrise, pe toată perioada de valabilitate a contractelor subsecvente.\nKit cu marcaj CE-IVD"
+  },
+  {
+    "Categorie": "PCR tumori",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit pentru testarea calitativă a mutațiilor EGFR",
+    "Specificatii_Tehnice": "Kitul include reactivii și consumabilele necesare pentru detecrarea a cel puțin 50 mutații în exonii 18-21 ai EGFR.\nMetoda este destinată analizei țesuturilor fixate și incluse în parafină.\nMetoda permite realizarea automată a tuturor pașilor procedurali: deparafinare, extracție acizi nucleici, amplificare, detecție, elaborarea raportului de analiză.\nFurnizorul trebuie să pună la dispoziția Autorității Contractante un echipament compatibil cu testele descrise, pe toată perioada de valabilitate a contractelor subsecvente.\nKit cu marcaj CE-IVD.\nLa evaluarea ofertelor se va lua în considerare prețul per test la care este oferit produsul (1 test reprezintă analiza unei probe de țesut)"
+  },
+  {
+    "Categorie": "PCR tumori",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit pentru testarea mutațiilor KRAS",
+    "Specificatii_Tehnice": "Kitul include reactivii și consumabilele necesare pentru detecrarea a cel puțin 20 mutații în exonii 2-4 ai KRAS.\nMetoda este destinată analizei țesuturilor fixate și incluse în parafină.\nMetoda permite realizarea automată a tuturor pașilor procedurali: deparafinare, extracție acizi nucleici, amplificare, detecție, elaborarea raportului de analiză.\nFurnizorul trebuie să pună la dispoziția Autorității Contractante un echipament compatibil cu testele descrise, pe toată perioada de valabilitate a contractelor subsecvente.\nKit cu marcaj CE-IVD.\nLa evaluarea ofertelor se va lua în considerare prețul per test la care este oferit produsul (1 test reprezintă analiza unei probe de țesut)"
+  },
+  {
+    "Categorie": "PCR tumori",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit pentru testarea mutațiilor NRAS și BRAF",
+    "Specificatii_Tehnice": "Kitul include reactivii și consumabilele necesare pentru detecrarea a cel puțin 15 mutații în exonii 2-4 ai NRAS și a cel puțin 5 mutații în codonul 600 al BRAF.\nMetoda este destinată analizei țesuturilor fixate și incluse în parafină.\nMetoda permite realizarea automată a tuturor pașilor procedurali: deparafinare, extracție acizi nucleici, amplificare, detecție, elaborarea raportului de analiză.\nFurnizorul trebuie să pună la dispoziția Autorității Contractante un echipament compatibil cu testele descrise, pe toată perioada de valabilitate a contractelor subsecvente.\nKit cu marcaj CE-IVD.\nLa evaluarea ofertelor se va lua în considerare prețul per test la care este oferit produsul (1 test reprezintă analiza unei probe de țesut)"
+  },
+  {
+    "Categorie": "PCR tumori",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit pentru testarea mutațiilor BRAF",
+    "Specificatii_Tehnice": "Kitul include reactivii și consumabilele necesare pentru detecrarea a cel puțin 5 mutații în codonul 600 al BRAF.\nMetoda este destinată analizei țesuturilor fixate și incluse în parafină.\nMetoda permite realizarea automată a tuturor pașilor procedurali: deparafinare, extracție acizi nucleici, amplificare, detecție, elaborarea raportului de analiză.\nFurnizorul trebuie să pună la dispoziția Autorității Contractante un echipament compatibil cu testele descrise, pe toată perioada de valabilitate a contractelor subsecvente.\nKit cu marcaj CE-IVD.\nLa evaluarea ofertelor se va lua în considerare prețul per test la care este oferit produsul (1 test reprezintă analiza unei probe de țesut)"
+  },
+  {
+    "Categorie": "PCR tumori",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit pentru testarea fuziunilor genelor ALK, ROS1 și RET",
+    "Specificatii_Tehnice": "Kitul include reactivii și consumabilele necesare pentru detecrarea produșilor de transcriere ai genelor de fuziune ce implică ALK, ROS1 și RET.\nDe asemenea, ktiul permite detectarea fuziunilor cu parteneri necunoscuți prin analiza dezechilibrului dintre expresia capetelor 5' și 3' ale genelor.\nMetoda este destinată analizei țesuturilor fixate și incluse în parafină.\nMetoda permite realizarea automată a tuturor pașilor procedurali: deparafinare, extracție acizi nucleici, amplificare, detecție, elaborarea raportului de analiză.\nFurnizorul trebuie să pună la dispoziția Autorității Contractante un echipament compatibil cu testele descrise, pe toată perioada de valabilitate a contractelor subsecvente.\nKit cu marcaj CE-IVD.\nLa evaluarea ofertelor se va lua în considerare prețul per test la care este oferit produsul (1 test reprezintă analiza unei probe de țesut)"
+  },
+  {
+    "Categorie": "Ion",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit pentru secvențierea țintită a ADN și ARN din hemopatii maligne mieloide",
+    "Specificatii_Tehnice": "Reactivii permit diagnosticul neoplaziilor mieloide maligne prin secvențiere țintită de nouă generație.\nKitul permite amplificarea prin PCR a cel puțin următoarelor regiuni genomice de interes:\nregiuni predispuse la mutații din genele ABL1, BRAF, CBL, CSF3R, DNMT3A, FLT3, GATA2, HRAS, IDH1, IDH2, JAK2, KIT, KRAS, MPL, MYD88, NPM1, NRAS, PTPN11, SETBP1, SF3B1, SRSF2, U2AF1 și WT1\nîntreaga regiune codantă a genelor ASXL1, BCOR, CALR, CEBPA, ETV6, EZH2, IKZF1, NF1, PHF6, PRPF8, RB1, RUNX1, SH2B3, STAG2, TET2, TP53 și  ZRSR2\neventualele inserții în regiunea genei FLT3 (FLT3-ITD)\nSimultan, reactivii permit analiza ARNm prin amplificare PCR după reverstranscriere a cel puțin următoarelor specii de ARN:\nARNm rezultat frecvent în urma unor evenimente de fuziune ale genelor ABL1, ALK, BCL2, BRAF, CCND1, CREBBP, EGFR, ETV6, FGFR1, FGFR2, FUS, HMGA2, JAK2, KMT2A (MLL), MECOM, MET, MLLT10, MLLT3, MYBL1, MYH11, NTRK3, NUP214, PDGFRA, PDGFRB, RARA, RBM15, RUNX1, TCF3 și TFE3\nExpresia genelor BAALC, MECOM, MYC, SMC1A și WT1 prin comparație cu un set de gene de referință.\nReactivii includ două amestecuri de primeri specifici pentru amplificarea ADN și un amestec de primeri specifici pentru amplificarea ARN după reverstranscriere.\nReacțiile de amplificare pornesc de la cantități minime de cel mult 10 ng ADN și ARN.\nKitul include reactivii necesari preparării bibliotecilor de fragmente (amplificarea ADN sau ADNc, digestia parțială a ampliconilor, ligarea adaptorilor, indexarea fragmentelor) ambalați sub forma unor cartușe de unică folosință ce permit prelucrarea a 4 probe în paralel (8 cartușe / kit).\nKitul include tampoanele necesare preparării bibliotecilor de fragmente ambalate sub forma unor cartușe de unică folosință ce permit prelucrarea a 4 probe în paralel (8 cartușe / kit).\nKitul include reactivii necesari pentru purificarea magnetică a bibliotecilor de fragmente.\nKitul include consumabilele necesare preparării bibliotecilor de fragmente, de unică folosință: vârfuri de pipetare, dispozitive pentru fixarea plăcilor PCR, cartușe de reacție din plastic pentru purificarea magnetică.\nKitul include 4 plăci PCR ce conțin câte 8 perechi de etichete moleculare distincte, necesare pentru indexarea a 32 de probe.\nKitul include programul necesar pentru analiza informatică și generarea raportului de analiză pentru 32 de probe"
+  },
+  {
+    "Categorie": "Ion",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit reactivi pentru inițializarea echipamentelor și pentru pregatirea automată a probelor, 8 rulări / kit",
+    "Specificatii_Tehnice": "Kit ce permite pregătirea robustă și automatizată a șabloanelor (templating)  pentru secvențiere.\nKitul conține cartușe de șabloane (templating) și reactivi de secvențiere de unică folosință preambalate, cu urmărire integrată a probelor, oferind un flux de lucru automatizat pentru secvențiere, cu trasabilitate completă a protocolului.\nKitul trebuie să permită rularea a 8 reacții de secvențiere.\nCompatibil cu chipuride diferite capacități"
+  },
+  {
+    "Categorie": "Ion",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit cu chipuri pentru reactia de secvențiere, 8 chipuri/kit",
+    "Specificatii_Tehnice": "Pachet de chipuri cu cod de bare pentru secvențierea bibliotecilor de fragmente.\nChipul poate să detecteaze electronic încorporarea bazei azotate sub acțiunea ADN-polimerazei, fără a utiliza fluorescența.\nChipul trebuie să permită un număr citirea unui număr de 15-20 milioane fragmente de ADN.\nPermite citirea unor fragmente cu lungimea de până la 400-600 baze.\nÎmpachetare: 8 chipuri / kit"
+  },
+  {
+    "Categorie": "Ion",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Reactivi pentru reacția de revertranscriere a ARN cu reverstranscriptază de tip SuperScript IV, 50 reactii",
+    "Specificatii_Tehnice": "Master mix conceput pentru sinteza rapidă, sensibilă și reproductibilă a ADN complementar.\nReacție de reverse transcriere în doar 10 minute.\nAmestec convenabil de reacție cDNA cu un singur tub pentru master mix de reacție cDNA pentru RT-qPCR.\nReacție eficientă chiar și cu cantități mici de probă și de puritate suboptimală.\nInclude reactivul pentru eliminarea ADN genomic (DNază) în doar două minute.\nÎmpachetarea: 50 de reacții"
+  }
+]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

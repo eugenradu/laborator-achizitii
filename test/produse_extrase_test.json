@@ -1,0 +1,14 @@
+[
+  {
+    "Categorie": "Extracție Qia",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Soluție deparafinare pentru extracția ADN, flacon 50 mL",
+    "Specificatii_Tehnice": "Soluție de deparafinizare optimizată pentru tratarea secțiunilor la parafină anterior purificării ADN folosind kitul specificat la punctul 1.\nSoluția poate rămâne în contact cu proba biologică și pe parcursul tratamentului cu proteinază K.\nNu este necesară îndepărtarea supernatantului înainte de procesarea ulterioară a probei.\nConține un colorant albastru inert.\nSoluția este recomandată de producător pentru utilizare în combinație cu kitul de extracție ADN specificat la punctul 1.\nAmbalare: flacon cu 50 mL"
+  },
+  {
+    "Categorie": "PCR tumori",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit pentru analiza variantelor EGFR în țesut tumoral, kit pentru 52 reacții",
+    "Specificatii_Tehnice": "Kit de reactivi cu marcaj CE IVD, validat pentru utilizarea în scop diagnostic folosind unul dintre sistemele existente în laborator: Bio-Rad CFX96 sau Roche LightCycler 480. Validarea trebuie să fie menționată clar în instrucțiunile de utilizare a kitului.\nReactivii sunt utilizați pentru analiza mutațiilor în gena EGFR folosind tehnica real-time PCR în țesut tumoral fixat cu formaldehidă și inclus la parafină.\nAceastă utilizare trebuie să fie menționată specific în instrucțiunile de utilizare a kitului.\nPermite utilizarea a 10 ng ADN / reacție.\nReactivii permit detecția cel puțin a variantelor ce afectează aminoacidul G719 (variante în exonul 18), a delețiilor frecvente din exonul 19, a variantelor ce afectează aminoacizi S768 și T790 (variante în exonul 20), a unor inserții din exonul 20, precum și a variantelor din exonul 21 ce afectează aminoacizii L858 și L861.\nKitul include: amestec de reacție concentrat 2X, amestecuri de amorse și sonde, reactiv de control pozitiv endogen.\nAmorsele și sondele sunt distribuite în 8 amestecuri ce sunt utilizate în paralel, în 8 reacții pentru fiecare probă.\nReacțiile utilizează două canale de fluorescență diferite, unul pentru variantele EGFR și celălalt pentru controlul intern endogen.\nLimita de detecție de 3,5% sau mai bună pentru variantele descrise.\nReactivii din kit permit realizarea a 52 de reacții"
+  }
+]

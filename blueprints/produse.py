@@ -2,6 +2,8 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from flask_login import login_required
 from sqlalchemy import or_
 import json
+import os
+import uuid
 from models import db, Produs, Categorie, Producator, VariantaComercialaProdus
 
 produse_bp = Blueprint('produse', __name__)
@@ -164,7 +166,6 @@ def import_produse_json():
                 flash('Fișierul JSON trebuie să conțină o listă de obiecte.', 'danger')
                 return redirect(url_for('produse.produse'))
             
-            # --- NOUA LOGICĂ: Detectare categorii noi ---
             categorii_din_json = {item.get('Categorie', '').strip() for item in data if item.get('Categorie', '').strip()}
             
             if categorii_din_json:
@@ -173,12 +174,21 @@ def import_produse_json():
                 categorii_noi_de_creat = list(categorii_din_json - categorii_existente)
 
                 if categorii_noi_de_creat:
-                    session['import_data'] = data
+                    temp_dir = 'tmp'
+                    if not os.path.exists(temp_dir):
+                        os.makedirs(temp_dir)
+                    
+                    temp_filename = f"{uuid.uuid4()}.json"
+                    temp_filepath = os.path.join(temp_dir, temp_filename)
+                    
+                    with open(temp_filepath, 'w', encoding='utf-8') as f:
+                        json.dump(data, f)
+
+                    session['import_filepath'] = temp_filepath
                     session['categorii_noi'] = categorii_noi_de_creat
                     flash('Am detectat categorii noi. Vă rugăm confirmați crearea lor pentru a continua importul.', 'info')
                     return redirect(url_for('produse.confirm_import'))
 
-            # Dacă nu sunt categorii noi, procesăm direct folosind funcția ajutătoare
             added_count, updated_count = _proceseaza_import_produse(data)
             flash(f'Import finalizat cu succes! Produse noi: {added_count}, Produse actualizate: {updated_count}.', 'success')
         except Exception as e:
@@ -192,18 +202,21 @@ def import_produse_json():
 @produse_bp.route('/import-json/confirm', methods=['GET', 'POST'])
 @login_required
 def confirm_import():
-    if 'import_data' not in session or 'categorii_noi' not in session:
+    if 'import_filepath' not in session or 'categorii_noi' not in session:
         flash('Nu există date de import în sesiune. Vă rugăm reîncercați.', 'warning')
         return redirect(url_for('produse.produse'))
 
+    temp_filepath = session['import_filepath']
+
     if request.method == 'POST':
         if 'cancel' in request.form:
-            session.pop('import_data', None)
+            session.pop('import_filepath', None)
             session.pop('categorii_noi', None)
+            if os.path.exists(temp_filepath):
+                os.remove(temp_filepath)
             flash('Importul a fost anulat.', 'info')
             return redirect(url_for('produse.produse'))
 
-        # --- Creare categorii noi ---
         categorii_noi = session.get('categorii_noi', [])
         for nume_cat in categorii_noi:
             new_cat = Categorie(Nume_Categorie=nume_cat)
@@ -211,18 +224,22 @@ def confirm_import():
         db.session.commit()
         flash(f'Au fost create {len(categorii_noi)} categorii noi.', 'success')
 
-        # --- Procesare import ---
-        data = session.get('import_data')
-        added_count, updated_count = _proceseaza_import_produse(data)
-        flash(f'Import finalizat cu succes! Produse noi: {added_count}, Produse actualizate: {updated_count}.', 'success')
-        
-        # --- Curățare sesiune ---
-        session.pop('import_data', None)
-        session.pop('categorii_noi', None)
+        try:
+            with open(temp_filepath, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            added_count, updated_count = _proceseaza_import_produse(data)
+            flash(f'Import finalizat cu succes! Produse noi: {added_count}, Produse actualizate: {updated_count}.', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash(f'A apărut o eroare la procesarea importului: {str(e)}', 'danger')
+        finally:
+            session.pop('import_filepath', None)
+            session.pop('categorii_noi', None)
+            if os.path.exists(temp_filepath):
+                os.remove(temp_filepath)
 
         return redirect(url_for('produse.produse'))
 
-    # --- GET: Afișare pagină de confirmare ---
     categorii_noi = session.get('categorii_noi')
     return render_template('confirm_import.html', categorii_noi=categorii_noi)
 

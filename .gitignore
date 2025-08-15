@@ -26,4 +26,4 @@ dist/
 .idea/
 
 # MacOS
-.DS_Store
+.DS_Storetmp/

@@ -1,0 +1,140 @@
+[
+  {
+    "Categorie": "Extracție Qia",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Soluție deparafinare pentru extracția ADN, flacon 50 mL",
+    "Specificatii_Tehnice": "Soluție de deparafinizare optimizată pentru tratarea secțiunilor la parafină anterior purificării ADN folosind kitul specificat la punctul 1.\nSoluția poate rămâne în contact cu proba biologică și pe parcursul tratamentului cu proteinază K.\nNu este necesară îndepărtarea supernatantului înainte de procesarea ulterioară a probei.\nConține un colorant albastru inert.\nSoluția este recomandată de producător pentru utilizare în combinație cu kitul de extracție ADN specificat la punctul 1.\nAmbalare: flacon cu 50 mL"
+  },
+  {
+    "Categorie": "Extracție Qia",
+    "Unitate_Masura": "buc",
+    "Nume_Generic": "Tampon de liză ATL, 4 x 50 ml",
+    "Specificatii_Tehnice": "Tampon de liză a probei biologice recomandat de producător pentru a fi utilizat cu reactivii de purificare ADN specificați la punctul 1 de mai sus.\nTamponul este recomandat de producător pentru a fi utilizat cu sistemul automat QIAsymphony din dotarea labpratorului.\nAmbalare: 4 flacoane a câte 50 mL"
+  },
+  {
+    "Categorie": "Extracție Qia",
+    "Unitate_Masura": "buc",
+    "Nume_Generic": "Ribonuclează A, flacon cu 2,5 mL",
+    "Specificatii_Tehnice": "Ribonuclează A cu concentrația de 100 mg/mL, sau 7000 unități/mL, volum 2,5 mL.\nRibonuclează A pentru utilizarea în protocolul recomandat de producăor pentru extracția ADN din țesuturi incluse la parafină cu reactivii specificați la punctul 1.\nSoluție certificată fără activitate de deoxiribonuclează.\nSoluție gata de întrebuințare"
+  },
+  {
+    "Categorie": "Extracție Qia",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit extracție ARN din țesuturi incluse la parafină, kit pentru 192 reacții",
+    "Specificatii_Tehnice": "Reactivi și consumabile pentru extracția automată a ARN, compatibili cu sistemul  QiaSymphony din dotarea laboratorului.\nPermite extracția automată a ARN total (inclusiv molecule mici de ARN) din țesuturi fixate și incluse în parafină și din alte tipuri de probe biologice.\nPermite extracția din secțiuni la parafină cu grosimea de 5-10 µm.\nARN extras poate fi utilizat pentru real-tipe PCR, secvențiere.\nPermite volume de eluție de 50-200 µL.\nPrincipiul de funcționare: purificare magnetică.\nKitul include reactivii necesari extracției (particule magnetice, tampoane de legare, de spălare, de eluție ARN, etc).\nReactivii sunt ambalați într-un cartuș care poate fi păstrat la temperatura camerei și se încarcă direct în sistemul de extracție.\nUn kit conține reactivi suficienți pentru prelucrarea a 192 probe"
+  },
+  {
+    "Categorie": "Extracție Qia",
+    "Unitate_Masura": "buc",
+    "Nume_Generic": "Soluție deparafinare pentru extracția ARN, 16 mL",
+    "Specificatii_Tehnice": "Soluție de deparafinare recomandată de producător a fi utilizată pentru extracția și purificarea ARN din țesuturi incluse la parafină folosind reactivii specificați la punctul 5.\nSoluția poate rămâne în contact cu proba biologică și pe parcursul tratamentului cu proteinază K.\nNu este necesară îndepărtarea supernatantului înainte de procesarea ulterioară a probei.\nConține un colorant albastru inert.\nSoluția este recomandată de producător pentru utilizare în combinație cu kitul de extracție ARN specificat la punctul 5.\nAmbalare: 2 flacoane cu câte 8 mL soluție"
+  },
+  {
+    "Categorie": "Extracție Qia",
+    "Unitate_Masura": "buc",
+    "Nume_Generic": "Soluție proteinază K, 2 mL",
+    "Specificatii_Tehnice": "Soluție >600 mAU/mL, volum 2 mL.\nProteinaza K are specificitate de substrat largă și activitate înaltă.\nProteinaza K este stabilă și activă la pH crescut, în prezența de agenți denaturanți puternici (uree, guanidină), sau în prezența SDS.\nEnzima poate fi inactivată prin incubarea 15 min. la 70°C.\nRecomandată de producător pentru utilizare în combinație cu kitul de extracție automată ARN"
+  },
+  {
+    "Categorie": "Extracție Qia",
+    "Unitate_Masura": "buc",
+    "Nume_Generic": "Tampon PKD",
+    "Specificatii_Tehnice": "Tampon de digestie optimizat, recomandat de producător pentru utilizare în combinație cu kitul de extracție ARN din țesuturi incluse la parafină specificat la punctul 5.\nAmbalare: flacon cu 15 mL"
+  },
+  {
+    "Categorie": "Extracție Qia",
+    "Unitate_Masura": "buc",
+    "Nume_Generic": "Tampon pentru digestia cu dezoxiribonuclează",
+    "Specificatii_Tehnice": "Tampon concentrat pentru tratamentul probelor cu deoziribonuclează.\nTamponul este recomandat de producător pentru utilizare în combinație cu kitul de extracție ARN din țesuturi incluse la parafină specificat la punctul 5.\nTamponul amplifică efectul enzimatic al deoziribonucleazei"
+  },
+  {
+    "Categorie": "Extracție Qia",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit extracție ADN din plasmă, kit pentru 96 reacții",
+    "Specificatii_Tehnice": "Reactivi și consumabile pentru extracția automată a ADN compatibili cu sistemul  QiaSymphony din dotarea laboratorului.\nPermite extracția ADN liber circulant din plasmă.\nPermite prelucrarea a 96 de probe plasmă, fiecare cu volumul de 2 mL.\nPrincipiul de funcționare: purificare magnetică.\nADN extras poate fi utilizat ulterior pentru secvențiere, real-time PCR, PCR digital.\nKitul include reactivii necesari extracției (particule magnetice, tampoane de legare, de spălare, de eluție ADN, proteinază K).\nReactivii sunt ambalați într-un cartuș care poate fi păstrat la temperatura camerei și se încarcă direct în sistemul de extracție.\nUn kit conține reactivi suficienți pentru prelucrarea a 192 probe"
+  },
+  {
+    "Categorie": "Ion",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit pentru secvențierea țintită a tumorilor, variantă automatizată, kit pentru 32 probe",
+    "Specificatii_Tehnice": "Kitul permite secvențierea de nouă generație (NGS), țintită, a tumorilor solide, pulmonare și cu alte localizări pentru a detecta variante de secvență atât în ADN cât și în ARN.\nReactivii permit obținerea a două biblioteci de fragmente pentru fiecare probă (ADN și ARN) folosind sistemul automat Ion Chef, pornind de la probe fixate cu formaldehidă și incluse la parafină.\nProdusul permite analiza variantelor punctiforme, a inserțiilor/delețiilor mici, a variantelor de număr de copii și a transcriptelor de fuziune.\nProdusul include: primerii pentru amplificarea a 52 de gene relevante pentru patologia tumorală, cartușe cu reactivi pentru amplificare (enzime, tampon de reacție), cartușe cu soluții pentru amplificare (reactivi pentru purificare magnetică, tampoane de reacție).\nKitul include consumabilele necesare: vârfuri de pipetare, plăci PCR, cartușe pentru purificare.\nKitul include reactivi pentru indexarea probelor, dispuși în plăci PCR cu 96 godeuri.\nAnaliza începe de la 10 ng ARN total și 10 ng ADN.\nBibliotecile de fragmente obținute pot fi secvențiate folosind sistemul IonTorrent S5.\nSecvențele rezultate în urma analizei trebuie să fie compatibile cu programele de analiză primară (identificarea secvenței de baze) și secundară (alinierea la genom de referință, identificarea variantelor) a datelor furnizate de producător.\nOferta trebuie să includă generarea unui număr corespunzător (32) de buletine de analiză detaliate care să cuprindă informații despre semnificația clinică a variantelor identificate, valoarea lor predictivă pentru răspunsul la terapie și eventualele studii clinice curente relevante pentru structura moleculară a tumorilor analizate.\nReactivii și consumabilele sunt suficiente pentru prepararea a 32 de probe (32 biblioteci ADN și 32 de biblioteci ARN) în 4 runde de lucru"
+  },
+  {
+    "Categorie": "Ion",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit cu celule secvențiere pentru sistemul Ion Gene Studio S5, kit cu 8 celule",
+    "Specificatii_Tehnice": "Pachet de celule de secvențiere (chipuri) cu cod de bare.\nCelula poate să detecteaze electronic încorporarea bazei de către polimerază fără a utiliza fluorescența.\nCelula trebuie să permită un număr de citiri între 3-6 milioane.\nCelula trebuie să permită  lungimi de citire de până la 400-600 baze.\nSă fie compatibilă cu metodele de pregătire a bibliotecilor și secvențiere folosind instrumentele  Ion Chef și S5"
+  },
+  {
+    "Categorie": "Ion",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit reactivi pentru reverstranscriere, 32 probe",
+    "Specificatii_Tehnice": "Reactivi pentru reverstranscriere ARN (prima catenă) optimizați pentru prepararea probelor în vederea secvențierii NGS.\nInclude o reverstranscriptază mutantă tip MMLV.\nKitul permite utilizarea probelor fixate și incluse la parafină.\nInclude un tub cu amestec de reverstranscriere concentrat 10X și un tub cu tampon de reacție concentrat 5x.\nPermite reverstranscrierea rapidă (25 minute) și utilizarea produsului de reacție direct în etapa următoare a preparării probelor folosind reactivii descriși la punctul 1.\nAmbalare: kit pentru 32 probe"
+  },
+  {
+    "Categorie": "PCR tumori",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit pentru analiza variantelor EGFR în țesut tumoral, kit pentru 52 reacții",
+    "Specificatii_Tehnice": "Kit de reactivi cu marcaj CE IVD, validat pentru utilizarea în scop diagnostic folosind unul dintre sistemele existente în laborator: Bio-Rad CFX96 sau Roche LightCycler 480. Validarea trebuie să fie menționată clar în instrucțiunile de utilizare a kitului.\nReactivii sunt utilizați pentru analiza mutațiilor în gena EGFR folosind tehnica real-time PCR în țesut tumoral fixat cu formaldehidă și inclus la parafină.\nAceastă utilizare trebuie să fie menționată specific în instrucțiunile de utilizare a kitului.\nPermite utilizarea a 10 ng ADN / reacție.\nReactivii permit detecția cel puțin a variantelor ce afectează aminoacidul G719 (variante în exonul 18), a delețiilor frecvente din exonul 19, a variantelor ce afectează aminoacizi S768 și T790 (variante în exonul 20), a unor inserții din exonul 20, precum și a variantelor din exonul 21 ce afectează aminoacizii L858 și L861.\nKitul include: amestec de reacție concentrat 2X, amestecuri de amorse și sonde, reactiv de control pozitiv endogen.\nAmorsele și sondele sunt distribuite în 8 amestecuri ce sunt utilizate în paralel, în 8 reacții pentru fiecare probă.\nReacțiile utilizează două canale de fluorescență diferite, unul pentru variantele EGFR și celălalt pentru controlul intern endogen.\nLimita de detecție de 3,5% sau mai bună pentru variantele descrise.\nReactivii din kit permit realizarea a 52 de reacții"
+  },
+  {
+    "Categorie": "PCR tumori",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit pentru analiza variantelor EGFR în ADN liber circulant, kit pentru 48 reacții",
+    "Specificatii_Tehnice": "Kit de reactivi cu marcaj CE IVD, recomandat pentru utilizarea în scop diagnostic folosind unul dintre sistemele existente în laborator: Bio-Rad CFX96 sau Roche LightCycler 480. Recomandarea trebuie să fie menționată clar în instrucțiunile de utilizare a kitului.\nReactivii sunt utilizați pentru analiza mutațiilor în gena EGFR folosind tehnica real-time PCR în ADN genomic uman liber circulant în plasmă (cell-free DNA).\nAceastă utilizare trebuie să fie menționată specific în instrucțiunile de utilizare a kitului.\nPermite utilizarea a 1,5 - 15 ng ADN / reacție.\nReactivii permit detecția cel puțin a variantelor ce afectează aminoacidul G719 (variante în exonul 18), a delețiilor frecvente din exonul 19, a variantelor ce afectează aminoacizi S768 și T790 (variante în exonul 20), a unor inserții din exonul 20, precum și a variantelor din exonul 21 ce afectează aminoacizii L858 și L861.\nKitul include: amestec de reacție concentrat 2X, amestecuri de amorse și sonde, reactiv de control pozitiv endogen.\nAmorsele și sondele sunt distribuite în 7 amestecuri ce sunt utilizate în paralel, în 7 reacții pentru fiecare probă.\nReacțiile utilizează cel puțin două canale de fluorescență diferite, unul sau mai multe pentru variantele EGFR și unul pentru controlul intern endogen.\nLimita de detecție: 25 sau mai puține copii mutante T790M.\nReactivii din kit permit realizarea a 48 de reacții"
+  },
+  {
+    "Categorie": "QC IHC",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Materiale pentru control extern de calitate imunohistochimie - proteina de fuziune EML4-ALK în adenocarcinomul pulmonar",
+    "Specificatii_Tehnice": "Materiale de control extern de calitate constând în lame cu secțiuni seriate dintr-un bloc la parafină ce cuprinde mai multe țesuturi, cel puțin unul dintre acestea fiind un adenocarcinom pulmonar cu translocația EML4-ALK care exprimă proteina de fuziune corespunzătoare.\nParticipanții se pot înregistra și trimite electronic detalii despre protocolul de lucru și rezultatele obținute.\nProdusul include evaluarea rezultatelor testului de imunohistochimie de către un grup de experți.\nRezultatele detaliate ale evaluării sunt trimise înapoi beneficiarului sub forma unui raport care include și observații și sugestii ale experților evaluatori.\nMaterialele sunt acreditate de către un organism național de acreditare pentru activitatea de testare a competenței laboratoarelor"
+  },
+  {
+    "Categorie": "QC IHC",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Materiale pentru control extern de calitate hibridizare in situ - amplificarea HER2 în carcinomul mamar",
+    "Specificatii_Tehnice": "Materiale de control extern de calitate constând în lame cu secțiuni seriate dintr-un bloc la parafină ce cuprinde mai multe țesuturi tumorale (carcinom mamar) cu niveluri diferite de amplificare a genei HER2.\nParticipanții se pot înregistra și trimite electronic detalii despre protocolul de lucru și rezultatele obținute.\nProdusul include evaluarea rezultatelor testului de hibridizare in situ de către un grup de experți.\nRezultatele detaliate ale evaluării sunt trimise înapoi beneficiarului sub forma unui raport care include și observații și sugestii ale experților evaluatori"
+  },
+  {
+    "Categorie": "QC IHC",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Materiale pentru control extern de calitate imunohistochimie - nivelul expresiei PD-L1 în carcinomul pulmonar non-microcelular",
+    "Specificatii_Tehnice": "Materiale de control extern de calitate constând în lame cu secțiuni seriate dintr-un bloc la parafină ce cuprinde mai multe țesuturi tumorale (carcinom pulmonar non-microcelular) și de control cu niveluri diferite de expresie a PD-L1.\nParticipanții se pot înregistra și trimite electronic detalii despre protocolul de lucru și rezultatele obținute.\nProdusul include evaluarea rezultatelor testului de imunohistochimie, exprimate sub forma scorului proporției de celule tumorale (TPS), de către un grup de experți.\nRezultatele detaliate ale evaluării sunt trimise înapoi beneficiarului sub forma unui raport care include și observații și sugestii ale experților evaluatori.\nMaterialele sunt acreditate de către un organism național de acreditare pentru activitatea de testare a competenței laboratoarelor"
+  },
+  {
+    "Categorie": "QC biomol",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Materiale pentru control extern de calitate - testarea variantelor EGFR în ADN plasmatic liber circulant",
+    "Specificatii_Tehnice": "Materiale de control extern de calitate constând în plasmă artificială pentru testarea competenței în analiza variantelor EGFR folosind probe de ADN plasmatic liber circulant.\nParticipanții se pot înregistra și trimite electronic detalii despre protocolul de lucru și rezultatele obținute.\nProdusul include evaluarea rezultatelor testului molecular de către un grup de experți.\nRezultatele detaliate ale evaluării sunt trimise înapoi beneficiarului sub forma unui raport care include și observații și sugestii ale experților evaluatori.\nMaterialele sunt acreditate de către un organism național de acreditare pentru activitatea de testare a competenței laboratoarelor"
+  },
+  {
+    "Categorie": "QC biomol",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Materiale pentru control extern de calitate - testarea variantelor EGFR în cancerul pulmonar",
+    "Specificatii_Tehnice": "Materiale de control extern de calitate constând în lame cu secțiuni seriate din blocuri la parafină din carcinom pulmonar.\nParticipanții se pot înregistra și trimite electronic detalii despre protocolul de lucru și rezultatele obținute.\nProdusul include evaluarea rezultatelor testului molecular (detecția variantelor EGFR), de către un grup de experți.\nRezultatele detaliate ale evaluării sunt trimise înapoi beneficiarului sub forma unui raport care include și observații și sugestii ale experților evaluatori.\nMaterialele sunt acreditate de către un organism național de acreditare pentru activitatea de testare a competenței laboratoarelor"
+  },
+  {
+    "Categorie": "QC biomol",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Materiale pentru control extern de calitate - testarea fuziunilor NTRK în cancer",
+    "Specificatii_Tehnice": "Materiale de control extern de calitate constând în lame cu secțiuni seriate din blocuri la parafină din diferite tipuri de cancer.\nParticipanții se pot înregistra și trimite electronic detalii despre protocolul de lucru și rezultatele obținute.\nProdusul include evaluarea rezultatelor testului molecular (detecția fuziunilor NTRK prin secvențiere de nouă generație), de către un grup de experți.\nRezultatele detaliate ale evaluării sunt trimise înapoi beneficiarului sub forma unui raport care include și observații și sugestii ale experților evaluatori.\nMaterialele sunt acreditate de către un organism național de acreditare pentru activitatea de testare a competenței laboratoarelor"
+  },
+  {
+    "Categorie": "QC biomol",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Materiale pentru control extern de calitate - testarea fuziunilor ALK, ROS1 și MET în cancerul pulmonar",
+    "Specificatii_Tehnice": "Materiale de control extern de calitate constând în lame cu secțiuni seriate din blocuri la parafină dincancer pulmonar.\nParticipanții se pot înregistra și trimite electronic detalii despre protocolul de lucru și rezultatele obținute.\nProdusul include evaluarea rezultatelor testului molecular (detecția fuziunilor ALK, ROS1 și MET), de către un grup de experți.\nRezultatele detaliate ale evaluării sunt trimise înapoi beneficiarului sub forma unui raport care include și observații și sugestii ale experților evaluatori.\nMaterialele sunt acreditate de către un organism național de acreditare pentru activitatea de testare a competenței laboratoarelor"
+  },
+  {
+    "Categorie": "Hibridizare",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit reactivi pentru testarea variantelor EGFR , kit pentru 20 reacții",
+    "Specificatii_Tehnice": "Permite depistarea simultană a cel puțin următoarelor variante genetice: variante din exonul 18 care afectează aminoacidul G719;\nvariante (inclusiv deleții și deleții-inserții) din exonul 19 care afectează unul sau mai mulți dintre aminoacizii K745, E746 și L747;\nvariante din exonul 20 ce conduc la substituția T790M; variante din exonul 21 care afectează L858 și L861.\nTestul poate fi utilizat pentru ADN extras din țesuturi fixate în formaldehidă și incluse la parafină, utilizarea trebuie să fie menționată explicit în instrucțiunile de utilizare a kitului.\nTest bazat pe amplificarea ADN genomic din regiunile de interes şi hibridizarea produsului de amplificare pe membrane, urmată de o reacție de evidențiere a hibridizării.\nInclude pe fiecare test un control de reacție, două controale pozitive și patru controale negative.\nConține amestecul pentru amplificarea PCR inclusiv polimerază Taq.\nConține bandeletele pentru hibridizarea produșilor de amplificare.\nConține reactivii necesari hibridizării (tampoane de denaturare și de hibridizare, soluții de spălare, conjugat și substrat cromogen).\nTimp de lucru total maxim 8 ore.\nCompatibil cu sistemul de hibridizare automată BeeBlot 20, existent în dotarea laboratorului.\nMarcaj CE IVD"
+  },
+  {
+    "Categorie": "Hibridizare",
+    "Unitate_Masura": "kit",
+    "Nume_Generic": "Kit cu reactivi suplimentari pentru hibridizare stripuri, kit pentru 20 de teste",
+    "Specificatii_Tehnice": "Reactivi auxiliari utilizați în combinație cu kiturilel de amplificare și hibridizare specificate mai sus la punctele 1 și 2.\nConține reactivi pentru denaturare, hibridizare, spălare, conjugare și soluție substrat cromogen necesari hibridizării pe stripuri.\nCompatibil cu sistemul de hibridizare automată BeeBlot 20, existent în dotarea laboratorului.\nMarcaj CE IVD"
+  }
+]
