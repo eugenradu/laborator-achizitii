@@ -265,20 +265,12 @@
     <div style="display: flex; justify-content: space-between; align-items: center;">
         <h4>Lot #{{ lot.ID_Lot }}: {{ lot.Nume_Lot }}</h4>
         {% if referat.Stare.value == 'Ciornă' %}
-        {% if lot.proceduri_asociate.count() > 0 %}
-        <div class="tooltip">
-            <button class="button-danger-outline" disabled>Șterge Lot</button>
-            <span class="tooltiptext">Acest lot nu poate fi șters deoarece este inclus într-o procedură de
-                achiziție.</span>
-        </div>
-        {% else %}
         <form method="POST"
             action="{{ url_for('referate.sterge_lot_referat', referat_id=referat.ID_Referat, lot_id=lot.ID_Lot) }}"
             onsubmit="return confirm('Sunteți sigur că doriți să ștergeți acest lot? Toate produsele alocate lui vor fi dezalocate.');"
             style="display: inline;">
             <button type="submit" class="button-danger-outline">Șterge Lot</button>
         </form>
-        {% endif %}
         {% endif %}
     </div>
     {% if lot.Descriere_Lot %}<p>Descriere: <span class="pre-formatted-text">{{ lot.Descriere_Lot }}</span></p>{% endif
