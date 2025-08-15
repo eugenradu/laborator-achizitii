@@ -32,6 +32,13 @@ def list_oferte():
 def adauga_oferta(context=None, context_id=None):
     """Gestionează adăugarea unei oferte, flexibil: procedură, referat sau spontană."""
 
+    # --- NOU: Verificare pentru referat_id din query params ---
+    if context is None:
+        referat_id_from_query = request.args.get('referat_id', type=int)
+        if referat_id_from_query:
+            context = 'referat'
+            context_id = referat_id_from_query
+
     # --- Validare context
     if context and context not in ['procedura', 'referat']:
         flash('Context invalid pentru adăugarea ofertei.', 'danger')
