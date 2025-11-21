@@ -24,8 +24,9 @@
 <div class="card">
     <h3>Importă Produse din JSON</h3>
     <p>Încarcă un fișier JSON cu o listă de produse. Cheile obligatorii sunt "Nume_Generic", "Specificatii_Tehnice" și
-        "Unitate_Masura". Cheia "Categorie" este opțională. Dacă este specificată, categoria trebuie să existe deja în
-        sistem. Dacă este omisă, produsul va fi asignat categoriei "Necategorizat".</p>
+        "Unitate_Masura". Cheia "Categorie" este opțională. Dacă este specificată și categoria nu există deja în
+        sistem se deschide un dialog care propune adăugarea categoriei. Dacă este omisă, produsul va fi asignat
+        categoriei "Necategorizat".</p>
     <form action="{{ url_for('produse.import_produse_json') }}" method="post" enctype="multipart/form-data">
         <label for="fisier_json">Selectează fișier:</label>
         <input type="file" id="fisier_json" name="fisier_json" accept=".json" required>

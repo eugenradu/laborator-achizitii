@@ -2,7 +2,7 @@
 
 {% block content %}
     <h2>Editează Produs Generic</h2>
-    <form method="POST" action="{{ url_for('edit_produs', produs_id=produs.ID_Produs) }}">
+    <form method="POST" action="{{ url_for('produse.edit_produs', produs_id=produs.ID_Produs) }}">
         <label for="nume_generic">Nume Generic Produs:</label><br>
         <input type="text" id="nume_generic" name="nume_generic" value="{{ produs.Nume_Generic }}" required><br><br>
         
