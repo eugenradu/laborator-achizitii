@@ -27,3 +27,4 @@ dist/
 
 # MacOS
 .DS_Storetmp/
+.DS_Store/
