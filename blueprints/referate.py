@@ -3,6 +3,7 @@ from flask_login import login_required, current_user
 from datetime import date
 from io import BytesIO
 import docx
+import re
 from docx.shared import Inches
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from models import (
@@ -315,7 +316,17 @@ def proceseaza_aprobare(referat_id):
 def genereaza_referat_doc(referat_id):
     """Generează un fișier .docx cu detaliile referatului de necesitate."""
     referat = ReferatNecesitate.query.get_or_404(referat_id)
-    loturi = Lot.query.filter_by(ID_Referat=referat_id).order_by(Lot.Nume_Lot).all()
+    
+    # Funcție helper pentru a extrage numărul lotului din nume
+    def extract_lot_number(lot):
+        match = re.search(r'^Lot (\d+):', lot.Nume_Lot)
+        if match:
+            return int(match.group(1))
+        return float('inf') # Pune loturile fără număr la sfârșit
+
+    # Preluare și sortare loturi în Python
+    loturi_unsorted = Lot.query.filter_by(ID_Referat=referat_id).all()
+    loturi = sorted(loturi_unsorted, key=extract_lot_number)
 
     document = docx.Document()
     document.add_heading(f'Referat de necesitate: {referat.Numar_Referat or "N/A"}', 0)
