@@ -1,6 +1,10 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, make_response
 from flask_login import login_required, current_user
 from datetime import date
+from io import BytesIO
+import docx
+from docx.shared import Inches
+from docx.enum.text import WD_ALIGN_PARAGRAPH
 from models import (
     db, Utilizator, Categorie, Producator, Produs, VariantaComercialaProdus, ReferatNecesitate,
     Lot, ProdusInReferat, ProdusInLot, Oferta, StareReferat
@@ -309,57 +313,72 @@ def proceseaza_aprobare(referat_id):
 @referate_bp.route('/referate/<int:referat_id>/genereaza_referat')
 @login_required
 def genereaza_referat_doc(referat_id):
-    """Generează un fișier .txt cu detaliile referatului de necesitate."""
+    """Generează un fișier .docx cu detaliile referatului de necesitate."""
     referat = ReferatNecesitate.query.get_or_404(referat_id)
-
-    # Construim conținutul text al documentului
-    referat_text = f"REFERAT DE NECESITATE\n"
-    referat_text += f"{'='*40}\n"
-    referat_text += f"Număr: {referat.Numar_Referat or 'N/A'}\n"
-    referat_text += f"Data: {referat.Data_Creare.strftime('%d-%m-%Y')}\n"
-    referat_text += f"Stare: {referat.Stare.value}\n"
-    if referat.creator_referat:
-        referat_text += f"Creat de: {referat.creator_referat.Nume_Utilizator}\n"
-    referat_text += f"{'='*40}\n"
-
-    # Preluăm loturile și produsele grupate pe lot
     loturi = Lot.query.filter_by(ID_Referat=referat_id).order_by(Lot.Nume_Lot).all()
-    produse_alocate_ids = set()
+
+    document = docx.Document()
+    document.add_heading(f'Referat de necesitate: {referat.Numar_Referat or "N/A"}', 0)
+
+    # --- Partea 1: Tabel centralizator ---
+    document.add_heading('Tabel centralizator loturi', level=1)
+    table = document.add_table(rows=1, cols=5)
+    table.style = 'Table Grid'
+    hdr_cells = table.rows[0].cells
+    headers = ['Nr. crt', 'Denumire', 'UM', 'Cant. minimă\n6 luni', 'Cant. maximă\n6 luni']
+    for i, header_text in enumerate(headers):
+        hdr_cells[i].text = header_text
 
     for lot in loturi:
-        referat_text += f"\n--- LOT: {lot.Nume_Lot.upper()} ---\n"
-        if lot.Descriere_Lot:
-            referat_text += f"Descriere: {lot.Descriere_Lot}\n"
-        referat_text += "\n"
+        # Rand pentru numele lotului
+        lot_row = table.add_row().cells
+        lot_row[0].merge(lot_row[4])
+        lot_row[0].text = lot.Nume_Lot
+        lot_row[0].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
 
         produse_in_lot = db.session.query(Produs, ProdusInReferat)\
             .join(ProdusInReferat, Produs.ID_Produs == ProdusInReferat.ID_Produs_Generic)\
             .join(ProdusInLot, ProdusInReferat.ID_Produs_Referat == ProdusInLot.ID_Produs_Referat)\
             .filter(ProdusInLot.ID_Lot == lot.ID_Lot)\
             .order_by(Produs.Nume_Generic).all()
+        
+        item_counter = 1
+        for produs, pir in produse_in_lot:
+            row_cells = table.add_row().cells
+            row_cells[0].text = str(item_counter)
+            row_cells[1].text = produs.Nume_Generic or ''
+            row_cells[2].text = produs.Unitate_Masura or ''
+            row_cells[3].text = '1'
+            row_cells[4].text = str(pir.Cantitate_Solicitata)
+            item_counter += 1
 
-        for i, (produs, pir) in enumerate(produse_in_lot):
-            referat_text += f"{i+1}. {produs.Nume_Generic}\n"
-            referat_text += f"   - Cantitate solicitată: {pir.Cantitate_Solicitata} {produs.Unitate_Masura}\n"
-            referat_text += f"   - Specificații tehnice: {produs.Specificatii_Tehnice or 'N/A'}\n\n"
-            produse_alocate_ids.add(pir.ID_Produs_Referat)
+    # --- Partea a 2-a: Specificații tehnice ---
+    document.add_page_break()
+    document.add_heading('Specificații tehnice', level=1)
 
-    # Preluăm produsele nealocate
-    produse_nealocate = db.session.query(Produs, ProdusInReferat)\
-        .join(ProdusInReferat, Produs.ID_Produs == ProdusInReferat.ID_Produs_Generic)\
-        .filter(ProdusInReferat.ID_Referat == referat_id, ProdusInReferat.ID_Produs_Referat.notin_(produse_alocate_ids))\
-        .order_by(Produs.Nume_Generic).all()
+    for lot in loturi:
+        document.add_paragraph(lot.Nume_Lot, style='Heading 2')
+        
+        produse_in_lot = db.session.query(Produs, ProdusInReferat)\
+            .join(ProdusInReferat, Produs.ID_Produs == ProdusInReferat.ID_Produs_Generic)\
+            .join(ProdusInLot, ProdusInReferat.ID_Produs_Referat == ProdusInLot.ID_Produs_Referat)\
+            .filter(ProdusInLot.ID_Lot == lot.ID_Lot)\
+            .order_by(Produs.Nume_Generic).all()
 
-    if produse_nealocate:
-        referat_text += f"\n--- PRODUSE NEALOCATE ---\n\n"
-        for i, (produs, pir) in enumerate(produse_nealocate):
-            referat_text += f"{i+1}. {produs.Nume_Generic}\n"
-            referat_text += f"   - Cantitate solicitată: {pir.Cantitate_Solicitata} {produs.Unitate_Masura}\n"
-            referat_text += f"   - Specificații tehnice: {produs.Specificatii_Tehnice or 'N/A'}\n\n"
+        for i, (produs, pir) in enumerate(produse_in_lot, 1):
+            document.add_paragraph(f"{i}. {produs.Nume_Generic}:", style='Heading 3')
+            document.add_paragraph(produs.Specificatii_Tehnice or 'Specificații tehnice lipsă.')
+            document.add_paragraph() # Adaugă un rând gol
 
-    response = make_response(referat_text)
-    response.headers["Content-Disposition"] = f"attachment; filename=referat_necesitate_{referat_id}.txt"
-    response.headers["Content-type"] = "text/plain; charset=utf-8"
+    # Salvare și trimitere document
+    file_stream = BytesIO()
+    document.save(file_stream)
+    file_stream.seek(0)
+
+    response = make_response(file_stream.read())
+    response.headers["Content-Disposition"] = f"attachment; filename=referat_necesitate_{referat.Numar_Referat or referat_id}.docx"
+    response.headers["Content-Type"] = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    
     return response
 
 @referate_bp.route('/referate/<int:referat_id>/edit_observatii', methods=['POST'])
