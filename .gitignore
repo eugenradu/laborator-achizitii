@@ -12,9 +12,10 @@ __pycache__/
 *.pyd
 *.so
 
-# Databases
+# Databases and backup
 *.db
 *.sqlite3
+bckup/
 
 # Distribution / packaging
 build/
